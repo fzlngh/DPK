@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Kalkulator Sederhana</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #d9f0fc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .kalkulator {
+      background-color: #e3f2fd;
+      padding: 35px;
+      border-radius: 18px;
+      width: 380px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      color: #1976d2;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #90caf9;
+      font-size: 16px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #42a5f5;
+    }
+
+    button {
+      width: 65px;
+      height: 50px;
+      margin: 8px;
+      font-size: 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #42a5f5;
+      color: #fff;
+    }
+
+    button:hover {
+      background-color: #1976d2;
+    }
+
+    .hasil {
+      margin-top: 25px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #1976d2;
+    }
+
+    .back-btn {
+        margin-bottom: 20px;
+        padding: 10px 18px;
+        background-color: #90caf9;
+        color: #0d47a1;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+        display: inline-block;
+    }
+
+    .back-btn:hover {
+        background-color: #64b5f6;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="kalkulator">
+   <a href="/dashboard" class="back-btn" target="_top">Kembali ke dashboard</a>
+    <h2>Kalkulator Sederhana</h2>
+
+    <input type="number" id="a" placeholder="Angka pertama">
+    <input type="number" id="b" placeholder="Angka kedua">
+
+    <div>
+      <button onclick="tambah()">+</button>
+      <button onclick="kurang()">-</button>
+      <button onclick="kali()">×</button>
+      <button onclick="bagi()">÷</button>
+    </div>
+
+    <div class="hasil">
+      Hasil: <span id="hasil">0</span>
+    </div>
+  </div>
+  <script src="./variable.js"></script>
+</body>
+</html>

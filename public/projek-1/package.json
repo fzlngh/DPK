@@ -1,0 +1,12 @@
+{
+  "name": "pajil",
+  "version": "1.0.0",
+  "description": "mujix",
+  "main": "index.html",
+  "scripts": {
+    "test": "debug",
+    "start": "node variable.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
