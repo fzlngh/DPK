@@ -6,13 +6,17 @@ type Menu = {
 };
 
 const debugMenu: Menu = {
-  name: "Debug Projek",
+  name: "Debug Section",
   path: "/debug-projek",
 };
 
 const projectMenus: Menu[] = [
   { name: "Projek 1", path: "/projek-1" },
   { name: "Projek 2", path: "/projek-2" },
+  { name: "Projek 3", path: "/projek-3" },
+  { name: "Projek 4", path: "/projek-4" },
+  { name: "Projek 5", path: "/projek-5" },
+  { name: "Projek 6", path: "/projek-6"}
 ];
 
 export default function Dashboard() {
