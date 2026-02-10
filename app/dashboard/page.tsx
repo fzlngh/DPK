@@ -15,9 +15,6 @@ const projectMenus: Menu[] = [
   { name: "Projek 2", path: "/projek-2" },
   { name: "Projek 3", path: "/projek-3" },
   { name: "Projek 4", path: "/projek-4" },
-  { name: "Projek 5", path: "/projek-5" },
-  { name: "Projek 6", path: "/projek-6" },
-  { name: "Projek 7", path: "/projek-7" },
 ];
 
 export default function Dashboard() {
