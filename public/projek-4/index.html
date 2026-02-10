@@ -3,9 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Coming Soon</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #1f1f1f, #3a3a3a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 48px 64px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+            animation: fadeUp 0.8s ease;
+        }
+
+        h1 {
+            color: #fff;
+            letter-spacing: 4px;
+            margin-bottom: 36px;
+            font-size: 28px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 36px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 999px;
+            background: #ffffff;
+            color: #222;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #000;
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
 <body>
-    TEST
+
+    <div class="container">
+        <h1>COMING SOON</h1>
+        <a href="/dashboard" target="_top" class="btn">
+            Back to Dashboard
+        </a>
+    </div>
+
 </body>
 </html>
