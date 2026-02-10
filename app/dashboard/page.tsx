@@ -17,18 +17,18 @@ const projectMenus: Menu[] = [
   { name: "Projek 4", path: "/projek-4" },
   { name: "Projek 5", path: "/projek-5" },
   { name: "Projek 6", path: "/projek-6" },
-  { name: "Projek 7", path: "/projek-7" }
+  { name: "Projek 7", path: "/projek-7" },
 ];
 
 export default function Dashboard() {
   return (
-    <main className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
-      <div className="w-full h-full bg-white/95 backdrop-blur rounded-2xl shadow-2xl p-8 flex flex-col">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-slate-800">
+    <main className="min-h-screen w-full bg-gradient-to-br from-[#020617] via-[#050b2e] to-black p-8">
+      <div className="w-full h-full rounded-3xl bg-black/40 backdrop-blur-xl border border-cyan-400/30 shadow-[0_0_40px_rgba(34,211,238,0.15)] p-10 flex flex-col">
+        <div className="mb-10 text-center">
+          <h1 className="text-4xl font-bold text-cyan-300 tracking-wide drop-shadow-[0_0_12px_rgba(34,211,238,0.8)]">
             Dashboard Dhiyaa Fazila Nugraha
           </h1>
-          <p className="text-slate-500 mt-1">
+          <p className="text-red-300/80 mt-2">
             Pilih menu untuk masuk ke projek saya
           </p>
         </div>
@@ -36,21 +36,23 @@ export default function Dashboard() {
         <div className="mb-10">
           <Link
             href={debugMenu.path}
-            className="block w-full h-20 flex items-center justify-center rounded-xl bg-gradient-to-r from-red-500 to-orange-500 text-white font-semibold text-lg shadow-lg transition-all duration-300 hover:scale-[1.01] hover:shadow-xl active:scale-95"
+            className="group block h-20 flex items-center justify-center rounded-2xl bg-gradient-to-r from-pink-500 to-red-500 text-white font-semibold text-lg shadow-[0_0_25px_rgba(236,72,153,0.7)] border border-pink-400/50 transition-all duration-300 hover:scale-[1.03] active:scale-95"
           >
             {debugMenu.name}
           </Link>
         </div>
 
-        <div className="flex-1 overflow-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="flex-1 overflow-auto mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
             {projectMenus.map((menu) => (
               <Link
                 key={menu.path}
                 href={menu.path}
-                className="h-24 flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold shadow-lg transition-all duration-300 hover:scale-[1.03] hover:shadow-xl active:scale-95"
+                className="group h-24 flex items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500/20 to-purple-600/20 border border-cyan-400/40 text-cyan-200 font-semibold shadow-[0_0_20px_rgba(34,211,238,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] active:scale-95"
               >
-                {menu.name}
+                <span className="group-hover:tracking-wide transition-all duration-300">
+                  {menu.name}
+                </span>
               </Link>
             ))}
           </div>
