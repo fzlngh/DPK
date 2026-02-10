@@ -16,7 +16,8 @@ const projectMenus: Menu[] = [
   { name: "Projek 3", path: "/projek-3" },
   { name: "Projek 4", path: "/projek-4" },
   { name: "Projek 5", path: "/projek-5" },
-  { name: "Projek 6", path: "/projek-6"}
+  { name: "Projek 6", path: "/projek-6" },
+  { name: "Projek 7", path: "/projek-7" }
 ];
 
 export default function Dashboard() {
@@ -25,10 +26,10 @@ export default function Dashboard() {
       <div className="w-full h-full bg-white/95 backdrop-blur rounded-2xl shadow-2xl p-8 flex flex-col">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-slate-800">
-            Dashboard
+            Dashboard Dhiyaa Fazila Nugraha
           </h1>
           <p className="text-slate-500 mt-1">
-            Pilih menu untuk masuk ke projek
+            Pilih menu untuk masuk ke projek saya
           </p>
         </div>
 
