@@ -7,7 +7,7 @@ type Menu = {
 
 const debugMenu: Menu = {
   name: "Debug Section",
-  path: "/debug-projek",
+  path: "/debug",
 };
 
 const feedbackMenu: Menu = {
