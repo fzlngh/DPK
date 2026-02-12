@@ -26,6 +26,13 @@ export default function Dashboard() {
   return (
     <main className="min-h-screen w-full bg-[radial-gradient(circle_at_center,#0f0f1a,#05050a)] p-8">
       <div className="w-full h-full rounded-3xl bg-[#0f0f1acc] backdrop-blur-xl border border-cyan-400/40 shadow-[0_0_25px_#00ffff,0_0_60px_#ff00ff] p-10 flex flex-col">
+
+        <Link
+          href="/"
+          className="w-fit mb-6 px-6 py-2 rounded-xl bg-black border border-cyan-400 text-cyan-300 font-semibold shadow-[0_0_15px_#00ffff] hover:bg-cyan-400 hover:text-black hover:shadow-[0_0_35px_#00ffff] transition-all duration-300 active:scale-95"
+        >
+          ← Back Home
+        </Link>
         
         <div className="mb-10 text-center">
           <h1 className="text-4xl font-bold text-[#00ffff] tracking-wide drop-shadow-[0_0_14px_#00ffff]">
