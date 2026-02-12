@@ -1,82 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coming Soon</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coming Soon</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<style>
+*{box-sizing:border-box}
 
-        body {
-            margin: 0;
-            height: 100vh;
-            background: linear-gradient(135deg, #1f1f1f, #3a3a3a);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: "Segoe UI", Arial, sans-serif;
-        }
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:"Segoe UI",Arial,sans-serif;
+  background: radial-gradient(circle at center,#0f0f1a,#05050a);
+}
 
-        .container {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 48px 64px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
-            animation: fadeUp 0.8s ease;
-        }
+.container{
+  text-align:center;
+  padding:55px 70px;
+  border-radius:24px;
+  background:rgba(15,15,30,.85);
+  backdrop-filter:blur(15px);
+  border:1px solid rgba(0,255,255,.3);
+  box-shadow:
+    0 0 15px #00ffff,
+    0 0 40px #ff00ff55;
+  animation:fadeUp .8s ease, glow 3s infinite alternate;
+}
 
-        h1 {
-            color: #fff;
-            letter-spacing: 4px;
-            margin-bottom: 36px;
-            font-size: 28px;
-        }
+h1{
+  color:#00ffff;
+  letter-spacing:6px;
+  margin-bottom:40px;
+  font-size:32px;
+  text-shadow:0 0 15px #00ffff;
+}
 
-        .btn {
-            display: inline-block;
-            padding: 14px 36px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 999px;
-            background: #ffffff;
-            color: #222;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
+.btn{
+  display:inline-block;
+  padding:14px 40px;
+  font-size:16px;
+  font-weight:600;
+  border-radius:999px;
+  background:black;
+  color:#ff00ff;
+  text-decoration:none;
+  border:1px solid #ff00ff;
+  box-shadow:0 0 12px #ff00ff;
+  transition:.3s;
+}
 
-        .btn:hover {
-            background: #000;
-            color: #fff;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
-        }
+.btn:hover{
+  background:#ff00ff;
+  color:black;
+  box-shadow:0 0 30px #ff00ff;
+  transform:translateY(-3px);
+}
 
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    </style>
+@keyframes fadeUp{
+  from{opacity:0; transform:translateY(20px)}
+  to{opacity:1; transform:translateY(0)}
+}
+
+@keyframes glow{
+  from{
+    box-shadow:
+      0 0 15px #00ffff,
+      0 0 40px #ff00ff55;
+  }
+  to{
+    box-shadow:
+      0 0 25px #ff00ff,
+      0 0 60px #00ffff55;
+  }
+}
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>COMING SOON</h1>
-        <a href="/dashboard" target="_top" class="btn">
-            Back to Dashboard
-        </a>
-    </div>
+<div class="container">
+  <h1>COMING SOON</h1>
+
+  <a href="/dashboard" target="_top" class="btn">
+    Back to Dashboard
+  </a>
+</div>
 
 </body>
 </html>
