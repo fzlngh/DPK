@@ -36,7 +36,7 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <div className="mb-10 flex flex-col gap-10">
+        <div className="mb-10 flex flex-col gap-8">
           
           <Link
             href={debugMenu.path}
