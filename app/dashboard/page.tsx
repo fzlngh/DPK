@@ -36,11 +36,11 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <div className="mb-10 flex flex-col gap-4">
+        <div className="mb-10 flex flex-col gap-10">
           
           <Link
             href={debugMenu.path}
-            className="h-20 flex items-center justify-center rounded-2xl bg-black border border-cyan-400 text-cyan-300 font-semibold text-lg shadow-[0_0_20px_#00ffff] transition-all duration-300 hover:bg-cyan-400 hover:text-black hover:shadow-[0_0_40px_#00ffff] active:scale-95"
+            className="h-16 flex items-center justify-center rounded-2xl bg-black border border-cyan-400 text-cyan-300 font-semibold text-lg shadow-[0_0_20px_#00ffff] transition-all duration-300 hover:bg-cyan-400 hover:text-black hover:shadow-[0_0_40px_#00ffff] active:scale-95"
           >
             {debugMenu.name}
           </Link>
