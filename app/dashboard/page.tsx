@@ -10,11 +10,6 @@ const debugMenu: Menu = {
   path: "/debug",
 };
 
-const feedbackMenu: Menu = {
-  name: "Feedback",
-  path: "/feedback",
-};
-
 const projectMenus: Menu[] = [
   { name: "Projek 1", path: "/projek-1" },
   { name: "Projek 2", path: "/projek-2" },
@@ -50,13 +45,6 @@ export default function Dashboard() {
             className="h-16 flex items-center justify-center rounded-2xl bg-black border border-cyan-400 text-cyan-300 font-semibold text-lg shadow-[0_0_20px_#00ffff] transition-all duration-300 hover:bg-cyan-400 hover:text-black hover:shadow-[0_0_40px_#00ffff] active:scale-95"
           >
             {debugMenu.name}
-          </Link>
-
-          <Link
-            href={feedbackMenu.path}
-            className="h-16 flex items-center justify-center rounded-2xl bg-black border border-pink-500 text-pink-300 font-semibold shadow-[0_0_20px_#ff00ff] transition-all duration-300 hover:bg-pink-500 hover:text-black hover:shadow-[0_0_40px_#ff00ff] active:scale-95"
-          >
-            {feedbackMenu.name}
           </Link>
 
         </div>

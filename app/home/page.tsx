@@ -1,5 +1,15 @@
 import Link from "next/link";
 
+type Menu = {
+  name: string;
+  path: string;
+};
+
+const feedbackMenu: Menu = {
+  name: "Feedback",
+  path: "/feedback",
+};
+
 export default function home() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-[#050510] text-white">
@@ -32,6 +42,14 @@ export default function home() {
               Showcase karya saya
             </p>
           </Link>
+
+          <Link
+             href={feedbackMenu.path}
+             className="md:col-span-2 h-16 flex items-center justify-center rounded-2xl bg-black border border-pink-500 text-pink-300 font-semibold shadow-[0_0_20px_#ff00ff] transition-all duration-300 hover:bg-pink-500 hover:text-black hover:shadow-[0_0_40px_#ff00ff] active:scale-95"
+          >
+                {feedbackMenu.name}
+          </Link>
+
         </div>
       </div>
     </main>
