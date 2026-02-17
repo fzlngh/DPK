@@ -1,5 +1,8 @@
-import ComingSoon from "../comingsoon/page";
-
-export default function Portofolio() {
-  return <ComingSoon />;
+export default function PortofolioPage() {
+  return (
+    <iframe
+      src="/portofolio/index.html"
+      className="w-full h-screen border-none"
+    />
+  );
 }
