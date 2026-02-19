@@ -9,13 +9,15 @@
       rel="stylesheet"
     />
     <style>
+      html {
+        scroll-behavior: smooth;
+      }
       :root {
         --bg: #050510;
         --card: #0a0a18cc;
         --cyan: #22ffff;
         --pink: #ff00ff;
       }
-
       * {
         margin: 0;
         padding: 0;
@@ -23,11 +25,13 @@
       }
       body {
         font-family: Inter, sans-serif;
-        background: #050510;
-        color: white;
+        background: var(--bg);
+        color: #fff;
       }
-
       header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
         padding: 20px 8%;
         display: flex;
         justify-content: space-between;
@@ -36,14 +40,16 @@
         backdrop-filter: blur(12px);
         border-bottom: 1px solid rgba(0, 255, 255, 0.2);
       }
-
       .logo {
         font-family: Orbitron;
         font-size: 22px;
         color: var(--cyan);
         text-shadow: 0 0 12px var(--cyan);
       }
-
+      nav {
+        display: flex;
+        align-items: center;
+      }
       nav a {
         margin-left: 25px;
         text-decoration: none;
@@ -54,7 +60,12 @@
         color: var(--pink);
         text-shadow: 0 0 12px var(--pink);
       }
-
+      .menu-toggle {
+        display: none;
+        font-size: 26px;
+        color: var(--cyan);
+        cursor: pointer;
+      }
       .hero {
         min-height: 85vh;
         display: flex;
@@ -64,24 +75,18 @@
         text-align: center;
         padding: 40px 10%;
       }
-
       .hero h1 {
         font-size: 56px;
         font-family: Orbitron;
         color: var(--cyan);
         text-shadow: 0 0 30px var(--cyan);
       }
-
       .hero p {
         margin-top: 20px;
         max-width: 600px;
         color: #9ca3af;
-        text-align: justify;
-        text-justify: inter-word;
-        line-height: 1;
-        letter-spacing: 0.2px;
+        line-height: 1.9;
       }
-
       .btn {
         margin-top: 30px;
         padding: 14px 40px;
@@ -93,17 +98,14 @@
         transition: 0.3s;
         box-shadow: 0 0 20px #ff00ff55;
       }
-
       .btn:hover {
         background: var(--pink);
-        color: black;
+        color: #000;
         box-shadow: 0 0 40px var(--pink);
       }
-
       section {
         padding: 100px 10%;
       }
-
       .title {
         font-size: 36px;
         margin-bottom: 60px;
@@ -112,13 +114,11 @@
         color: var(--pink);
         text-shadow: 0 0 18px var(--pink);
       }
-
       .cards {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
         gap: 30px;
       }
-
       .card {
         background: var(--card);
         border: 1px solid rgba(34, 255, 255, 0.25);
@@ -128,25 +128,21 @@
         backdrop-filter: blur(14px);
         box-shadow: 0 0 25px rgba(0, 255, 255, 0.08);
       }
-
       .card:hover {
         transform: translateY(-10px);
         border-color: var(--cyan);
         box-shadow: 0 0 40px rgba(34, 255, 255, 0.7);
       }
-
       .card h3 {
         color: var(--cyan);
         margin-bottom: 10px;
       }
-
       .skills {
         display: flex;
         flex-wrap: wrap;
         gap: 15px;
         justify-content: center;
       }
-
       .skill {
         padding: 10px 22px;
         border-radius: 999px;
@@ -154,11 +150,9 @@
         box-shadow: 0 0 18px #ff00ff55;
         font-size: 14px;
       }
-
       .contact {
         text-align: center;
       }
-
       .contact a {
         display: inline-block;
         margin: 10px;
@@ -170,68 +164,72 @@
         transition: 0.3s;
         box-shadow: 0 0 18px rgba(0, 255, 255, 0.25);
       }
-
       .contact a:hover {
         background: var(--cyan);
-        color: black;
+        color: #000;
         box-shadow: 0 0 40px var(--cyan);
       }
-
       footer {
         text-align: center;
         padding: 40px;
         font-size: 14px;
         color: #777;
       }
-
-      @media (max-width: 900px) {
-        header {
-          padding: 16px 5%;
+      .profile-img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 2px solid var(--cyan);
+        box-shadow: 0 0 25px var(--cyan);
+        transition: 0.3s;
+      }
+      .profile-img:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 45px var(--pink);
+        border-color: var(--pink);
+      }
+      @media (max-width: 768px) {
+        nav {
+          position: absolute;
+          top: 100%;
+          right: 0;
+          background: #050510f0;
+          flex-direction: column;
+          width: 200px;
+          border: 1px solid #00ffff33;
+          border-radius: 12px;
+          overflow: hidden;
+          max-height: 0;
+          transition: max-height 0.3s ease;
         }
-
-        .hero h1 {
-          font-size: 42px;
+        nav a {
+          margin: 0;
+          padding: 15px;
+          border-bottom: 1px solid #00ffff11;
         }
-
-        section {
-          padding: 80px 6%;
+        nav.active {
+          max-height: 400px;
+        }
+        .menu-toggle {
+          display: block;
         }
       }
-
       @media (max-width: 600px) {
-        header {
-          flex-direction: column;
-          gap: 10px;
-        }
-
-        nav a {
-          margin-left: 12px;
-          font-size: 14px;
-        }
-
-        .hero {
-          min-height: 70vh;
-          padding: 30px 5%;
-        }
-
         .hero h1 {
           font-size: 30px;
         }
-
         .hero p {
           font-size: 14px;
           text-align: left;
         }
-
         .title {
           font-size: 26px;
           margin-bottom: 40px;
         }
-
         .card {
           padding: 24px;
         }
-
         section {
           padding: 60px 5%;
         }
@@ -241,7 +239,8 @@
   <body>
     <header>
       <div class="logo">Dhiyaa Fazila Nugraha</div>
-      <nav>
+      <div class="menu-toggle" id="menu-toggle">☰</div>
+      <nav id="nav-menu">
         <a href="/home" target="_top">Home</a>
         <a href="#about">About</a>
         <a href="#projects">Projects</a>
@@ -250,27 +249,39 @@
       </nav>
     </header>
 
-    <section class="hero">
+    <section class="hero" id="home">
       <h1>Hi, I'm Fazil</h1>
       <p>
         My name is Dhiyaa Fazila Nugraha, a vocational high school student
         specializing in technology and engineering. I study at SMKN 1 Jakarta,
-        majoring in SIJA (Sistem Informasi Jaringan dan Aplikasi), a four-year
-        program focused on network systems, information technology, and
-        application development. I have a strong passion for programming and
-        enjoy building systems, exploring new technologies, and solving
-        technical problems through code. I am particularly interested in
-        computer engineering and software development, and I continuously
-        improve my skills by practicing, experimenting with projects, and
-        learning new tools. My goal is to gain international experience,
-        collaborate with people from diverse backgrounds, and grow into a
-        knowledgeable and impactful professional in the technology field.
+        majoring in SIJA, a four-year program focused on network systems,
+        information technology, and application development. I have a strong
+        passion for programming and enjoy building systems, exploring new
+        technologies, and solving technical problems through code. I am
+        particularly interested in computer engineering and software
+        development, and I continuously improve my skills by practicing,
+        experimenting with projects, and learning new tools. My goal is to gain
+        international experience, collaborate with people from diverse
+        backgrounds, and grow into a knowledgeable and impactful professional in
+        the technology field.
       </p>
       <a href="#projects" class="btn">View Projects</a>
     </section>
 
     <section id="about">
       <h2 class="title">About Me</h2>
+
+      <div style="display: flex; justify-content: center; margin-bottom: 50px">
+        <div
+          class="card"
+          style="text-align: center; max-width: 320px; width: 100%"
+        >
+          <img src="./photo.jpeg" alt="Profile Photo" class="profile-img" />
+          <h3 style="margin-top: 15px">Dhiyaa Fazila Nugraha</h3>
+          <p style="font-size: 14px; color: #9ca3af">Future Engineer</p>
+        </div>
+      </div>
+
       <div class="cards">
         <div class="card">
           <h3>Profile</h3>
@@ -280,6 +291,7 @@
             stacks and exploring innovation.
           </p>
         </div>
+
         <div class="card">
           <h3>Goal</h3>
           <p>
@@ -288,6 +300,7 @@
             world problems.
           </p>
         </div>
+
         <div class="card">
           <h3>Strength</h3>
           <p>
@@ -335,11 +348,22 @@
       <h2 class="title">Contact</h2>
       <div class="contact">
         <a href="https://github.com/fzlngh">GitHub</a>
-        <a href="#">Instagram</a>
-        <a href="#">Email</a>
+        <a href="https://www.instagram.com/pajilowkey?igsh=ejA0ZDk4YzNzbWtw" target="_blank">Instagram</a>
+        <a href="mailto:nugrahafazila@email.com" target="_blank">Email</a>
       </div>
     </section>
 
     <footer>© 2026 Fazila — Built with passion</footer>
+
+    <script>
+      const toggle = document.getElementById("menu-toggle");
+      const nav = document.getElementById("nav-menu");
+      toggle.onclick = () => nav.classList.toggle("active");
+      document
+        .querySelectorAll("nav a")
+        .forEach(
+          (link) => (link.onclick = () => nav.classList.remove("active")),
+        );
+    </script>
   </body>
 </html>
