@@ -213,9 +213,18 @@
         }
         .menu-toggle {
           display: block;
+          color: var(--pink);
         }
       }
       @media (max-width: 600px) {
+        .logo {
+          font-size: 16px;
+          text-shadow: 0 0 8px var(--cyan);
+        }
+        .menu-toggle {
+          color: var(--pink);
+          text-shadow: 0 0 10px var(--pink);
+        }
         .hero h1 {
           font-size: 30px;
         }
@@ -276,7 +285,7 @@
           class="card"
           style="text-align: center; max-width: 320px; width: 100%"
         >
-          <img src="./photo.jpeg" alt="Profile Photo" class="profile-img" />
+          <img src="./photo.jpeg" class="profile-img" />
           <h3 style="margin-top: 15px">Dhiyaa Fazila Nugraha</h3>
           <p style="font-size: 14px; color: #9ca3af">Future Engineer</p>
         </div>
@@ -348,8 +357,12 @@
       <h2 class="title">Contact</h2>
       <div class="contact">
         <a href="https://github.com/fzlngh">GitHub</a>
-        <a href="https://www.instagram.com/pajilowkey?igsh=ejA0ZDk4YzNzbWtw" target="_blank">Instagram</a>
-        <a href="mailto:nugrahafazila@email.com" target="_blank">Email</a>
+        <a
+          href="https://www.instagram.com/pajilowkey?igsh=ejA0ZDk4YzNzbWtw"
+          target="_blank"
+          >Instagram</a
+        >
+        <a href="mailto:nugrahafazila@email.com">Email</a>
       </div>
     </section>
 
@@ -358,7 +371,12 @@
     <script>
       const toggle = document.getElementById("menu-toggle");
       const nav = document.getElementById("nav-menu");
-      toggle.onclick = () => nav.classList.toggle("active");
+      toggle.onclick = (e) => {
+        e.stopPropagation();
+        nav.classList.toggle("active");
+      };
+      document.addEventListener("click", () => nav.classList.remove("active"));
+      nav.addEventListener("click", (e) => e.stopPropagation());
       document
         .querySelectorAll("nav a")
         .forEach(
