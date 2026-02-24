@@ -24,7 +24,7 @@
       backdrop-filter: blur(15px);
       padding: 40px;
       border-radius: 25px;
-      width: min(1100px, 95vw);
+      width: min(700px, 95vw);
       height: 80vh;
       display:flex;
       flex-direction:column;
@@ -118,7 +118,7 @@
   <div class="card">
     <h1>Feedback</h1>
 
-    <a href="/" target="_top" class="back-btn">← Back to home</a>
+    <a href="/" target="_top" class="back-btn">Back to home</a>
 
     <form id="feedbackForm">
       <input type="text" name="name" placeholder="Your Name" required>
@@ -149,7 +149,7 @@
         this
       )
       .then(()=>{
-        status.textContent = "Feedback sent successfully ⚡";
+        status.textContent = "Feedback sent successfully";
         form.reset();
       })
       .catch(()=>{
