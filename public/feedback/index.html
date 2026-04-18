@@ -3,177 +3,285 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Neon Feedback</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
+    <title>Feedback — dfn.dev</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-
     <style>
+      :root {
+        --bg: #0c0d0f;
+        --surface: #141518;
+        --surface2: #1c1e22;
+        --border: rgba(255,255,255,0.07);
+        --border-hover: rgba(255,255,255,0.14);
+        --text: #e8e9eb;
+        --muted: #6b7280;
+        --accent: #e8d5a3;
+        --accent2: #7eb8a4;
+        --white: #f4f4f5;
+      }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+
       body {
-        margin: 0;
-        height: 100vh;
+        font-family: 'DM Sans', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
         display: flex;
-        padding: 20px;
-        justify-content: center;
         align-items: center;
-        background: radial-gradient(circle at center, #0f0f1a, #05050a);
-        font-family: "Orbitron", sans-serif;
-        color: white;
-      }
-
-      .card {
-        background: rgba(15, 15, 30, 0.85);
-        backdrop-filter: blur(15px);
-        padding: 40px;
-        border-radius: 25px;
-        width: min(700px, 92vw);
-        max-height: 90vh;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
         justify-content: center;
-        box-shadow:
-          0 0 10px #00ffff,
-          0 0 20px #00ffff,
-          0 0 40px #ff00ff;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        text-align: center;
-        animation: glow 3s infinite alternate;
+        padding: 40px 20px;
+        overflow-x: hidden;
       }
 
-      @keyframes glow {
-        from {
-          box-shadow:
-            0 0 10px #00ffff,
-            0 0 20px #00ffff,
-            0 0 40px #ff00ff;
-        }
-        to {
-          box-shadow:
-            0 0 20px #ff00ff,
-            0 0 40px #00ffff,
-            0 0 60px #ff00ff;
-        }
+      /* Grain */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        opacity: 0.025;
+        pointer-events: none;
+        z-index: 9999;
       }
+
+      /* Ambient blobs */
+      .blob1 {
+        position: fixed;
+        top: -150px; right: -150px;
+        width: 500px; height: 500px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(126,184,164,0.06), transparent 70%);
+        pointer-events: none;
+      }
+      .blob2 {
+        position: fixed;
+        bottom: -100px; left: -100px;
+        width: 400px; height: 400px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(232,213,163,0.04), transparent 70%);
+        pointer-events: none;
+      }
+
+      /* Card */
+      .card {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 480px;
+        animation: fadeUp 0.7s ease forwards;
+      }
+
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Back link */
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'DM Mono', monospace;
+        font-size: 12px;
+        color: var(--muted);
+        text-decoration: none;
+        letter-spacing: 0.05em;
+        margin-bottom: 32px;
+        transition: color 0.2s;
+      }
+      .back-link:hover { color: var(--text); }
+
+      /* Header */
+      .header { margin-bottom: 36px; }
+      .eyebrow {
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        color: var(--accent2);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--accent2); }
 
       h1 {
-        margin-bottom: 20px;
-        color: #00ffff;
-        text-shadow: 0 0 10px #00ffff;
+        font-family: 'DM Serif Display', serif;
+        font-size: 36px;
+        font-weight: 400;
+        color: var(--white);
+        line-height: 1.1;
+      }
+      h1 em { font-style: italic; color: var(--accent); }
+
+      /* Form container */
+      .form-wrap {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
       }
 
-      input,
-      textarea {
+      .field {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border);
+        position: relative;
+      }
+      .field:last-of-type { border-bottom: none; }
+
+      .field label {
+        display: block;
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+
+      .field input,
+      .field textarea {
         width: 100%;
-        padding: 12px;
-        margin: 10px 0;
-        border-radius: 12px;
+        background: transparent;
         border: none;
         outline: none;
-        font-family: inherit;
-        background: #0a0a18;
-        color: white;
-        box-shadow: inset 0 0 8px #00ffff;
-        transition: 0.3s;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 14px;
+        color: var(--text);
+        resize: none;
+        line-height: 1.6;
       }
+      .field input::placeholder,
+      .field textarea::placeholder { color: var(--muted); }
 
-      input:focus,
-      textarea:focus {
-        box-shadow: inset 0 0 15px #ff00ff;
+      .field::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 24px; right: 24px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        opacity: 0;
+        transition: opacity 0.3s;
       }
+      .field:focus-within::after { opacity: 1; }
+      .field:focus-within label { color: var(--accent2); }
 
-      button {
-        width: 100%;
-        padding: 14px;
-        margin-top: 15px;
-        border-radius: 15px;
-        border: none;
-        background: linear-gradient(90deg, #00ffff, #ff00ff);
-        color: black;
-        font-weight: bold;
-        cursor: pointer;
-        font-size: 16px;
-        transition: 0.3s;
-      }
-
-      button:hover {
-        transform: scale(1.05);
-        box-shadow:
-          0 0 20px #00ffff,
-          0 0 40px #ff00ff;
+      /* Submit */
+      .submit-wrap {
+        padding: 20px 24px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
       }
 
       .status {
-        margin-top: 15px;
-        font-size: 14px;
-        color: #00ffff;
-        min-height: 18px;
+        font-family: 'DM Mono', monospace;
+        font-size: 12px;
+        color: var(--muted);
+        min-height: 16px;
+        transition: color 0.3s;
       }
-      .back-btn {
-        display: inline-block;
-        margin-bottom: 15px;
-        padding: 10px 18px;
-        border-radius: 12px;
-        text-decoration: none;
-        font-size: 14px;
-        color: #00ffff;
-        border: 1px solid #00ffff;
-        box-shadow: 0 0 12px #00ffff;
-        transition: 0.25s;
-      }
+      .status.success { color: var(--accent2); }
+      .status.error { color: #f87171; }
+      .status.loading { color: var(--muted); }
 
-      .back-btn:hover {
-        background: #00ffff;
-        color: black;
-        box-shadow: 0 0 25px #00ffff;
-        transform: scale(1.05);
+      .btn-submit {
+        padding: 12px 28px;
+        background: var(--accent);
+        color: #0c0d0f;
+        border: none;
+        border-radius: 8px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+        cursor: pointer;
+        transition: opacity 0.2s, transform 0.2s;
+        flex-shrink: 0;
+      }
+      .btn-submit:hover { opacity: 0.85; transform: translateY(-1px); }
+      .btn-submit:active { transform: translateY(0); }
+      .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+      /* Footer */
+      .footer-note {
+        margin-top: 24px;
+        text-align: center;
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        color: var(--muted);
+        opacity: 0.5;
+        letter-spacing: 0.05em;
       }
     </style>
   </head>
   <body>
-    <div class="card">
-      <h1>Feedback</h1>
+    <div class="blob1"></div>
+    <div class="blob2"></div>
 
-      <a href="/" target="_top" class="back-btn">Back to home</a>
+    <div class="card">
+      <a href="/" target="_top" class="back-link">Back to home</a>
+
+      <div class="header">
+        <div class="eyebrow">Feedback</div>
+        <h1>Sampaikan<br><em>pesanmu.</em></h1>
+      </div>
 
       <form id="feedbackForm">
-        <input type="text" name="name" placeholder="Your Name" required />
-        <input type="email" name="email" placeholder="Your Email" required />
-        <textarea
-          name="message"
-          rows="4"
-          placeholder="Your Feedback"
-          required
-        ></textarea>
-        <button type="submit">Send Feedback</button>
+        <div class="form-wrap">
+          <div class="field">
+            <label for="name">Nama</label>
+            <input id="name" type="text" name="name" placeholder="Nama kamu" required autocomplete="off"/>
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" type="email" name="email" placeholder="email@contoh.com" required autocomplete="off"/>
+          </div>
+          <div class="field">
+            <label for="message">Pesan</label>
+            <textarea id="message" name="message" rows="5" placeholder="Tulis feedbackmu di sini..." required></textarea>
+          </div>
+        </div>
+
+        <div class="submit-wrap">
+          <span class="status" id="status"></span>
+          <button type="submit" class="btn-submit" id="submitBtn">Kirim</button>
+        </div>
       </form>
 
-      <div class="status" id="status"></div>
+      <p class="footer-note">© 2026 · Fazil.dev</p>
     </div>
 
     <script>
-      (function () {
-        emailjs.init("Fb-d0G_hUFZxRfqLb");
-      })();
+      (function () { emailjs.init("Fb-d0G_hUFZxRfqLb"); })();
 
       const form = document.getElementById("feedbackForm");
       const status = document.getElementById("status");
+      const submitBtn = document.getElementById("submitBtn");
 
       form.addEventListener("submit", function (e) {
         e.preventDefault();
+        status.textContent = "Mengirim...";
+        status.className = "status loading";
+        submitBtn.disabled = true;
 
-        status.textContent = "Sending...";
-
-        emailjs
-          .sendForm("feedback-dpk089", "template_k95rckv", this)
+        emailjs.sendForm("feedback-dpk089", "template_k95rckv", this)
           .then(() => {
-            status.textContent = "Feedback sent successfully";
+            status.textContent = "✓ Feedback terkirim";
+            status.className = "status success";
             form.reset();
           })
           .catch(() => {
-            status.textContent = "Failed to send.";
+            status.textContent = "✕ Gagal mengirim, coba lagi.";
+            status.className = "status error";
+          })
+          .finally(() => {
+            submitBtn.disabled = false;
           });
       });
     </script>

@@ -3,252 +3,734 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Neon Portfolio</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap"
-      rel="stylesheet"
-    />
+    <title>Dhiyaa Fazila Nugraha — Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
     <style>
-      html {
-        scroll-behavior: smooth;
-      }
       :root {
-        --bg: #050510;
-        --card: #0a0a18cc;
-        --cyan: #22ffff;
-        --pink: #ff00ff;
+        --bg: #0c0d0f;
+        --surface: #141518;
+        --surface2: #1c1e22;
+        --border: rgba(255,255,255,0.07);
+        --border-hover: rgba(255,255,255,0.15);
+        --text: #e8e9eb;
+        --muted: #6b7280;
+        --accent: #e8d5a3;
+        --accent2: #7eb8a4;
+        --accent3: #c4a882;
+        --white: #f4f4f5;
       }
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      html { scroll-behavior: smooth; }
+
       body {
-        font-family: Inter, sans-serif;
+        font-family: 'DM Sans', sans-serif;
         background: var(--bg);
-        color: #fff;
+        color: var(--text);
+        line-height: 1.6;
+        overflow-x: hidden;
       }
+
+      /* ── Grain overlay ── */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        opacity: 0.025;
+        pointer-events: none;
+        z-index: 9999;
+      }
+
+      /* ── Cursor dot ── */
+      .cursor {
+        width: 8px; height: 8px;
+        background: var(--accent);
+        border-radius: 50%;
+        position: fixed;
+        pointer-events: none;
+        z-index: 10000;
+        transition: transform 0.15s ease, opacity 0.3s ease;
+        mix-blend-mode: difference;
+      }
+      .cursor-ring {
+        width: 32px; height: 32px;
+        border: 1px solid rgba(232,213,163,0.4);
+        border-radius: 50%;
+        position: fixed;
+        pointer-events: none;
+        z-index: 9998;
+        transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.3s;
+      }
+
+      /* ── Header ── */
       header {
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        padding: 20px 8%;
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        z-index: 100;
+        padding: 24px 6%;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: rgba(10, 10, 30, 0.6);
-        backdrop-filter: blur(12px);
-        border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        transition: background 0.4s, border-color 0.4s;
       }
+      header.scrolled {
+        background: rgba(12,13,15,0.85);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border);
+      }
+
       .logo {
-        font-family: Orbitron;
-        font-size: 22px;
-        color: var(--cyan);
-        text-shadow: 0 0 12px var(--cyan);
+        font-family: 'DM Mono', monospace;
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--muted);
+        letter-spacing: 0.05em;
       }
-      nav {
-        display: flex;
-        align-items: center;
-      }
+      .logo span { color: var(--accent); }
+
+      nav { display: flex; align-items: center; gap: 36px; }
       nav a {
-        margin-left: 25px;
+        font-size: 13px;
+        color: var(--muted);
         text-decoration: none;
-        color: #aaa;
-        transition: 0.3s;
+        letter-spacing: 0.04em;
+        transition: color 0.2s;
+        position: relative;
       }
-      nav a:hover {
-        color: var(--pink);
-        text-shadow: 0 0 12px var(--pink);
+      nav a::after {
+        content: '';
+        position: absolute;
+        bottom: -2px; left: 0; right: 0;
+        height: 1px;
+        background: var(--accent);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
       }
+      nav a:hover { color: var(--text); }
+      nav a:hover::after { transform: scaleX(1); }
+
       .menu-toggle {
         display: none;
-        font-size: 26px;
-        color: var(--cyan);
+        background: none;
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 8px 12px;
+        border-radius: 6px;
         cursor: pointer;
+        font-size: 16px;
+        transition: border-color 0.2s;
       }
+      .menu-toggle:hover { border-color: var(--border-hover); }
+
+      /* ── Hero ── */
       .hero {
-        min-height: 85vh;
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        padding: 0 6%;
+        gap: 60px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-bg {
+        position: absolute;
+        top: -200px; right: -200px;
+        width: 600px; height: 600px;
+        background: radial-gradient(circle, rgba(126,184,164,0.06) 0%, transparent 70%);
+        pointer-events: none;
+      }
+      .hero-bg2 {
+        position: absolute;
+        bottom: -100px; left: -100px;
+        width: 400px; height: 400px;
+        background: radial-gradient(circle, rgba(232,213,163,0.04) 0%, transparent 70%);
+        pointer-events: none;
+      }
+
+      .hero-content { position: relative; z-index: 1; }
+
+      .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'DM Mono', monospace;
+        font-size: 12px;
+        color: var(--accent2);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 24px;
+        opacity: 0;
+        animation: fadeUp 0.8s 0.2s forwards;
+      }
+      .hero-eyebrow::before {
+        content: '';
+        width: 24px; height: 1px;
+        background: var(--accent2);
+      }
+
+      .hero h1 {
+        font-family: 'DM Serif Display', serif;
+        font-size: clamp(42px, 5vw, 68px);
+        font-weight: 400;
+        line-height: 1.05;
+        color: var(--white);
+        margin-bottom: 24px;
+        opacity: 0;
+        animation: fadeUp 0.8s 0.35s forwards;
+      }
+      .hero h1 em {
+        font-style: italic;
+        color: var(--accent);
+      }
+
+      .hero-desc {
+        font-size: 15px;
+        color: var(--muted);
+        max-width: 440px;
+        line-height: 1.8;
+        margin-bottom: 40px;
+        opacity: 0;
+        animation: fadeUp 0.8s 0.5s forwards;
+      }
+
+      .hero-actions {
         display: flex;
-        flex-direction: column;
+        gap: 16px;
+        flex-wrap: wrap;
+        opacity: 0;
+        animation: fadeUp 0.8s 0.65s forwards;
+      }
+
+      .btn-primary {
+        padding: 13px 32px;
+        background: var(--accent);
+        color: #0c0d0f;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+        text-decoration: none;
+        cursor: pointer;
+        transition: opacity 0.2s, transform 0.2s;
+      }
+      .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+      .btn-ghost {
+        padding: 13px 32px;
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 400;
+        letter-spacing: 0.03em;
+        text-decoration: none;
+        transition: border-color 0.2s, transform 0.2s;
+      }
+      .btn-ghost:hover { border-color: var(--border-hover); transform: translateY(-1px); }
+
+      .hero-visual {
+        position: relative;
+        display: flex;
         justify-content: center;
         align-items: center;
-        text-align: center;
-        padding: 40px 10%;
+        opacity: 0;
+        animation: fadeIn 1.2s 0.5s forwards;
       }
-      .hero h1 {
-        font-size: 56px;
-        font-family: Orbitron;
-        color: var(--cyan);
-        text-shadow: 0 0 30px var(--cyan);
+
+      .profile-frame {
+        position: relative;
+        width: 300px; height: 300px;
       }
-      .hero p {
-        margin-top: 20px;
-        max-width: 600px;
-        color: #9ca3af;
-        line-height: 1.9;
+      .profile-frame::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg, var(--accent) 0%, transparent 40%, var(--accent2) 60%, transparent 80%, var(--accent) 100%);
+        animation: spin 8s linear infinite;
       }
-      .btn {
-        margin-top: 30px;
-        padding: 14px 40px;
-        border-radius: 14px;
-        border: 1px solid var(--pink);
-        color: var(--pink);
-        text-decoration: none;
-        font-weight: 600;
-        transition: 0.3s;
-        box-shadow: 0 0 20px #ff00ff55;
-      }
-      .btn:hover {
-        background: var(--pink);
-        color: #000;
-        box-shadow: 0 0 40px var(--pink);
-      }
-      section {
-        padding: 100px 10%;
-      }
-      .title {
-        font-size: 36px;
-        margin-bottom: 60px;
-        text-align: center;
-        font-family: Orbitron;
-        color: var(--pink);
-        text-shadow: 0 0 18px var(--pink);
-      }
-      .cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 30px;
-      }
-      .card {
-        background: var(--card);
-        border: 1px solid rgba(34, 255, 255, 0.25);
-        padding: 32px;
-        border-radius: 24px;
-        transition: 0.35s;
-        backdrop-filter: blur(14px);
-        box-shadow: 0 0 25px rgba(0, 255, 255, 0.08);
-      }
-      .card:hover {
-        transform: translateY(-10px);
-        border-color: var(--cyan);
-        box-shadow: 0 0 40px rgba(34, 255, 255, 0.7);
-      }
-      .card h3 {
-        color: var(--cyan);
-        margin-bottom: 10px;
-      }
-      .skills {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-        justify-content: center;
-      }
-      .skill {
-        padding: 10px 22px;
-        border-radius: 999px;
-        border: 1px solid #ff00ff55;
-        box-shadow: 0 0 18px #ff00ff55;
-        font-size: 14px;
-      }
-      .contact {
-        text-align: center;
-      }
-      .contact a {
-        display: inline-block;
-        margin: 10px;
-        padding: 12px 30px;
-        border-radius: 14px;
-        border: 1px solid var(--cyan);
-        color: var(--cyan);
-        text-decoration: none;
-        transition: 0.3s;
-        box-shadow: 0 0 18px rgba(0, 255, 255, 0.25);
-      }
-      .contact a:hover {
-        background: var(--cyan);
-        color: #000;
-        box-shadow: 0 0 40px var(--cyan);
-      }
-      footer {
-        text-align: center;
-        padding: 40px;
-        font-size: 14px;
-        color: #777;
+      .profile-frame::after {
+        content: '';
+        position: absolute;
+        inset: 3px;
+        border-radius: 50%;
+        background: var(--bg);
       }
       .profile-img {
-        width: 150px;
-        height: 150px;
-        object-fit: cover;
+        position: absolute;
+        inset: 6px;
+        width: calc(100% - 12px);
+        height: calc(100% - 12px);
         border-radius: 50%;
-        border: 2px solid var(--cyan);
-        box-shadow: 0 0 25px var(--cyan);
-        transition: 0.3s;
+        object-fit: cover;
+        object-position: center top;
+        z-index: 1;
+        filter: grayscale(20%);
+        transition: filter 0.3s;
       }
-      .profile-img:hover {
-        transform: scale(1.05);
-        box-shadow: 0 0 45px var(--pink);
-        border-color: var(--pink);
+      .profile-img:hover { filter: grayscale(0%); }
+
+      .status-badge {
+        position: absolute;
+        bottom: 16px; right: 0;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 8px 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        color: var(--muted);
+        z-index: 2;
+        backdrop-filter: blur(10px);
       }
+      .status-dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: #4ade80;
+        animation: pulse 2s infinite;
+      }
+
+      /* ── Divider line ── */
+      .divider {
+        width: 100%;
+        height: 1px;
+        background: var(--border);
+        margin: 0 6%;
+        width: 88%;
+      }
+
+      /* ── Sections ── */
+      section { padding: 100px 6%; }
+
+      .section-label {
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        color: var(--accent2);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .section-label::after {
+        content: '';
+        height: 1px;
+        width: 40px;
+        background: var(--border);
+      }
+
+      .section-title {
+        font-family: 'DM Serif Display', serif;
+        font-size: clamp(28px, 3.5vw, 44px);
+        font-weight: 400;
+        color: var(--white);
+        margin-bottom: 60px;
+        line-height: 1.1;
+      }
+      .section-title em { font-style: italic; color: var(--accent); }
+
+      /* ── About ── */
+      #about .layout {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 80px;
+        align-items: start;
+      }
+
+      .about-stat-list { display: flex; flex-direction: column; gap: 0; }
+      .about-stat {
+        padding: 24px 0;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 16px;
+      }
+      .about-stat:first-child { padding-top: 0; }
+      .about-stat-label {
+        font-size: 12px;
+        color: var(--muted);
+        font-family: 'DM Mono', monospace;
+        letter-spacing: 0.05em;
+        flex-shrink: 0;
+      }
+      .about-stat-value {
+        font-size: 14px;
+        color: var(--text);
+        text-align: right;
+      }
+
+      .about-text p {
+        font-size: 15px;
+        color: var(--muted);
+        line-height: 1.9;
+        margin-bottom: 20px;
+      }
+      .about-text p:last-child { margin-bottom: 0; }
+
+      .highlight-text {
+        color: var(--text);
+        font-weight: 400;
+      }
+
+      /* ── Cards ── */
+      .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .card {
+        background: var(--surface);
+        padding: 36px 32px;
+        transition: background 0.2s;
+        position: relative;
+        overflow: hidden;
+      }
+      .card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .card:hover { background: var(--surface2); }
+      .card:hover::before { opacity: 1; }
+
+      .card-number {
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        color: var(--border-hover);
+        margin-bottom: 20px;
+        letter-spacing: 0.08em;
+      }
+      .card h3 {
+        font-family: 'DM Serif Display', serif;
+        font-size: 20px;
+        font-weight: 400;
+        color: var(--white);
+        margin-bottom: 12px;
+        line-height: 1.2;
+      }
+      .card p {
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .card-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 20px;
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        color: var(--accent2);
+        letter-spacing: 0.05em;
+      }
+
+      /* ── Projects ── */
+      .projects-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+
+      .project-item {
+        background: var(--surface);
+        padding: 32px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 24px;
+        transition: background 0.2s;
+        cursor: default;
+        position: relative;
+        overflow: hidden;
+      }
+      .project-item::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, rgba(232,213,163,0.02), transparent);
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .project-item:hover { background: var(--surface2); }
+      .project-item:hover::after { opacity: 1; }
+
+      .project-meta {
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 8px;
+        letter-spacing: 0.08em;
+      }
+      .project-title {
+        font-family: 'DM Serif Display', serif;
+        font-size: 22px;
+        font-weight: 400;
+        color: var(--white);
+        margin-bottom: 8px;
+      }
+      .project-desc {
+        font-size: 14px;
+        color: var(--muted);
+        max-width: 480px;
+        line-height: 1.6;
+      }
+      .project-tech {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+        flex-wrap: wrap;
+      }
+      .tech-tag {
+        padding: 4px 10px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.03em;
+      }
+      .project-arrow {
+        font-size: 20px;
+        color: var(--border-hover);
+        transition: transform 0.2s, color 0.2s;
+        flex-shrink: 0;
+      }
+      .project-item:hover .project-arrow {
+        transform: translate(4px, -4px);
+        color: var(--accent);
+      }
+
+      /* ── Skills ── */
+      .skills-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: start;
+      }
+
+      .skill-group { margin-bottom: 0; }
+      .skill-group-title {
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        color: var(--accent2);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+      }
+
+      .skill-list { display: flex; flex-direction: column; gap: 0; }
+      .skill-item {
+        padding: 16px 0;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .skill-item:last-child { border-bottom: none; }
+      .skill-name {
+        font-size: 14px;
+        color: var(--text);
+      }
+      .skill-bar {
+        width: 80px;
+        height: 2px;
+        background: var(--border);
+        border-radius: 1px;
+        position: relative;
+        overflow: hidden;
+      }
+      .skill-fill {
+        position: absolute;
+        top: 0; left: 0; bottom: 0;
+        background: var(--accent);
+        border-radius: 1px;
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 1s cubic-bezier(0.16,1,0.3,1);
+      }
+      .skill-fill.visible { transform: scaleX(1); }
+
+      /* ── Contact ── */
+      #contact { padding-bottom: 120px; }
+      .contact-inner {
+        max-width: 600px;
+      }
+      .contact-desc {
+        font-size: 15px;
+        color: var(--muted);
+        line-height: 1.8;
+        margin-bottom: 48px;
+      }
+      .contact-links {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .contact-link {
+        background: var(--surface);
+        padding: 20px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-decoration: none;
+        transition: background 0.2s;
+      }
+      .contact-link:hover { background: var(--surface2); }
+      .contact-link-label {
+        font-size: 14px;
+        color: var(--muted);
+        font-family: 'DM Mono', monospace;
+        font-size: 12px;
+        letter-spacing: 0.05em;
+      }
+      .contact-link-value {
+        font-size: 14px;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .contact-link-value span {
+        font-size: 16px;
+        color: var(--border-hover);
+        transition: transform 0.2s, color 0.2s;
+      }
+      .contact-link:hover .contact-link-value span {
+        transform: translate(4px, -4px);
+        color: var(--accent);
+      }
+
+      /* ── Footer ── */
+      footer {
+        padding: 32px 6%;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      footer p {
+        font-family: 'DM Mono', monospace;
+        font-size: 12px;
+        color: var(--muted);
+        letter-spacing: 0.04em;
+      }
+
+      /* ── Animations ── */
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.8); }
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: none;
+      }
+      .reveal-delay-1 { transition-delay: 0.1s; }
+      .reveal-delay-2 { transition-delay: 0.2s; }
+      .reveal-delay-3 { transition-delay: 0.3s; }
+
+      /* ── Mobile ── */
+      @media (max-width: 900px) {
+        .hero {
+          grid-template-columns: 1fr;
+          padding-top: 110px;
+          min-height: auto;
+          padding-bottom: 60px;
+          text-align: center;
+        }
+        .hero-content { order: 2; }
+        .hero-visual {
+          order: 1;
+          display: flex;
+          margin-bottom: 8px;
+        }
+        .hero-eyebrow { justify-content: center; }
+        .hero-desc { margin-left: auto; margin-right: auto; }
+        .hero-actions { justify-content: center; }
+        .profile-frame { width: 180px; height: 180px; }
+        .status-badge { font-size: 10px; padding: 6px 10px; }
+        #about .layout { grid-template-columns: 1fr; gap: 48px; }
+        .skills-layout { grid-template-columns: 1fr; gap: 40px; }
+      }
+
       @media (max-width: 768px) {
         nav {
-          position: absolute;
-          top: 100%;
-          right: 0;
-          background: #050510f0;
+          position: fixed;
+          top: 0; right: 0; bottom: 0;
+          width: 260px;
+          background: rgba(12,13,15,0.98);
+          backdrop-filter: blur(20px);
           flex-direction: column;
-          width: 200px;
-          border: 1px solid #00ffff33;
-          border-radius: 12px;
-          overflow: hidden;
-          max-height: 0;
-          transition: max-height 0.3s ease;
+          align-items: flex-start;
+          padding: 80px 32px 32px;
+          gap: 24px;
+          transform: translateX(100%);
+          transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+          border-left: 1px solid var(--border);
         }
-        nav a {
-          margin: 0;
-          padding: 15px;
-          border-bottom: 1px solid #00ffff11;
-        }
-        nav.active {
-          max-height: 400px;
-        }
-        .menu-toggle {
-          display: block;
-          color: var(--pink);
-        }
+        nav.active { transform: translateX(0); }
+        nav a { font-size: 15px; }
+        .menu-toggle { display: block; }
       }
+
       @media (max-width: 600px) {
-        .logo {
-          font-size: 16px;
-          text-shadow: 0 0 8px var(--cyan);
-        }
-        .menu-toggle {
-          color: var(--pink);
-          text-shadow: 0 0 10px var(--pink);
-        }
-        .hero h1 {
-          font-size: 30px;
-        }
-        .hero p {
-          font-size: 14px;
-          text-align: left;
-        }
-        .title {
-          font-size: 26px;
-          margin-bottom: 40px;
-        }
-        .card {
-          padding: 24px;
-        }
-        section {
-          padding: 60px 5%;
-        }
+        section { padding: 70px 5%; }
+        header { padding: 20px 5%; }
+        .project-item { grid-template-columns: 1fr; }
+        .project-arrow { display: none; }
+        footer { flex-direction: column; align-items: flex-start; }
       }
     </style>
   </head>
   <body>
-    <header>
-      <div class="logo">Dhiyaa Fazila Nugraha</div>
-      <div class="menu-toggle" id="menu-toggle">☰</div>
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-ring" id="cursor-ring"></div>
+
+    <header id="header">
+      <div class="logo"><span>Fazil</span>.dev</div>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
       <nav id="nav-menu">
         <a href="/home" target="_top">Home</a>
         <a href="#about">About</a>
@@ -258,130 +740,251 @@
       </nav>
     </header>
 
+    <!-- ── Hero ── -->
     <section class="hero" id="home">
-      <h1>Hi, I'm Fazil</h1>
-      <p>
-        My name is Dhiyaa Fazila Nugraha, a vocational high school student
-        specializing in technology and engineering. I study at SMKN 1 Jakarta,
-        majoring in SIJA, a four-year program focused on network systems,
-        information technology, and application development. I have a strong
-        passion for programming and enjoy building systems, exploring new
-        technologies, and solving technical problems through code. I am
-        particularly interested in computer engineering and software
-        development, and I continuously improve my skills by practicing,
-        experimenting with projects, and learning new tools. My goal is to gain
-        international experience, collaborate with people from diverse
-        backgrounds, and grow into a knowledgeable and impactful professional in
-        the technology field.
-      </p>
-      <a href="#projects" class="btn">View Projects</a>
+      <div class="hero-bg"></div>
+      <div class="hero-bg2"></div>
+      <div class="hero-content">
+        <div class="hero-eyebrow">Available for opportunities</div>
+        <h1>Hi, I'm<br><em>Fazil.</em></h1>
+        <p class="hero-desc">
+          A vocational student at SMKN 1 Jakarta, majoring in network systems and IT.
+          I build clean, purposeful software and am passionate about engineering
+          that creates real impact.
+        </p>
+        <div class="hero-actions">
+          <a href="#projects" class="btn-primary">View Projects</a>
+          <a href="#contact" class="btn-ghost">Get in Touch</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="profile-frame">
+          <img src="./photo.jpeg" class="profile-img" alt="Dhiyaa Fazila Nugraha"/>
+          <div class="status-badge">
+            <div class="status-dot"></div>
+            Open to work
+          </div>
+        </div>
+      </div>
     </section>
 
+    <div style="padding: 0 6%"><div class="divider"></div></div>
+
+    <!-- ── About ── -->
     <section id="about">
-      <h2 class="title">About Me</h2>
-
-      <div style="display: flex; justify-content: center; margin-bottom: 50px">
-        <div
-          class="card"
-          style="text-align: center; max-width: 320px; width: 100%"
-        >
-          <img src="./photo.jpeg" class="profile-img" />
-          <h3 style="margin-top: 15px">Dhiyaa Fazila Nugraha</h3>
-          <p style="font-size: 14px; color: #9ca3af">Future Engineer</p>
+      <div class="section-label reveal">About</div>
+      <h2 class="section-title reveal reveal-delay-1">Building with<br><em>intention.</em></h2>
+      <div class="layout">
+        <div class="about-stat-list reveal reveal-delay-1">
+          <div class="about-stat">
+            <span class="about-stat-label">School</span>
+            <span class="about-stat-value">SMKN 1 Jakarta</span>
+          </div>
+          <div class="about-stat">
+            <span class="about-stat-label">Major</span>
+            <span class="about-stat-value">SIJA — 4-year program</span>
+          </div>
+          <div class="about-stat">
+            <span class="about-stat-label">Focus</span>
+            <span class="about-stat-value">Software & Networks</span>
+          </div>
+          <div class="about-stat">
+            <span class="about-stat-label">Goal</span>
+            <span class="about-stat-value">Global Engineer</span>
+          </div>
+          <div class="about-stat">
+            <span class="about-stat-label">Location</span>
+            <span class="about-stat-value">Jakarta, Indonesia</span>
+          </div>
         </div>
-      </div>
-
-      <div class="cards">
-        <div class="card">
-          <h3>Profile</h3>
+        <div class="about-text reveal reveal-delay-2">
           <p>
-            Vocational high school IT student focused on software engineering,
-            web development, and system architecture. Always learning new tech
-            stacks and exploring innovation.
+            I'm <span class="highlight-text">Dhiyaa Fazila Nugraha</span>, a student specializing in
+            network systems, information technology, and application development.
+            My program — SIJA — gives me a structured foundation in both theoretical
+            knowledge and hands-on engineering.
           </p>
-        </div>
-
-        <div class="card">
-          <h3>Goal</h3>
           <p>
-            My mission is to become a global level engineer, collaborate
-            internationally, and build impactful technology that solves real
-            world problems.
+            I have a strong drive toward <span class="highlight-text">software development and computer engineering</span>,
+            spending time outside of school experimenting with projects, learning new stacks,
+            and refining my craft through deliberate practice.
           </p>
-        </div>
-
-        <div class="card">
-          <h3>Strength</h3>
           <p>
-            Fast learner, analytical thinker, creative builder, disciplined
-            worker, and highly curious about emerging technologies.
+            My long-term ambition is to work at a global level — collaborating across
+            cultures and contributing to technology that genuinely makes a difference.
           </p>
         </div>
       </div>
     </section>
 
+    <!-- ── Projects ── -->
     <section id="projects">
-      <h2 class="title">Projects</h2>
-      <div class="cards">
-        <div class="card">
-          <h3>Cashier System</h3>
-          <p>
-            Advanced python terminal POS system with modular architecture and
-            interactive UI logic.
-          </p>
+      <div class="section-label reveal">Projects</div>
+      <h2 class="section-title reveal reveal-delay-1">Things I've <em>built.</em></h2>
+      <div class="projects-list reveal reveal-delay-2">
+        <div class="project-item">
+          <div>
+            <div class="project-meta">01 — Terminal Application</div>
+            <div class="project-title">Cashier System</div>
+            <div class="project-desc">
+              A modular POS application built in Python with an interactive terminal UI,
+              structured architecture, and clean business logic for managing transactions.
+            </div>
+            <div class="project-tech">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">CLI</span>
+              <span class="tech-tag">Modular Architecture</span>
+            </div>
+          </div>
+          <div class="project-arrow">↗</div>
         </div>
-        <div class="card">
-          <h3>Portfolio Website</h3>
-          <p>
-            Personal showcase site optimized for performance, accessibility, and
-            responsive design.
-          </p>
+        <div class="project-item">
+          <div>
+            <div class="project-meta">02 — Web Development</div>
+            <div class="project-title">Portfolio Website</div>
+            <div class="project-desc">
+              A personal portfolio crafted for performance and responsive design —
+              clean, accessible, and purpose-built to showcase work and skills.
+            </div>
+            <div class="project-tech">
+              <span class="tech-tag">HTML</span>
+              <span class="tech-tag">CSS</span>
+              <span class="tech-tag">JavaScript</span>
+            </div>
+          </div>
+          <div class="project-arrow">↗</div>
         </div>
       </div>
     </section>
 
+    <!-- ── Skills ── -->
     <section id="skills">
-      <h2 class="title">Skills</h2>
-      <div class="skills">
-        <div class="skill">HTML</div>
-        <div class="skill">CSS</div>
-        <div class="skill">JavaScript</div>
-        <div class="skill">Python</div>
-        <div class="skill">React</div>
-        <div class="skill">Next.js</div>
-        <div class="skill">System Logic</div>
+      <div class="section-label reveal">Skills</div>
+      <h2 class="section-title reveal reveal-delay-1">Tools of the <em>trade.</em></h2>
+      <div class="skills-layout">
+        <div class="reveal reveal-delay-2">
+          <div class="skill-group-title">Frontend</div>
+          <div class="skill-list">
+            <div class="skill-item">
+              <span class="skill-name">HTML & CSS</span>
+              <div class="skill-bar"><div class="skill-fill" data-width="90"></div></div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-name">JavaScript</span>
+              <div class="skill-bar"><div class="skill-fill" data-width="75"></div></div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-name">React</span>
+              <div class="skill-bar"><div class="skill-fill" data-width="65"></div></div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-name">Next.js</span>
+              <div class="skill-bar"><div class="skill-fill" data-width="55"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="reveal reveal-delay-3">
+          <div class="skill-group-title">Backend & Systems</div>
+          <div class="skill-list">
+            <div class="skill-item">
+              <span class="skill-name">Python</span>
+              <div class="skill-bar"><div class="skill-fill" data-width="80"></div></div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-name">System Logic</span>
+              <div class="skill-bar"><div class="skill-fill" data-width="70"></div></div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-name">Network Systems</span>
+              <div class="skill-bar"><div class="skill-fill" data-width="60"></div></div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
+    <!-- ── Contact ── -->
     <section id="contact">
-      <h2 class="title">Contact</h2>
-      <div class="contact">
-        <a href="https://github.com/fzlngh" target="_blank">GitHub</a>
-        <a
-          href="https://www.instagram.com/pajilowkey?igsh=ejA0ZDk4YzNzbWtw"
-          target="_blank"
-          >Instagram</a
-        >
-        <a href="mailto:nugrahafazila@email.com">Email</a>
+      <div class="section-label reveal">Contact</div>
+      <h2 class="section-title reveal reveal-delay-1">Let's <em>connect.</em></h2>
+      <div class="contact-inner reveal reveal-delay-2">
+        <p class="contact-desc">
+          I'm open to opportunities, collaborations, or just a good conversation
+          about tech. Reach out through any of the channels below.
+        </p>
+        <div class="contact-links">
+          <a href="https://github.com/fzlngh" target="_blank" class="contact-link">
+            <span class="contact-link-label">GitHub</span>
+            <span class="contact-link-value">github.com/fzlngh <span>↗</span></span>
+          </a>
+          <a href="https://www.instagram.com/pajilowkey" target="_blank" class="contact-link">
+            <span class="contact-link-label">Instagram</span>
+            <span class="contact-link-value">@pajilowkey <span>↗</span></span>
+          </a>
+          <a href="mailto:nugrahafazila@email.com" class="contact-link">
+            <span class="contact-link-label">Email</span>
+            <span class="contact-link-value">nugrahafazila@email.com <span>↗</span></span>
+          </a>
+        </div>
       </div>
     </section>
 
-    <footer>© 2026 Fazila — Built with passion</footer>
+    <footer>
+      <p>© 2026 Dhiyaa Fazila Nugraha</p>
+      <p>Built with care — Jakarta, Indonesia</p>
+    </footer>
 
     <script>
-      const toggle = document.getElementById("menu-toggle");
-      const nav = document.getElementById("nav-menu");
-      toggle.onclick = (e) => {
-        e.stopPropagation();
-        nav.classList.toggle("active");
-      };
-      document.addEventListener("click", () => nav.classList.remove("active"));
-      nav.addEventListener("click", (e) => e.stopPropagation());
-      document
-        .querySelectorAll("nav a")
-        .forEach(
-          (link) => (link.onclick = () => nav.classList.remove("active")),
-        );
+      // ── Custom cursor ──
+      const cursor = document.getElementById('cursor');
+      const ring = document.getElementById('cursor-ring');
+      let mx = 0, my = 0, rx = 0, ry = 0;
+      document.addEventListener('mousemove', e => {
+        mx = e.clientX; my = e.clientY;
+        cursor.style.left = mx - 4 + 'px';
+        cursor.style.top = my - 4 + 'px';
+      });
+      function animateRing() {
+        rx += (mx - rx) * 0.12;
+        ry += (my - ry) * 0.12;
+        ring.style.left = rx - 16 + 'px';
+        ring.style.top = ry - 16 + 'px';
+        requestAnimationFrame(animateRing);
+      }
+      animateRing();
+
+      // ── Header scroll ──
+      const header = document.getElementById('header');
+      window.addEventListener('scroll', () => {
+        header.classList.toggle('scrolled', window.scrollY > 40);
+      });
+
+      // ── Mobile menu ──
+      const toggle = document.getElementById('menu-toggle');
+      const nav = document.getElementById('nav-menu');
+      toggle.onclick = e => { e.stopPropagation(); nav.classList.toggle('active'); };
+      document.addEventListener('click', () => nav.classList.remove('active'));
+      nav.addEventListener('click', e => e.stopPropagation());
+      nav.querySelectorAll('a').forEach(a => a.onclick = () => nav.classList.remove('active'));
+
+      // ── Reveal on scroll ──
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            // Animate skill bars
+            entry.target.querySelectorAll('.skill-fill').forEach(bar => {
+              bar.style.width = bar.dataset.width + '%';
+              bar.classList.add('visible');
+            });
+          }
+        });
+      }, { threshold: 0.12 });
+
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+      document.querySelectorAll('.skill-fill').forEach(bar => {
+        bar.style.width = '0%';
+      });
     </script>
   </body>
 </html>
