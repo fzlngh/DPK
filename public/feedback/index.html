@@ -92,6 +92,7 @@
         transition: color 0.2s;
       }
       .back-link:hover { color: var(--text); }
+      .back-link::before { content: '←'; }
 
       /* Header */
       .header { margin-bottom: 36px; }
@@ -254,15 +255,28 @@
         </div>
       </form>
 
+      <!-- Success state -->
+      <div id="successBox" style="display:none;opacity:0;transition:opacity 0.5s ease;flex-direction:column;align-items:center;text-align:center;padding:48px 24px;background:var(--surface);border:1px solid var(--border);border-radius:16px;">
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:24px;font-size:20px;color:var(--accent2);">✓</div>
+        <p style="font-family:'DM Mono',monospace;font-size:11px;color:var(--accent2);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:12px;">Terkirim</p>
+        <h2 style="font-family:'DM Serif Display',serif;font-size:28px;font-weight:400;color:var(--white);line-height:1.2;margin-bottom:12px;">Terima kasih, <em id="successName" style="font-style:italic;color:var(--accent);"></em><span style="color:var(--accent);">.</span></h2>
+        <p style="font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:28px;">Masukanmu sudah kami terima dan sangat berarti.</p>
+        <button onclick="location.reload()" style="padding:11px 28px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Kirim lagi</button>
+      </div>
+
       <p class="footer-note">© 2026 · Fazil.dev</p>
     </div>
 
     <script>
       (function () { emailjs.init("Fb-d0G_hUFZxRfqLb"); })();
 
-      const form = document.getElementById("feedbackForm");
-      const status = document.getElementById("status");
-      const submitBtn = document.getElementById("submitBtn");
+      const form        = document.getElementById("feedbackForm");
+      const formWrap    = document.querySelector(".form-wrap");
+      const submitWrap  = document.querySelector(".submit-wrap");
+      const status      = document.getElementById("status");
+      const submitBtn   = document.getElementById("submitBtn");
+      const successBox  = document.getElementById("successBox");
+      const successName = document.getElementById("successName");
 
       form.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -270,17 +284,28 @@
         status.className = "status loading";
         submitBtn.disabled = true;
 
-        emailjs.sendForm("feedback-dpk089", "template_k95rckv", this)
+        const senderName = this.querySelector('[name="name"]').value.trim();
+
+        emailjs.sendForm("feedback-dpk089", "template_i24seja", this)
           .then(() => {
-            status.textContent = "✓ Feedback terkirim";
-            status.className = "status success";
+            // Reset & hide form
             form.reset();
+            formWrap.style.transition = "opacity 0.35s";
+            formWrap.style.opacity = "0";
+            submitWrap.style.transition = "opacity 0.35s";
+            submitWrap.style.opacity = "0";
+            setTimeout(() => {
+              formWrap.style.display = "none";
+              submitWrap.style.display = "none";
+              // Show success box
+              successName.textContent = senderName || "kamu";
+              successBox.style.display = "flex";
+              requestAnimationFrame(() => { successBox.style.opacity = "1"; });
+            }, 350);
           })
           .catch(() => {
             status.textContent = "✕ Gagal mengirim, coba lagi.";
             status.className = "status error";
-          })
-          .finally(() => {
             submitBtn.disabled = false;
           });
       });
