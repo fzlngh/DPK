@@ -65,7 +65,7 @@ export default function Home() {
             style={{ fontFamily: "'DM Serif Display', serif" }}
           >
             Selamat datang,{" "}
-            <em className="italic text-[#e8d5a3]">Fazil.</em>
+            <em className="italic text-[#e8d5a3]">Guest.</em>
           </h1>
         </motion.div>
 

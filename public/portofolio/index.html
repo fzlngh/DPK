@@ -640,6 +640,71 @@
         letter-spacing: 0.04em;
       }
 
+      /* ── Skeleton ── */
+      @keyframes shimmer {
+        0% { background-position: -600px 0; }
+        100% { background-position: 600px 0; }
+      }
+      .skeleton {
+        background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
+        background-size: 800px 100%;
+        animation: shimmer 1.8s infinite linear;
+        border-radius: 4px;
+      }
+      .skeleton-meta { height: 10px; width: 140px; margin-bottom: 14px; }
+      .skeleton-title { height: 22px; width: 190px; margin-bottom: 12px; border-radius: 4px; }
+      .skeleton-desc-1 { height: 11px; width: 100%; margin-bottom: 8px; }
+      .skeleton-desc-2 { height: 11px; width: 70%; margin-bottom: 20px; }
+      .skeleton-tag {
+        height: 22px; width: 56px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-right: 8px;
+      }
+      .skeleton-arrow { height: 20px; width: 20px; border-radius: 4px; flex-shrink: 0; }
+
+      .project-skeleton {
+        background: var(--surface);
+        padding: 32px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 24px;
+        position: relative;
+      }
+
+      /* Coming Soon badge */
+      .coming-soon-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+        margin-top: 16px;
+      }
+      .coming-soon-dot {
+        width: 5px; height: 5px;
+        border-radius: 50%;
+        background: var(--accent);
+        animation: pulse 2s infinite;
+      }
+
+      /* Locked / coming soon project rows */
+      .project-item.locked {
+        cursor: default;
+        opacity: 0.55;
+      }
+      .project-item.locked:hover { background: var(--surface); }
+      .project-item.locked:hover::after { opacity: 0; }
+      .project-item.locked .project-arrow { color: var(--border); }
+      .project-item.locked:hover .project-arrow { transform: none; color: var(--border); }
+
       /* ── Animations ── */
       @keyframes fadeUp {
         from { opacity: 0; transform: translateY(20px); }
@@ -821,8 +886,37 @@
     <section id="projects">
       <div class="section-label reveal">Projects</div>
       <h2 class="section-title reveal reveal-delay-1">Things I've <em>built.</em></h2>
-      <div class="projects-list reveal reveal-delay-2">
-        <div class="project-item">
+
+      <!-- Skeleton (shown while loading) -->
+      <div class="projects-list reveal reveal-delay-2" id="projects-skeleton">
+        <div class="project-skeleton">
+          <div>
+            <div class="skeleton skeleton-meta"></div>
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-desc-1"></div>
+            <div class="skeleton skeleton-desc-2"></div>
+            <span class="skeleton skeleton-tag"></span>
+            <span class="skeleton skeleton-tag"></span>
+            <span class="skeleton skeleton-tag"></span>
+          </div>
+          <div class="skeleton skeleton-arrow"></div>
+        </div>
+        <div class="project-skeleton" style="border-top: 1px solid var(--border);">
+          <div>
+            <div class="skeleton skeleton-meta"></div>
+            <div class="skeleton skeleton-title" style="width:160px;"></div>
+            <div class="skeleton skeleton-desc-1"></div>
+            <div class="skeleton skeleton-desc-2" style="width:55%;"></div>
+            <span class="skeleton skeleton-tag"></span>
+            <span class="skeleton skeleton-tag"></span>
+          </div>
+          <div class="skeleton skeleton-arrow"></div>
+        </div>
+      </div>
+
+      <!-- Real content (shown after skeleton) -->
+      <div class="projects-list" id="projects-content" style="display:none;">
+        <div class="project-item locked">
           <div>
             <div class="project-meta">01 — Terminal Application</div>
             <div class="project-title">Cashier System</div>
@@ -835,10 +929,14 @@
               <span class="tech-tag">CLI</span>
               <span class="tech-tag">Modular Architecture</span>
             </div>
+            <div class="coming-soon-badge">
+              <span class="coming-soon-dot"></span>
+              Coming soon
+            </div>
           </div>
-          <div class="project-arrow">↗</div>
+          <div class="project-arrow">—</div>
         </div>
-        <div class="project-item">
+        <div class="project-item locked">
           <div>
             <div class="project-meta">02 — Web Development</div>
             <div class="project-title">Portfolio Website</div>
@@ -851,8 +949,12 @@
               <span class="tech-tag">CSS</span>
               <span class="tech-tag">JavaScript</span>
             </div>
+            <div class="coming-soon-badge">
+              <span class="coming-soon-dot"></span>
+              Coming soon
+            </div>
           </div>
-          <div class="project-arrow">↗</div>
+          <div class="project-arrow">—</div>
         </div>
       </div>
     </section>
@@ -867,19 +969,19 @@
           <div class="skill-list">
             <div class="skill-item">
               <span class="skill-name">HTML & CSS</span>
-              <div class="skill-bar"><div class="skill-fill" data-width="90"></div></div>
+              <div class="skill-bar"><div class="skill-fill" data-width="95"></div></div>
             </div>
             <div class="skill-item">
               <span class="skill-name">JavaScript</span>
-              <div class="skill-bar"><div class="skill-fill" data-width="75"></div></div>
+              <div class="skill-bar"><div class="skill-fill" data-width="90"></div></div>
             </div>
             <div class="skill-item">
               <span class="skill-name">React</span>
-              <div class="skill-bar"><div class="skill-fill" data-width="65"></div></div>
+              <div class="skill-bar"><div class="skill-fill" data-width="50"></div></div>
             </div>
             <div class="skill-item">
               <span class="skill-name">Next.js</span>
-              <div class="skill-bar"><div class="skill-fill" data-width="55"></div></div>
+              <div class="skill-bar"><div class="skill-fill" data-width="80"></div></div>
             </div>
           </div>
         </div>
@@ -888,15 +990,11 @@
           <div class="skill-list">
             <div class="skill-item">
               <span class="skill-name">Python</span>
-              <div class="skill-bar"><div class="skill-fill" data-width="80"></div></div>
-            </div>
-            <div class="skill-item">
-              <span class="skill-name">System Logic</span>
-              <div class="skill-bar"><div class="skill-fill" data-width="70"></div></div>
-            </div>
-            <div class="skill-item">
-              <span class="skill-name">Network Systems</span>
               <div class="skill-bar"><div class="skill-fill" data-width="60"></div></div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-name">Express.js</span>
+              <div class="skill-bar"><div class="skill-fill" data-width="30"></div></div>
             </div>
           </div>
         </div>
@@ -931,7 +1029,7 @@
 
     <footer>
       <p>© 2026 Dhiyaa Fazila Nugraha</p>
-      <p>Built with care — Jakarta, Indonesia</p>
+      <p>Built with care - Jakarta, Indonesia</p>
     </footer>
 
     <script>
@@ -981,10 +1079,26 @@
         });
       }, { threshold: 0.12 });
 
+      // ── Projects skeleton → content ──
+      setTimeout(() => {
+        const skeleton = document.getElementById('projects-skeleton');
+        const content  = document.getElementById('projects-content');
+        skeleton.style.transition = 'opacity 0.4s ease';
+        skeleton.style.opacity = '0';
+        setTimeout(() => {
+          skeleton.style.display = 'none';
+          content.style.display = 'flex';
+          content.style.opacity = '0';
+          content.style.transition = 'opacity 0.5s ease';
+          requestAnimationFrame(() => { content.style.opacity = '1'; });
+        }, 400);
+      }, 1800);
+
       document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
       document.querySelectorAll('.skill-fill').forEach(bar => {
         bar.style.width = '0%';
       });
+
     </script>
   </body>
 </html>
