@@ -18,6 +18,7 @@ const projectMenus: Menu[] = [
   { name: "Projek 2", path: "/projek-2" },
   { name: "Projek 3", path: "/projek-3" },
   { name: "Projek 4", path: "/projek-4" },
+  { name: "Projek 5", path: "/projek-5" },
 ];
 
 const container: Variants = {
