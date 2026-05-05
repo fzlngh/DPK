@@ -1,20 +1,48 @@
 <!doctype html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Game Tangkap Kotak</title>
-    <link rel="stylesheet" href="./style.css">
-  </head>
-  <body>
-    <h1>🎮 Tangkap Kotak</h1>
-    <p>Skor: <span id="score">0</span></p>
-    <p>Waktu: <span id="time">30</span> detik</p>
-    <button onclick="startGame()">Mulai Game</button>
+<head>
+  <meta charset="UTF-8" />
+  <title>Tangkap Kotak</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-    <div id="gameArea">
-      <div id="box"></div>
+  <h1>Tangkap Kotak</h1>
+
+  <div class="stats">
+    <span>Skor: <strong id="score">0</strong></span>
+    <span>Level: <strong id="level">1</strong></span>
+    <span>Waktu: <strong id="time">60</strong>s</span>
+    <span>Best: <strong id="best">0</strong></span>
+  </div>
+
+  <div id="gameArea">
+    <div id="box"></div>
+    <div id="trap"></div>
+
+    <div class="overlay" id="startOverlay">
+      <h2>Siap Bermain?</h2>
+      <p>Klik kotak <span class="hint-blue">biru</span>, hindari kotak <span class="hint-red">merah</span>!</p>
+      <button onclick="startGame()">Mulai</button>
     </div>
 
-    <script src="./script.js"></script>
-  </body>
+    <div class="overlay" id="gameOverOverlay" style="display:none">
+      <h2>Game Selesai!</h2>
+      <p>Skor: <strong id="finalScore">0</strong></p>
+      <p id="newBest" style="display:none">🏆 Rekor Baru!</p>
+      <button onclick="startGame()">Main Lagi</button>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button onclick="startGame()">Mulai</button>
+    <button class="btn-reset" onclick="resetGame()">Reset</button>
+  </div>
+
+  <audio id="sfxClick" src="click.mp3" preload="auto"></audio>
+  <audio id="sfxTrap"  src="trap.mp3"  preload="auto"></audio>
+  <audio id="sfxOver"  src="over.mp3"  preload="auto"></audio>
+
+  <script src="script.js"></script>
+</body>
 </html>

@@ -1,27 +1,133 @@
-   body {
-        text-align: center;
-        font-family: Arial;
-        background: #f0f0f0;
-      }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-      #gameArea {
-        width: 400px;
-        height: 400px;
-        background: white;
-        border: 2px solid black;
-        margin: 20px auto;
-        position: relative;
-      }
+body {
+  font-family: Arial, sans-serif;
+  background: #1a1a2e;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+}
 
-      #box {
-        width: 50px;
-        height: 50px;
-        background: red;
-        position: absolute;
-        cursor: pointer;
-      }
+h1 {
+  margin-bottom: 14px;
+  font-size: 1.8rem;
+}
 
-      button {
-        padding: 10px;
-        font-size: 16px;
-      }
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 14px;
+  font-size: 1rem;
+}
+
+.stats strong {
+  color: #00d4ff;
+}
+
+#gameArea {
+  position: relative;
+  width: 500px;
+  height: 400px;
+  background: #16213e;
+  border: 2px solid #0f3460;
+  margin: 0 auto 14px;
+  overflow: hidden;
+}
+
+#box {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: #2980b9;
+  cursor: pointer;
+  display: none;
+  border-radius: 6px;
+}
+
+#box:hover {
+  background: #3498db;
+}
+
+#trap {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: #c0392b;
+  cursor: pointer;
+  display: none;
+  border-radius: 6px;
+}
+
+#trap:hover {
+  background: #e74c3c;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.overlay h2 {
+  font-size: 1.6rem;
+}
+
+.overlay p {
+  color: #aaa;
+  font-size: 0.95rem;
+}
+
+.overlay strong {
+  color: #f1c40f;
+  font-size: 1.4rem;
+}
+
+.hint-blue { color: #3498db; font-weight: bold; }
+.hint-red  { color: #e74c3c; font-weight: bold; }
+
+#newBest {
+  color: #f39c12;
+  font-weight: bold;
+}
+
+button {
+  padding: 10px 24px;
+  font-size: 1rem;
+  background: #2980b9;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #3498db;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-reset {
+  background: #c0392b;
+}
+
+.btn-reset:hover {
+  background: #e74c3c;
+}
+
+#time.urgent {
+  color: #e74c3c;
+}
