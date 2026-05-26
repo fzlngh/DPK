@@ -1,7 +1,7 @@
-export default function Projek5Page() {
+export default function Projek6Page() {
   return (
     <iframe
-      src="/projek-5/index.html"
+      src="/projek-6/index.html"
       className="w-full h-screen border-none"
     />
   );

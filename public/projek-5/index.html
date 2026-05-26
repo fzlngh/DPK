@@ -1,93 +1,2331 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Coming Soon</title>
-
+<title>BEAT BANG! - Rhythm Tap Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-family:"Segoe UI",Arial,sans-serif;
-  background: radial-gradient(circle at center,#0f0f1a,#05050a);
-}
-
-.container{
-  text-align:center;
-  padding:55px 70px;
-  border-radius:24px;
-  background:rgba(15,15,30,.85);
-  backdrop-filter:blur(15px);
-  border:1px solid rgba(0,255,255,.3);
-  box-shadow:
-    0 0 15px #00ffff,
-    0 0 40px #ff00ff55;
-  animation:fadeUp .8s ease, glow 3s infinite alternate;
-}
-
-h1{
-  color:#00ffff;
-  letter-spacing:6px;
-  margin-bottom:40px;
-  font-size:32px;
-  text-shadow:0 0 15px #00ffff;
-}
-
-.btn{
-  display:inline-block;
-  padding:14px 40px;
-  font-size:16px;
-  font-weight:600;
-  border-radius:999px;
-  background:black;
-  color:#ff00ff;
-  text-decoration:none;
-  border:1px solid #ff00ff;
-  box-shadow:0 0 12px #ff00ff;
-  transition:.3s;
-}
-
-.btn:hover{
-  background:#ff00ff;
-  color:black;
-  box-shadow:0 0 30px #ff00ff;
-  transform:translateY(-3px);
-}
-
-@keyframes fadeUp{
-  from{opacity:0; transform:translateY(20px)}
-  to{opacity:1; transform:translateY(0)}
-}
-
-@keyframes glow{
-  from{
-    box-shadow:
-      0 0 15px #00ffff,
-      0 0 40px #ff00ff55;
+  :root {
+    --yellow: #00bbff;
+    --black: #1a1a1a;
+    --red: #FF2D2D;
+    --blue: #1E90FF;
+    --green: #00C853;
+    --purple: #9B59B6;
+    --orange: #FF6B00;
+    --white: #FFFDF0;
+    --panel-bg: #FFFDF0;
+    --shadow: 4px 4px 0px #1a1a1a;
+    --shadow-lg: 6px 6px 0px #1a1a1a;
+    --border: 3px solid #1a1a1a;
+    --border-thick: 4px solid #1a1a1a;
   }
-  to{
-    box-shadow:
-      0 0 25px #ff00ff,
-      0 0 60px #00ffff55;
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--yellow);
+    font-family: 'Comic Neue', cursive;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(circle, #1a1a1a 1px, transparent 1px);
+    background-size: 30px 30px;
+    background-color: var(--yellow);
   }
-}
+
+  /* HALFTONE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px);
+    background-size: 12px 12px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #app {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .logo {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(52px, 10vw, 88px);
+    color: var(--black);
+    letter-spacing: 4px;
+    text-shadow:
+      4px 4px 0 var(--red),
+      8px 8px 0 var(--black);
+    line-height: 1;
+    display: inline-block;
+    transform: rotate(-2deg);
+    position: relative;
+  }
+
+  .logo span { color: var(--red); }
+  .logo::after {
+    content: '💥';
+    font-size: 0.5em;
+    position: absolute;
+    top: -10px;
+    right: -30px;
+    transform: rotate(15deg);
+  }
+
+  .tagline {
+    font-family: 'Permanent Marker', cursive;
+    font-size: 18px;
+    color: var(--black);
+    background: var(--white);
+    display: inline-block;
+    padding: 4px 16px;
+    border: var(--border-thick);
+    box-shadow: var(--shadow);
+    transform: rotate(1deg);
+    margin-top: 8px;
+  }
+
+  /* SPEECH BUBBLE */
+  .speech-bubble {
+    position: relative;
+    background: var(--white);
+    border: var(--border-thick);
+    box-shadow: var(--shadow-lg);
+    border-radius: 20px;
+    padding: 12px 20px;
+    display: inline-block;
+    font-family: 'Comic Neue', cursive;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 30px;
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 20px solid var(--black);
+  }
+  .speech-bubble::before {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 33px;
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 17px solid var(--white);
+    z-index: 1;
+  }
+
+  /* PANELS (comic book layout) */
+  .panel {
+    background: var(--white);
+    border: var(--border-thick);
+    box-shadow: var(--shadow-lg);
+    border-radius: 4px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 8px,
+      rgba(255,224,0,0.05) 8px,
+      rgba(255,224,0,0.05) 9px
+    );
+    pointer-events: none;
+  }
+
+  .panel-label {
+    font-family: 'Bangers', cursive;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--white);
+    background: var(--black);
+    padding: 2px 10px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-bottom-right-radius: 8px;
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .stat-card {
+    background: var(--black);
+    border: var(--border-thick);
+    box-shadow: 3px 3px 0 var(--white);
+    padding: 10px 12px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%);
+  }
+
+  .stat-label {
+    font-family: 'Bangers', cursive;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--yellow);
+  }
+
+  .stat-value {
+    font-family: 'Bangers', cursive;
+    font-size: 28px;
+    color: var(--white);
+    line-height: 1;
+  }
+
+  .stat-value.combo { color: var(--orange); }
+  .stat-value.score { color: var(--yellow); }
+  .stat-value.life { color: var(--red); }
+  .stat-value.acc { color: var(--green); }
+
+  /* MUSIC SELECTOR */
+  .music-selector {
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Bangers', cursive;
+    font-size: 26px;
+    letter-spacing: 3px;
+    color: var(--black);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 4px;
+    background: var(--black);
+    border-radius: 2px;
+  }
+
+  .songs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+  }
+
+  .song-card {
+    background: var(--white);
+    border: var(--border-thick);
+    box-shadow: var(--shadow);
+    padding: 14px;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .song-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .song-card.active {
+    background: var(--yellow);
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--black);
+  }
+
+  .song-card.locked {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(0.5);
+  }
+
+  .song-card::before {
+    content: attr(data-genre);
+    position: absolute;
+    top: 8px;
+    right: -20px;
+    font-family: 'Bangers', cursive;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 2px 30px 2px 10px;
+    color: var(--white);
+    transform: rotate(15deg);
+  }
+
+  .song-card[data-genre="POP"]::before { background: var(--red); }
+  .song-card[data-genre="EDM"]::before { background: var(--blue); }
+  .song-card[data-genre="ROCK"]::before { background: var(--black); }
+  .song-card[data-genre="JAZZ"]::before { background: var(--purple); }
+  .song-card[data-genre="CUSTOM"]::before { background: var(--green); }
+
+  .song-emoji { font-size: 32px; margin-bottom: 6px; display: block; }
+  .song-name {
+    font-family: 'Permanent Marker', cursive;
+    font-size: 15px;
+    color: var(--black);
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+
+  .song-artist {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 8px;
+  }
+
+  .song-meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-family: 'Bangers', cursive;
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border: 2px solid var(--black);
+    border-radius: 3px;
+  }
+
+  .badge.bpm { background: var(--orange); color: var(--black); }
+  .badge.diff-easy { background: var(--green); color: var(--white); }
+  .badge.diff-medium { background: var(--orange); color: var(--white); }
+  .badge.diff-hard { background: var(--red); color: var(--white); }
+  .badge.locked { background: var(--black); color: var(--yellow); }
+
+  /* ADD MUSIC AREA */
+  .add-music-zone {
+    border: 4px dashed var(--black);
+    background: repeating-linear-gradient(
+      45deg,
+      var(--yellow),
+      var(--yellow) 10px,
+      rgba(255,255,255,0.5) 10px,
+      rgba(255,255,255,0.5) 20px
+    );
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 4px;
+  }
+
+  .add-music-zone:hover {
+    transform: scale(1.01);
+  }
+
+  .add-music-zone.drag-over {
+    background: var(--yellow);
+    border-color: var(--green);
+    box-shadow: 0 0 0 4px var(--green);
+  }
+
+  .drop-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .drop-text {
+    font-family: 'Bangers', cursive;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--black);
+  }
+
+  .drop-sub {
+    font-size: 13px;
+    color: #555;
+    margin-top: 4px;
+  }
+
+  /* GAME AREA */
+  .game-area {
+    position: relative;
+    margin-bottom: 16px;
+  }
+
+  .game-canvas-wrap {
+    position: relative;
+    background: var(--black);
+    border: var(--border-thick);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+
+  #gameCanvas {
+    display: block;
+    width: 100%;
+    height: 420px;
+  }
+
+  /* LANES */
+  .lanes-container {
+    display: flex;
+    gap: 8px;
+    padding: 0 8px;
+    margin-bottom: 16px;
+  }
+
+  .lane-btn {
+    flex: 1;
+    height: 70px;
+    border: var(--border-thick);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bangers', cursive;
+    font-size: 28px;
+    letter-spacing: 2px;
+    user-select: none;
+    transition: transform 0.05s, box-shadow 0.05s, background 0.05s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .lane-btn::before {
+    content: attr(data-key);
+    position: absolute;
+    top: 4px;
+    left: 8px;
+    font-size: 12px;
+    opacity: 0.6;
+  }
+
+  .lane-btn:nth-child(1) { background: #FF6B6B; color: var(--white); }
+  .lane-btn:nth-child(2) { background: #4FC3F7; color: var(--white); }
+  .lane-btn:nth-child(3) { background: #81C784; color: var(--white); }
+  .lane-btn:nth-child(4) { background: #FFD54F; color: var(--black); }
+
+  .lane-btn:active, .lane-btn.pressed {
+    transform: translateY(3px);
+    box-shadow: 1px 1px 0 var(--black);
+  }
+
+  .lane-btn.hit-perfect { background: var(--yellow) !important; }
+  .lane-btn.hit-great { background: var(--green) !important; }
+  .lane-btn.hit-good { background: var(--blue) !important; }
+
+  /* HIT FEEDBACK */
+  .hit-text {
+    position: absolute;
+    font-family: 'Bangers', cursive;
+    font-size: 36px;
+    letter-spacing: 3px;
+    pointer-events: none;
+    animation: hitPop 0.6s ease-out forwards;
+    z-index: 100;
+    text-shadow: 3px 3px 0 var(--black);
+  }
+
+  @keyframes hitPop {
+    0% { transform: scale(0.5) rotate(-5deg); opacity: 1; }
+    40% { transform: scale(1.3) rotate(3deg); opacity: 1; }
+    100% { transform: scale(1) translateY(-60px) rotate(-2deg); opacity: 0; }
+  }
+
+  .hit-perfect-text { color: var(--yellow); }
+  .hit-great-text { color: var(--green); }
+  .hit-good-text { color: var(--blue); }
+  .hit-miss-text { color: var(--red); }
+
+  /* CONTROLS */
+  .controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    align-items: center;
+  }
+
+  .btn {
+    font-family: 'Bangers', cursive;
+    font-size: 20px;
+    letter-spacing: 2px;
+    padding: 10px 24px;
+    border: var(--border-thick);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--black);
+  }
+
+  .btn-play { background: var(--green); color: var(--white); }
+  .btn-stop { background: var(--red); color: var(--white); }
+  .btn-pause { background: var(--orange); color: var(--white); }
+  .btn-restart { background: var(--blue); color: var(--white); }
+
+  .volume-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--white);
+    border: var(--border-thick);
+    box-shadow: var(--shadow);
+    padding: 8px 14px;
+  }
+
+  .volume-label {
+    font-family: 'Bangers', cursive;
+    font-size: 16px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  input[type=range] {
+    accent-color: var(--black);
+    width: 80px;
+  }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    background: var(--white);
+    border: var(--border-thick);
+    box-shadow: var(--shadow);
+    height: 20px;
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: repeating-linear-gradient(
+      45deg,
+      var(--yellow),
+      var(--yellow) 10px,
+      var(--orange) 10px,
+      var(--orange) 20px
+    );
+    width: 0%;
+    transition: width 0.3s;
+    border-right: 3px solid var(--black);
+  }
+
+  .progress-label {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Bangers', cursive;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: var(--black);
+  }
+
+  /* LIFE BAR */
+  .life-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .life-label {
+    font-family: 'Bangers', cursive;
+    font-size: 18px;
+    letter-spacing: 2px;
+    min-width: 60px;
+  }
+
+  .hearts {
+    display: flex;
+    gap: 4px;
+  }
+
+  .heart {
+    font-size: 28px;
+    transition: transform 0.2s;
+    filter: drop-shadow(2px 2px 0 var(--black));
+  }
+
+  .heart.lost {
+    opacity: 0.2;
+    transform: scale(0.8);
+    filter: grayscale(1);
+  }
+
+  /* LEADERBOARD */
+  .leaderboard {
+    margin-bottom: 16px;
+  }
+
+  .lb-entry {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--black);
+    transition: background 0.1s;
+  }
+
+  .lb-entry:hover { background: var(--yellow); }
+  .lb-rank {
+    font-family: 'Bangers', cursive;
+    font-size: 22px;
+    min-width: 30px;
+    color: var(--black);
+  }
+  .lb-rank.gold { color: #FFD700; -webkit-text-stroke: 1px var(--black); }
+  .lb-rank.silver { color: #C0C0C0; -webkit-text-stroke: 1px var(--black); }
+  .lb-rank.bronze { color: #CD7F32; -webkit-text-stroke: 1px var(--black); }
+
+  .lb-name {
+    flex: 1;
+    font-family: 'Permanent Marker', cursive;
+    font-size: 15px;
+  }
+
+  .lb-score {
+    font-family: 'Bangers', cursive;
+    font-size: 20px;
+    color: var(--red);
+  }
+
+  .lb-grade {
+    font-family: 'Bangers', cursive;
+    font-size: 20px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid var(--black);
+  }
+
+  .lb-grade.S { background: var(--yellow); color: var(--black); }
+  .lb-grade.A { background: var(--green); color: var(--white); }
+  .lb-grade.B { background: var(--blue); color: var(--white); }
+  .lb-grade.C { background: var(--orange); color: var(--white); }
+  .lb-grade.D { background: var(--red); color: var(--white); }
+
+  /* RESULT MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    display: none;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .result-modal {
+    background: var(--white);
+    border: 6px solid var(--black);
+    box-shadow: 12px 12px 0 var(--black);
+    padding: 30px;
+    max-width: 480px;
+    width: 90%;
+    position: relative;
+    transform: rotate(-1deg);
+    text-align: center;
+  }
+
+  .result-modal::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 20%, var(--yellow) 0%, transparent 50%);
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .result-grade {
+    font-family: 'Bangers', cursive;
+    font-size: 120px;
+    line-height: 1;
+    color: var(--yellow);
+    -webkit-text-stroke: 4px var(--black);
+    text-shadow: 8px 8px 0 var(--black);
+    display: block;
+    animation: gradeAppear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes gradeAppear {
+    0% { transform: scale(0) rotate(-15deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+
+  .result-title {
+    font-family: 'Bangers', cursive;
+    font-size: 38px;
+    letter-spacing: 4px;
+    color: var(--black);
+    margin-bottom: 16px;
+  }
+
+  .result-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 20px 0;
+  }
+
+  .result-stat {
+    background: var(--black);
+    color: var(--white);
+    padding: 10px;
+    border: 3px solid var(--black);
+    box-shadow: 3px 3px 0 #555;
+  }
+
+  .result-stat-label {
+    font-family: 'Bangers', cursive;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--yellow);
+    margin-bottom: 4px;
+  }
+
+  .result-stat-val {
+    font-family: 'Bangers', cursive;
+    font-size: 28px;
+    color: var(--white);
+  }
+
+  /* COMBO BURST */
+  .combo-burst {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Bangers', cursive;
+    font-size: 80px;
+    color: var(--yellow);
+    -webkit-text-stroke: 4px var(--black);
+    pointer-events: none;
+    z-index: 500;
+    animation: comboBurst 0.8s ease-out forwards;
+    display: none;
+  }
+
+  @keyframes comboBurst {
+    0% { transform: translate(-50%,-50%) scale(0.3); opacity: 1; }
+    50% { transform: translate(-50%,-50%) scale(1.2); opacity: 1; }
+    100% { transform: translate(-50%,-50%) scale(1) translateY(-40px); opacity: 0; }
+  }
+
+  /* SETTINGS */
+  .settings-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 2px dashed var(--black);
+  }
+
+  .settings-label {
+    font-family: 'Bangers', cursive;
+    font-size: 18px;
+    letter-spacing: 2px;
+    min-width: 120px;
+  }
+
+  .diff-btn {
+    font-family: 'Bangers', cursive;
+    font-size: 16px;
+    padding: 4px 14px;
+    border: var(--border);
+    cursor: pointer;
+    transition: all 0.1s;
+    letter-spacing: 1px;
+  }
+
+  .diff-btn.easy { background: var(--white); }
+  .diff-btn.medium { background: var(--white); }
+  .diff-btn.hard { background: var(--white); }
+  .diff-btn.active.easy { background: var(--green); color: var(--white); box-shadow: var(--shadow); }
+  .diff-btn.active.medium { background: var(--orange); color: var(--white); box-shadow: var(--shadow); }
+  .diff-btn.active.hard { background: var(--red); color: var(--white); box-shadow: var(--shadow); }
+
+  /* EFFECT ANIMATIONS */
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-8px) rotate(-2deg); }
+    40% { transform: translateX(8px) rotate(2deg); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+  }
+
+  .shake { animation: shake 0.3s ease; }
+
+  @keyframes bgFlash {
+    0% { background-color: var(--red); }
+    100% { background-color: var(--yellow); }
+  }
+
+  /* NOTE PARTICLES */
+  .note-particle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 200;
+    font-size: 24px;
+    animation: particleFly 0.8s ease-out forwards;
+  }
+
+  @keyframes particleFly {
+    0% { opacity: 1; transform: scale(1) translate(0, 0); }
+    100% { opacity: 0; transform: scale(0.5) translate(var(--tx), var(--ty)); }
+  }
+
+  /* TWO COLUMN LAYOUT */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  @media (max-width: 600px) {
+    .two-col { grid-template-columns: 1fr; }
+    .stats-bar { grid-template-columns: 1fr 1fr; }
+    .songs-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* STARBURST */
+  .starburst {
+    position: absolute;
+    font-family: 'Bangers', cursive;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: var(--black);
+    background: var(--yellow);
+    padding: 8px 12px;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 80px;
+    height: 80px;
+    animation: spin 6s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* WAVEFORM VISUALIZER */
+  #waveCanvas {
+    width: 100%;
+    height: 60px;
+    display: block;
+    background: transparent;
+  }
+
+  /* UPLOAD FORM */
+  #uploadForm { display: none; }
+
+  .hidden { display: none; }
+
+  /* Notification */
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--black);
+    color: var(--yellow);
+    font-family: 'Bangers', cursive;
+    font-size: 20px;
+    letter-spacing: 2px;
+    padding: 12px 24px;
+    border: 4px solid var(--yellow);
+    box-shadow: var(--shadow-lg);
+    z-index: 2000;
+    transform: translateX(120%);
+    transition: transform 0.3s;
+  }
+
+  .notification.show { transform: translateX(0); }
+
+  /* Name input modal */
+  .name-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+  }
+
+  .name-modal.active { display: flex; }
+
+  .name-box {
+    background: var(--yellow);
+    border: 6px solid var(--black);
+    box-shadow: 10px 10px 0 var(--black);
+    padding: 24px;
+    text-align: center;
+    transform: rotate(1deg);
+  }
+
+  .name-box h2 {
+    font-family: 'Bangers', cursive;
+    font-size: 32px;
+    letter-spacing: 3px;
+    margin-bottom: 16px;
+  }
+
+  .name-input {
+    font-family: 'Permanent Marker', cursive;
+    font-size: 22px;
+    padding: 8px 16px;
+    border: 4px solid var(--black);
+    background: var(--white);
+    width: 100%;
+    margin-bottom: 16px;
+    text-align: center;
+    outline: none;
+  }
+
+  /* Screen states */
+  #mainMenu, #gameScreen { }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>COMING SOON</h1>
+<div id="app">
 
-  <a href="/dashboard" target="_top" class="btn">
-    Back to Dashboard
-  </a>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">BEAT <span>BANG!</span></div>
+    <div class="tagline">🎵 TAP TO THE BEAT • FEEL THE RHYTHM 🎵</div>
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="stat-label">★ SCORE</div>
+      <div class="stat-value score" id="scoreDisplay">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">⚡ COMBO</div>
+      <div class="stat-value combo" id="comboDisplay">0x</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">🎯 ACCURACY</div>
+      <div class="stat-value acc" id="accDisplay">100%</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">🔥 BEST</div>
+      <div class="stat-value" id="bestDisplay">0</div>
+    </div>
+  </div>
+
+  <!-- LIFE BAR + PROGRESS -->
+  <div class="panel" style="margin-bottom:12px; padding: 12px 16px;">
+    <div class="life-bar-wrap">
+      <div class="life-label">LIFE</div>
+      <div class="hearts" id="heartsDisplay">
+        <span class="heart">❤️</span>
+        <span class="heart">❤️</span>
+        <span class="heart">❤️</span>
+        <span class="heart">❤️</span>
+        <span class="heart">❤️</span>
+      </div>
+      <div style="flex:1"></div>
+      <div id="statusBubble" class="speech-bubble" style="display:none; font-size:13px; padding:6px 12px;">READY!</div>
+    </div>
+    <div class="progress-wrap" id="progressWrap" style="display:none;">
+      <div class="progress-bar" id="progressBar"></div>
+      <div class="progress-label" id="progressLabel">0:00</div>
+    </div>
+    <!-- Waveform -->
+    <canvas id="waveCanvas"></canvas>
+  </div>
+
+  <!-- GAME CANVAS -->
+  <div class="game-area">
+    <div class="game-canvas-wrap">
+      <canvas id="gameCanvas"></canvas>
+    </div>
+    <!-- Hit feedback layer -->
+    <div id="hitLayer" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"></div>
+  </div>
+
+  <!-- LANE BUTTONS -->
+  <div class="lanes-container" id="lanesContainer">
+    <button class="lane-btn" data-lane="0" data-key="D" onpointerdown="tapLane(0)"><span>D</span></button>
+    <button class="lane-btn" data-lane="1" data-key="F" onpointerdown="tapLane(1)"><span>F</span></button>
+    <button class="lane-btn" data-lane="2" data-key="J" onpointerdown="tapLane(2)"><span>J</span></button>
+    <button class="lane-btn" data-lane="3" data-key="K" onpointerdown="tapLane(3)"><span>K</span></button>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button class="btn btn-play" id="btnPlay" onclick="startGame()">▶ PLAY</button>
+    <button class="btn btn-pause" id="btnPause" onclick="pauseGame()" style="display:none">⏸ PAUSE</button>
+    <button class="btn btn-stop" id="btnStop" onclick="stopGame()" style="display:none">⏹ STOP</button>
+    <button class="btn btn-restart" onclick="restartGame()">↺ RESTART</button>
+    <div class="volume-control">
+      <span class="volume-label">🔊 VOL</span>
+      <input type="range" id="volSlider" min="0" max="100" value="70" oninput="setVolume(this.value)">
+      <span id="volLabel" style="font-family:Bangers,cursive;font-size:16px;min-width:35px">70%</span>
+    </div>
+    <div class="volume-control">
+      <span class="volume-label">🎵 SPEED</span>
+      <input type="range" id="speedSlider" min="50" max="150" value="100" oninput="setSpeed(this.value)">
+      <span id="speedLabel" style="font-family:Bangers,cursive;font-size:16px;min-width:40px">1.0x</span>
+    </div>
+  </div>
+
+  <!-- TWO COLUMN: MUSIC + SETTINGS -->
+  <div class="two-col" style="margin-bottom:16px">
+
+    <!-- MUSIC SELECTOR -->
+    <div class="panel">
+      <div class="panel-label">MUSIC</div>
+      <div class="section-title" style="margin-top:16px">🎵 SONGS</div>
+      <div class="songs-grid" id="songsGrid">
+        <!-- Filled by JS -->
+      </div>
+      <div style="margin-top:12px">
+        <div class="add-music-zone" id="dropZone" onclick="document.getElementById('audioFileInput').click()">
+          <span class="drop-icon">🎵</span>
+          <div class="drop-text">+ ADD YOUR MUSIC</div>
+          <div class="drop-sub">Click or drag & drop MP3/WAV/OGG/M4A</div>
+        </div>
+        <input type="file" id="audioFileInput" accept="audio/*" style="display:none" onchange="loadCustomAudio(this)">
+      </div>
+    </div>
+
+    <!-- SETTINGS + LEADERBOARD -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <!-- SETTINGS -->
+      <div class="panel">
+        <div class="panel-label">CONFIG</div>
+        <div class="section-title" style="margin-top:16px">⚙️ SETTINGS</div>
+        <div class="settings-row">
+          <span class="settings-label">DIFFICULTY</span>
+          <button class="diff-btn easy active" onclick="setDifficulty('easy',this)">EASY</button>
+          <button class="diff-btn medium" onclick="setDifficulty('medium',this)">MED</button>
+          <button class="diff-btn hard" onclick="setDifficulty('hard',this)">HARD</button>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">LANES</span>
+          <button class="diff-btn easy" onclick="setLanes(2,this)" id="lane2btn">2</button>
+          <button class="diff-btn medium active" onclick="setLanes(4,this)" id="lane4btn">4</button>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">NOTE SKIN</span>
+          <select id="noteSkinSelect" style="font-family:Bangers,cursive;font-size:16px;padding:4px 8px;border:3px solid #1a1a1a;cursor:pointer" onchange="setNoteSkin(this.value)">
+            <option value="circle">● CIRCLE</option>
+            <option value="star">★ STAR</option>
+            <option value="diamond">◆ DIAMOND</option>
+            <option value="emoji">🎵 EMOJI</option>
+          </select>
+        </div>
+        <div class="settings-row" id="playerNameRow">
+          <span class="settings-label">PLAYER</span>
+          <div id="playerNameDisplay" style="font-family:Permanent Marker,cursive;font-size:16px;cursor:pointer;text-decoration:underline;text-decoration-style:dotted" onclick="showNameModal()">
+            Anonymous
+          </div>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">AUTO-PLAY</span>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="autoplayCheck" style="width:20px;height:20px;cursor:pointer">
+            <span style="font-family:Bangers,cursive;font-size:16px">DEMO MODE</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- LEADERBOARD -->
+      <div class="panel" style="flex:1">
+        <div class="panel-label">SCORES</div>
+        <div class="section-title" style="margin-top:16px">🏆 TOP SCORES</div>
+        <div id="leaderboard">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
+<!-- RESULT MODAL -->
+<div class="modal-overlay" id="resultModal">
+  <div class="result-modal">
+    <span class="result-grade" id="resultGrade">S</span>
+    <div class="result-title" id="resultTitle">PERFECT!</div>
+    <div class="result-stats">
+      <div class="result-stat">
+        <div class="result-stat-label">SCORE</div>
+        <div class="result-stat-val" id="resultScore">0</div>
+      </div>
+      <div class="result-stat">
+        <div class="result-stat-label">MAX COMBO</div>
+        <div class="result-stat-val" id="resultCombo">0x</div>
+      </div>
+      <div class="result-stat">
+        <div class="result-stat-label">ACCURACY</div>
+        <div class="result-stat-val" id="resultAcc">0%</div>
+      </div>
+      <div class="result-stat">
+        <div class="result-stat-label">PERFECT HITS</div>
+        <div class="result-stat-val" id="resultPerfect">0</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:16px">
+      <button class="btn btn-restart" onclick="closeResult()">↺ PLAY AGAIN</button>
+      <button class="btn btn-play" onclick="closeResult()">✓ BACK</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAME MODAL -->
+<div class="name-modal" id="nameModal">
+  <div class="name-box">
+    <h2>YOUR NAME, HERO!</h2>
+    <input type="text" class="name-input" id="nameInput" maxlength="12" placeholder="Enter name...">
+    <button class="btn btn-play" onclick="saveName()" style="width:100%;justify-content:center">
+      ✓ SAVE NAME
+    </button>
+  </div>
+</div>
+
+<!-- COMBO BURST -->
+<div class="combo-burst" id="comboBurst"></div>
+
+<!-- NOTIFICATION -->
+<div class="notification" id="notification"></div>
+
+<script>
+// ============================================================
+// BEAT BANG! - RHYTHM GAME ENGINE
+// ============================================================
+
+// --- SONG DATABASE ---
+const SONGS = [
+  {
+    id: 'demo1',
+    name: 'Cosmic Groove',
+    artist: 'Beat Bang!',
+    emoji: '🚀',
+    genre: 'EDM',
+    bpm: 128,
+    difficulty: 'medium',
+    audioFile: null,
+    pattern: generatePattern(128, 60, 'medium'),
+    color: '#4FC3F7'
+  },
+  {
+    id: 'demo2',
+    name: 'Neon Rush',
+    artist: 'SynthWave',
+    emoji: '⚡',
+    genre: 'EDM',
+    bpm: 160,
+    difficulty: 'hard',
+    audioFile: null,
+    pattern: generatePattern(160, 60, 'hard'),
+    color: '#FF6B6B'
+  },
+  {
+    id: 'demo3',
+    name: 'Chill Vibes',
+    artist: 'Lo-Fi Crew',
+    emoji: '🌊',
+    genre: 'POP',
+    bpm: 90,
+    difficulty: 'easy',
+    audioFile: null,
+    pattern: generatePattern(90, 60, 'easy'),
+    color: '#81C784'
+  },
+  {
+    id: 'demo4',
+    name: 'Jazz Hands',
+    artist: 'Swing Kings',
+    emoji: '🎷',
+    genre: 'JAZZ',
+    bpm: 110,
+    difficulty: 'medium',
+    audioFile: null,
+    pattern: generatePattern(110, 60, 'medium'),
+    color: '#CE93D8'
+  },
+  {
+    id: 'demo5',
+    name: 'Rock Solid',
+    artist: 'The Riffs',
+    emoji: '🎸',
+    genre: 'ROCK',
+    bpm: 140,
+    difficulty: 'hard',
+    audioFile: null,
+    pattern: generatePattern(140, 60, 'hard'),
+    color: '#FFCC02'
+  },
+  {
+    id: 'custom1',
+    name: 'Your Music Here',
+    artist: 'Upload MP3/WAV',
+    emoji: '📁',
+    genre: 'CUSTOM',
+    bpm: 120,
+    difficulty: 'medium',
+    audioFile: null,
+    locked: false,
+    isCustomSlot: true,
+    color: '#A5D6A7'
+  },
+  {
+    id: 'custom2',
+    name: 'Your Music Here',
+    artist: 'Upload MP3/WAV',
+    emoji: '📁',
+    genre: 'CUSTOM',
+    bpm: 120,
+    difficulty: 'medium',
+    audioFile: null,
+    locked: false,
+    isCustomSlot: true,
+    color: '#80CBC4'
+  },
+  {
+    id: 'custom3',
+    name: 'Your Music Here',
+    artist: 'Upload MP3/WAV',
+    emoji: '📁',
+    genre: 'CUSTOM',
+    bpm: 120,
+    difficulty: 'medium',
+    audioFile: null,
+    locked: false,
+    isCustomSlot: true,
+    color: '#FFD54F'
+  }
+];
+
+// Generate note patterns
+function generatePattern(bpm, duration, difficulty) {
+  const beatInterval = 60 / bpm;
+  const notes = [];
+  const densities = { easy: 0.4, medium: 0.65, hard: 0.9 };
+  const density = densities[difficulty] || 0.6;
+  const laneCount = 4;
+  let t = 1;
+
+  while (t < duration) {
+    for (let lane = 0; lane < laneCount; lane++) {
+      if (Math.random() < density / laneCount) {
+        notes.push({ time: t + (Math.random() * 0.05), lane: lane });
+      }
+    }
+    // Add some offbeats
+    if (difficulty === 'hard' && Math.random() < 0.3) {
+      const halfBeat = beatInterval / 2;
+      const lane = Math.floor(Math.random() * laneCount);
+      notes.push({ time: t + halfBeat + (Math.random() * 0.03), lane });
+    }
+    t += beatInterval;
+  }
+  notes.sort((a, b) => a.time - b.time);
+  return notes;
+}
+
+// --- GAME STATE ---
+let state = {
+  score: 0,
+  combo: 0,
+  maxCombo: 0,
+  life: 5,
+  maxLife: 5,
+  totalNotes: 0,
+  hitNotes: 0,
+  perfectHits: 0,
+  greatHits: 0,
+  goodHits: 0,
+  missHits: 0,
+  isPlaying: false,
+  isPaused: false,
+  startTime: 0,
+  elapsedPausedTime: 0,
+  pauseStart: 0,
+  currentTime: 0,
+  activeSong: SONGS[0],
+  difficulty: 'medium',
+  lanes: 4,
+  noteSkin: 'circle',
+  playerName: localStorage.getItem('beatbang_name') || 'Anonymous',
+  volume: 0.7,
+  speed: 1.0,
+  autoplay: false,
+  bestScore: parseInt(localStorage.getItem('beatbang_best') || '0'),
+  spawnedNotes: 0,
+  activeNotes: [],
+  notePool: []
+};
+
+// --- CANVAS SETUP ---
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const waveCanvas = document.getElementById('waveCanvas');
+const waveCtx = waveCanvas.getContext('2d');
+
+function resizeCanvas() {
+  const wrap = canvas.parentElement;
+  canvas.width = wrap.clientWidth;
+  canvas.height = 420;
+  waveCanvas.width = waveCanvas.parentElement.clientWidth;
+  waveCanvas.height = 60;
+}
+
+window.addEventListener('resize', () => { resizeCanvas(); });
+resizeCanvas();
+
+// --- AUDIO ENGINE ---
+let audioCtx = null;
+let audioBuffer = null;
+let audioSource = null;
+let analyser = null;
+let gainNode = null;
+let audioStartTime = 0;
+let audioOffset = 0;
+
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    gainNode = audioCtx.createGain();
+    gainNode.connect(audioCtx.destination);
+    analyser.connect(gainNode);
+  }
+}
+
+// Synthesize drum beats as fallback audio
+function createDemoAudio(bpm, duration) {
+  if (!audioCtx) initAudio();
+  const sampleRate = audioCtx.sampleRate;
+  const frameCount = sampleRate * duration;
+  const buffer = audioCtx.createBuffer(2, frameCount, sampleRate);
+
+  for (let ch = 0; ch < 2; ch++) {
+    const data = buffer.getChannelData(ch);
+    const beatInterval = (60 / bpm) * sampleRate;
+
+    for (let i = 0; i < frameCount; i++) {
+      const t = i / sampleRate;
+      const beat = Math.floor(i / beatInterval);
+      const phase = (i % beatInterval) / beatInterval;
+
+      // Kick drum every beat
+      let sample = 0;
+      if (phase < 0.05) {
+        const kickFreq = 150 * Math.exp(-phase * 40);
+        sample += 0.6 * Math.sin(2 * Math.PI * kickFreq * phase) * Math.exp(-phase * 25);
+      }
+
+      // Snare on beats 2 & 4
+      if (beat % 2 === 1 && phase < 0.04) {
+        sample += 0.4 * (Math.random() * 2 - 1) * Math.exp(-phase * 30);
+      }
+
+      // Hi-hat on every half beat
+      const halfPhase = (i % (beatInterval / 2)) / (beatInterval / 2);
+      if (halfPhase < 0.02) {
+        sample += 0.2 * (Math.random() * 2 - 1) * Math.exp(-halfPhase * 60);
+      }
+
+      // Bass note
+      const bassNote = 60 + (beat % 4) * 7;
+      const bassFreq = 440 * Math.pow(2, (bassNote - 69) / 12);
+      sample += 0.15 * Math.sin(2 * Math.PI * bassFreq * t) * (1 - phase * 0.5);
+
+      // Melody
+      const melodyNotes = [0, 4, 7, 12, 7, 4, 2, 0];
+      const melodyNote = 72 + melodyNotes[beat % 8];
+      const melodyFreq = 440 * Math.pow(2, (melodyNote - 69) / 12);
+      if (beat % 2 === 0 && phase < 0.3) {
+        sample += 0.12 * Math.sin(2 * Math.PI * melodyFreq * t) * Math.exp(-phase * 3);
+      }
+
+      data[i] = Math.tanh(sample * 1.5);
+    }
+  }
+
+  return buffer;
+}
+
+async function loadCustomAudio(input) {
+  if (!input.files[0]) return;
+  const file = input.files[0];
+  initAudio();
+
+  const buf = await file.arrayBuffer();
+  try {
+    const decoded = await audioCtx.decodeAudioData(buf);
+    // Find next available custom slot
+    const customSlot = SONGS.find(s => s.isCustomSlot && !s.audioBuffer);
+    if (customSlot) {
+      customSlot.audioBuffer = decoded;
+      customSlot.audioFile = file;
+      customSlot.name = file.name.replace(/\.[^.]+$/, '');
+      customSlot.artist = 'Your Upload';
+      customSlot.emoji = '🎵';
+      customSlot.bpm = 120;
+      customSlot.isCustomSlot = false;
+      customSlot.duration = decoded.duration;
+      customSlot.pattern = generatePattern(120, decoded.duration, state.difficulty);
+      renderSongs();
+      showNotification('🎵 MUSIC LOADED!');
+    } else {
+      showNotification('⚠️ NO MORE SLOTS!');
+    }
+  } catch (e) {
+    showNotification('⚠️ COULD NOT LOAD');
+    console.error(e);
+  }
+  input.value = '';
+}
+
+function playAudio(startOffset = 0) {
+  if (!audioCtx) initAudio();
+  if (audioSource) {
+    try { audioSource.stop(); } catch(e) {}
+    audioSource = null;
+  }
+
+  let buffer = state.activeSong.audioBuffer || null;
+
+  if (!buffer) {
+    buffer = createDemoAudio(state.activeSong.bpm, 65);
+  }
+
+  audioBuffer = buffer;
+  audioSource = audioCtx.createBufferSource();
+  audioSource.buffer = buffer;
+  audioSource.playbackRate.value = state.speed;
+  audioSource.connect(analyser);
+
+  const vol = state.volume;
+  gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
+
+  audioSource.start(0, startOffset);
+  audioStartTime = audioCtx.currentTime - startOffset;
+
+  audioSource.onended = () => {
+    if (state.isPlaying && !state.isPaused) {
+      endGame();
+    }
+  };
+}
+
+function getAudioTime() {
+  if (!audioCtx || !audioSource) return 0;
+  return (audioCtx.currentTime - audioStartTime);
+}
+
+function setVolume(val) {
+  state.volume = val / 100;
+  document.getElementById('volLabel').textContent = val + '%';
+  if (gainNode) gainNode.gain.setValueAtTime(state.volume, audioCtx.currentTime);
+}
+
+function setSpeed(val) {
+  state.speed = val / 100;
+  document.getElementById('speedLabel').textContent = (val / 100).toFixed(1) + 'x';
+  if (audioSource) audioSource.playbackRate.value = state.speed;
+}
+
+// --- NOTE RENDERING ---
+const LANE_COLORS = ['#FF6B6B', '#4FC3F7', '#81C784', '#FFD54F'];
+const LANE_DARK = ['#C62828', '#0277BD', '#2E7D32', '#F57F17'];
+
+function drawNote(x, y, lane, progress, skin) {
+  const r = 22;
+  ctx.save();
+  ctx.shadowColor = LANE_COLORS[lane];
+  ctx.shadowBlur = 10;
+
+  if (skin === 'circle') {
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = LANE_COLORS[lane];
+    ctx.fill();
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Shine
+    ctx.beginPath();
+    ctx.arc(x - r * 0.3, y - r * 0.3, r * 0.3, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fill();
+
+  } else if (skin === 'star') {
+    drawStar(ctx, x, y, 5, r, r * 0.4, LANE_COLORS[lane]);
+
+  } else if (skin === 'diamond') {
+    ctx.beginPath();
+    ctx.moveTo(x, y - r);
+    ctx.lineTo(x + r * 0.7, y);
+    ctx.lineTo(x, y + r);
+    ctx.lineTo(x - r * 0.7, y);
+    ctx.closePath();
+    ctx.fillStyle = LANE_COLORS[lane];
+    ctx.fill();
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+  } else if (skin === 'emoji') {
+    const emojis = ['🎵', '🎶', '⭐', '💫'];
+    ctx.font = `${r * 1.6}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(emojis[lane], x, y);
+  }
+
+  ctx.restore();
+}
+
+function drawStar(ctx, cx, cy, spikes, outerR, innerR, color) {
+  let rot = (Math.PI / 2) * 3;
+  const step = Math.PI / spikes;
+  ctx.beginPath();
+  for (let i = 0; i < spikes; i++) {
+    ctx.lineTo(cx + Math.cos(rot) * outerR, cy + Math.sin(rot) * outerR);
+    rot += step;
+    ctx.lineTo(cx + Math.cos(rot) * innerR, cy + Math.sin(rot) * innerR);
+    rot += step;
+  }
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.strokeStyle = '#1a1a1a';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+}
+
+// --- GAME RENDERING ---
+const HIT_LINE_Y_RATIO = 0.82;
+
+function getHitLineY() { return canvas.height * HIT_LINE_Y_RATIO; }
+
+function getLaneX(lane) {
+  const lanes = state.lanes;
+  const laneWidth = canvas.width / lanes;
+  return laneWidth * lane + laneWidth / 2;
+}
+
+function renderGame() {
+  const W = canvas.width;
+  const H = canvas.height;
+
+  // Background - dark with halftone feel
+  ctx.fillStyle = '#111111';
+  ctx.fillRect(0, 0, W, H);
+
+  // Halftone dots
+  const dotSpacing = 25;
+  ctx.fillStyle = 'rgba(255,255,255,0.03)';
+  for (let x = 0; x < W; x += dotSpacing) {
+    for (let y = 0; y < H; y += dotSpacing) {
+      ctx.beginPath();
+      ctx.arc(x, y, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // Lane dividers
+  for (let i = 1; i < state.lanes; i++) {
+    const x = (W / state.lanes) * i;
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, H);
+    ctx.stroke();
+  }
+
+  // Lane backgrounds
+  for (let i = 0; i < state.lanes; i++) {
+    const x = (W / state.lanes) * i;
+    const laneW = W / state.lanes;
+    const grad = ctx.createLinearGradient(x, 0, x + laneW, 0);
+    grad.addColorStop(0, 'transparent');
+    grad.addColorStop(0.5, LANE_COLORS[i] + '08');
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.fillRect(x, 0, laneW, H);
+  }
+
+  // Hit line
+  const hitY = getHitLineY();
+  ctx.strokeStyle = '#FFE000';
+  ctx.lineWidth = 4;
+  ctx.setLineDash([10, 5]);
+  ctx.beginPath();
+  ctx.moveTo(0, hitY);
+  ctx.lineTo(W, hitY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Hit targets
+  for (let i = 0; i < state.lanes; i++) {
+    const x = getLaneX(i);
+    // Glow ring
+    ctx.beginPath();
+    ctx.arc(x, hitY, 26, 0, Math.PI * 2);
+    ctx.strokeStyle = LANE_COLORS[i] + '60';
+    ctx.lineWidth = 8;
+    ctx.stroke();
+    // Inner ring
+    ctx.beginPath();
+    ctx.arc(x, hitY, 22, 0, Math.PI * 2);
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.fillStyle = LANE_COLORS[i] + '30';
+    ctx.fill();
+  }
+
+  // Active notes
+  const nowTime = state.isPlaying ? getAudioTime() : 0;
+  const lookAhead = 2.0; // seconds ahead to show
+
+  for (const note of state.activeNotes) {
+    if (note.hit || note.missed) continue;
+
+    const timeUntil = note.time - nowTime;
+    if (timeUntil > lookAhead || timeUntil < -0.5) continue;
+
+    const progress = 1 - (timeUntil / lookAhead);
+    const y = progress * hitY;
+    const x = getLaneX(note.lane % state.lanes);
+
+    // Approach glow
+    if (timeUntil < 0.3 && timeUntil > -0.15) {
+      const intensity = 1 - Math.abs(timeUntil) / 0.3;
+      ctx.beginPath();
+      ctx.arc(x, y, 30 * intensity + 22, 0, Math.PI * 2);
+      ctx.fillStyle = LANE_COLORS[note.lane % state.lanes] + Math.floor(intensity * 80).toString(16).padStart(2,'0');
+      ctx.fill();
+    }
+
+    drawNote(x, y, note.lane % state.lanes, progress, state.noteSkin);
+  }
+
+  // BPM indicator
+  const bpm = state.activeSong.bpm;
+  const beatTime = 60 / bpm;
+  const beatPhase = (nowTime % beatTime) / beatTime;
+  const beatPulse = Math.max(0, 1 - beatPhase * 3);
+  if (beatPulse > 0) {
+    ctx.fillStyle = `rgba(255,224,0,${beatPulse * 0.15})`;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // Auto-play indicator
+  if (state.autoplay) {
+    ctx.fillStyle = 'rgba(255,224,0,0.8)';
+    ctx.font = 'bold 14px Bangers, cursive';
+    ctx.textAlign = 'center';
+    ctx.fillText('AUTO-PLAY', W / 2, 20);
+  }
+
+  // Song title overlay (when not playing)
+  if (!state.isPlaying) {
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.fillStyle = '#FFE000';
+    ctx.font = `bold ${Math.min(52, W * 0.07)}px Bangers, cursive`;
+    ctx.textAlign = 'center';
+    ctx.letterSpacing = '4px';
+    ctx.fillText(state.activeSong.name, W / 2, H * 0.4);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `${Math.min(24, W * 0.035)}px Permanent Marker, cursive`;
+    ctx.fillText(state.activeSong.artist, W / 2, H * 0.5);
+
+    ctx.fillStyle = '#FFE000';
+    ctx.font = `${Math.min(20, W * 0.03)}px Bangers, cursive`;
+    ctx.fillText('PRESS PLAY TO START!', W / 2, H * 0.65);
+  }
+}
+
+// --- WAVEFORM ---
+function renderWaveform() {
+  const W = waveCanvas.width;
+  const H = waveCanvas.height;
+  waveCtx.clearRect(0, 0, W, H);
+
+  if (!analyser || !state.isPlaying) {
+    // Static decoration
+    waveCtx.strokeStyle = 'rgba(26,26,26,0.15)';
+    waveCtx.lineWidth = 2;
+    waveCtx.beginPath();
+    for (let x = 0; x < W; x++) {
+      const y = H / 2 + Math.sin(x * 0.05) * 8;
+      x === 0 ? waveCtx.moveTo(x, y) : waveCtx.lineTo(x, y);
+    }
+    waveCtx.stroke();
+    return;
+  }
+
+  const bufLen = analyser.frequencyBinCount;
+  const data = new Uint8Array(bufLen);
+  analyser.getByteTimeDomainData(data);
+
+  waveCtx.lineWidth = 2.5;
+  waveCtx.strokeStyle = '#1a1a1a';
+  waveCtx.beginPath();
+
+  const sliceW = W / bufLen;
+  let x = 0;
+
+  for (let i = 0; i < bufLen; i++) {
+    const v = data[i] / 128.0;
+    const y = (v * H) / 2;
+    i === 0 ? waveCtx.moveTo(x, y) : waveCtx.lineTo(x, y);
+    x += sliceW;
+  }
+  waveCtx.stroke();
+
+  // Frequency bars
+  const freqData = new Uint8Array(bufLen);
+  analyser.getByteFrequencyData(freqData);
+
+  const barW = W / (bufLen / 2);
+  for (let i = 0; i < bufLen / 2; i++) {
+    const barH = (freqData[i] / 255) * H * 0.8;
+    const hue = (i / (bufLen / 2)) * 120 + 200;
+    waveCtx.fillStyle = `hsla(${hue}, 80%, 55%, 0.4)`;
+    waveCtx.fillRect(i * barW, H - barH, barW - 1, barH);
+  }
+}
+
+// --- GAME LOOP ---
+let animFrame = null;
+let autoplayTimer = null;
+
+function gameLoop() {
+  if (!state.isPlaying || state.isPaused) return;
+
+  const nowTime = getAudioTime();
+  state.currentTime = nowTime;
+
+  // Spawn notes from pattern
+  const pattern = state.activeSong.pattern;
+  while (state.spawnedNotes < pattern.length && pattern[state.spawnedNotes].time <= nowTime + 2.5) {
+    state.activeNotes.push({ ...pattern[state.spawnedNotes], hit: false, missed: false });
+    state.spawnedNotes++;
+  }
+
+  // Check missed notes
+  for (const note of state.activeNotes) {
+    if (!note.hit && !note.missed && nowTime > note.time + 0.2) {
+      note.missed = true;
+      onMiss();
+    }
+  }
+
+  // Auto-play
+  if (state.autoplay) {
+    for (const note of state.activeNotes) {
+      if (!note.hit && !note.missed) {
+        const diff = Math.abs(nowTime - note.time);
+        if (diff < 0.06) {
+          note.hit = true;
+          onHit('perfect', note.lane);
+        }
+      }
+    }
+  }
+
+  // Cleanup old notes
+  if (state.activeNotes.length > 200) {
+    state.activeNotes = state.activeNotes.filter(n => n.time > nowTime - 1);
+  }
+
+  // Update progress
+  updateProgress(nowTime);
+
+  renderGame();
+  renderWaveform();
+
+  animFrame = requestAnimationFrame(gameLoop);
+}
+
+function updateProgress(nowTime) {
+  const duration = state.activeSong.audioBuffer
+    ? state.activeSong.audioBuffer.duration
+    : 65;
+  const pct = Math.min(100, (nowTime / duration) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+
+  const mins = Math.floor(nowTime / 60);
+  const secs = Math.floor(nowTime % 60).toString().padStart(2, '0');
+  const totalMins = Math.floor(duration / 60);
+  const totalSecs = Math.floor(duration % 60).toString().padStart(2, '0');
+  document.getElementById('progressLabel').textContent = `${mins}:${secs} / ${totalMins}:${totalSecs}`;
+}
+
+// --- GAME CONTROLS ---
+function startGame() {
+  if (state.isPlaying) return;
+  initAudio();
+  audioCtx.resume();
+
+  state.score = 0;
+  state.combo = 0;
+  state.maxCombo = 0;
+  state.life = state.maxLife;
+  state.totalNotes = state.activeSong.pattern.length;
+  state.hitNotes = 0;
+  state.perfectHits = 0;
+  state.greatHits = 0;
+  state.goodHits = 0;
+  state.missHits = 0;
+  state.isPlaying = true;
+  state.isPaused = false;
+  state.spawnedNotes = 0;
+  state.activeNotes = [];
+
+  updateHUD();
+  updateHearts();
+  updateLaneButtons();
+
+  document.getElementById('btnPlay').style.display = 'none';
+  document.getElementById('btnPause').style.display = '';
+  document.getElementById('btnStop').style.display = '';
+  document.getElementById('progressWrap').style.display = '';
+  document.getElementById('statusBubble').style.display = '';
+  document.getElementById('statusBubble').textContent = 'GO!';
+
+  playAudio(0);
+  gameLoop();
+
+  setTimeout(() => {
+    document.getElementById('statusBubble').textContent = '🎵 PLAYING!';
+  }, 1000);
+}
+
+function pauseGame() {
+  if (!state.isPlaying) return;
+  if (state.isPaused) {
+    // Resume
+    state.isPaused = false;
+    const pauseDuration = audioCtx.currentTime - state.pauseStart;
+    audioStartTime += pauseDuration;
+    playAudio(getAudioTime());
+    document.getElementById('btnPause').textContent = '⏸ PAUSE';
+    document.getElementById('statusBubble').textContent = '🎵 PLAYING!';
+    gameLoop();
+  } else {
+    // Pause
+    state.isPaused = true;
+    state.pauseStart = audioCtx.currentTime;
+    if (audioSource) { try { audioSource.stop(); } catch(e) {} audioSource = null; }
+    cancelAnimationFrame(animFrame);
+    document.getElementById('btnPause').textContent = '▶ RESUME';
+    document.getElementById('statusBubble').textContent = '⏸ PAUSED';
+  }
+}
+
+function stopGame() {
+  state.isPlaying = false;
+  state.isPaused = false;
+  if (audioSource) { try { audioSource.stop(); } catch(e) {} audioSource = null; }
+  cancelAnimationFrame(animFrame);
+
+  document.getElementById('btnPlay').style.display = '';
+  document.getElementById('btnPause').style.display = 'none';
+  document.getElementById('btnStop').style.display = 'none';
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('statusBubble').style.display = 'none';
+  document.getElementById('btnPause').textContent = '⏸ PAUSE';
+
+  renderGame();
+}
+
+function restartGame() {
+  stopGame();
+  setTimeout(startGame, 100);
+}
+
+function endGame() {
+  if (!state.isPlaying) return;
+  state.isPlaying = false;
+  cancelAnimationFrame(animFrame);
+
+  const finalScore = state.score;
+  if (finalScore > state.bestScore) {
+    state.bestScore = finalScore;
+    localStorage.setItem('beatbang_best', finalScore);
+    document.getElementById('bestDisplay').textContent = finalScore;
+  }
+
+  // Save to leaderboard
+  const lb = JSON.parse(localStorage.getItem('beatbang_lb') || '[]');
+  const totalHits = state.perfectHits + state.greatHits + state.goodHits;
+  const acc = state.totalNotes > 0 ? Math.round((totalHits / state.totalNotes) * 100) : 0;
+  lb.push({
+    name: state.playerName,
+    score: finalScore,
+    acc,
+    song: state.activeSong.name,
+    date: new Date().toLocaleDateString(),
+    grade: getGrade(acc)
+  });
+  lb.sort((a, b) => b.score - a.score);
+  lb.splice(10, 999);
+  localStorage.setItem('beatbang_lb', JSON.stringify(lb));
+
+  showResult(finalScore, acc);
+  renderLeaderboard();
+
+  document.getElementById('btnPlay').style.display = '';
+  document.getElementById('btnPause').style.display = 'none';
+  document.getElementById('btnStop').style.display = 'none';
+}
+
+function getGrade(acc) {
+  if (acc >= 95) return 'S';
+  if (acc >= 85) return 'A';
+  if (acc >= 70) return 'B';
+  if (acc >= 50) return 'C';
+  return 'D';
+}
+
+function showResult(score, acc) {
+  const grade = getGrade(acc);
+  const titles = { S: 'SUPERB!!! 🔥', A: 'AWESOME! ⭐', B: 'GREAT JOB! 👊', C: 'KEEP GOING! 💪', D: 'PRACTICE MORE! 🥁' };
+  const gradeColors = { S: '#FFE000', A: '#00C853', B: '#1E90FF', C: '#FF6B00', D: '#FF2D2D' };
+
+  document.getElementById('resultGrade').textContent = grade;
+  document.getElementById('resultGrade').style.color = gradeColors[grade];
+  document.getElementById('resultTitle').textContent = titles[grade];
+  document.getElementById('resultScore').textContent = score.toLocaleString();
+  document.getElementById('resultCombo').textContent = state.maxCombo + 'x';
+  document.getElementById('resultAcc').textContent = acc + '%';
+  document.getElementById('resultPerfect').textContent = state.perfectHits;
+
+  document.getElementById('resultModal').classList.add('active');
+}
+
+function closeResult() {
+  document.getElementById('resultModal').classList.remove('active');
+  stopGame();
+}
+
+// --- HIT DETECTION ---
+function tapLane(lane) {
+  if (!state.isPlaying || state.isPaused) {
+    if (!state.isPlaying) startGame();
+    return;
+  }
+
+  const nowTime = getAudioTime();
+  const btn = document.querySelectorAll('.lane-btn')[lane];
+
+  // Visual feedback
+  btn.classList.add('pressed');
+  setTimeout(() => btn.classList.remove('pressed'), 100);
+
+  // Find nearest note in this lane
+  let bestNote = null;
+  let bestDiff = Infinity;
+
+  for (const note of state.activeNotes) {
+    if (note.hit || note.missed) continue;
+    const effectiveLane = note.lane % state.lanes;
+    if (effectiveLane !== lane) continue;
+    const diff = Math.abs(nowTime - note.time);
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      bestNote = note;
+    }
+  }
+
+  if (!bestNote || bestDiff > 0.25) {
+    // Miss tap
+    spawnHitText('MISS!', lane, 'miss');
+    return;
+  }
+
+  bestNote.hit = true;
+
+  let hitType = 'good';
+  if (bestDiff < 0.06) hitType = 'perfect';
+  else if (bestDiff < 0.12) hitType = 'great';
+
+  onHit(hitType, lane);
+  spawnHitText(hitType.toUpperCase() + '!', lane, hitType);
+  spawnParticles(lane);
+}
+
+function onHit(type, lane) {
+  const points = { perfect: 300, great: 150, good: 80 };
+  const multiplier = 1 + Math.floor(state.combo / 10) * 0.5;
+
+  state.score += Math.round(points[type] * multiplier);
+  state.combo++;
+  state.maxCombo = Math.max(state.maxCombo, state.combo);
+  state.hitNotes++;
+
+  if (type === 'perfect') state.perfectHits++;
+  else if (type === 'great') state.greatHits++;
+  else state.goodHits++;
+
+  // Combo milestones
+  if (state.combo > 0 && state.combo % 10 === 0) {
+    showComboBurst(state.combo);
+  }
+
+  // Lane flash
+  const btn = document.querySelectorAll('.lane-btn')[lane % state.lanes];
+  btn.classList.add('hit-' + type);
+  setTimeout(() => {
+    btn.classList.remove('hit-perfect', 'hit-great', 'hit-good');
+  }, 150);
+
+  updateHUD();
+}
+
+function onMiss() {
+  state.combo = 0;
+  state.missHits++;
+  state.life = Math.max(0, state.life - 1);
+  updateHearts();
+  updateHUD();
+
+  if (state.life <= 0) {
+    endGame();
+    return;
+  }
+
+  // Screen shake
+  const wrap = document.getElementById('app');
+  wrap.classList.add('shake');
+  setTimeout(() => wrap.classList.remove('shake'), 300);
+}
+
+function spawnHitText(text, lane, type) {
+  const layer = document.getElementById('hitLayer');
+  const el = document.createElement('div');
+  el.className = 'hit-text hit-' + type + '-text';
+  el.textContent = text;
+
+  const laneW = canvas.clientWidth / state.lanes;
+  const x = laneW * lane + laneW / 2;
+  const hitLineY = canvas.clientHeight * HIT_LINE_Y_RATIO;
+
+  el.style.left = x + 'px';
+  el.style.top = hitLineY + 'px';
+  el.style.transform = 'translateX(-50%)';
+
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 700);
+}
+
+function spawnParticles(lane) {
+  const laneW = canvas.clientWidth / state.lanes;
+  const x = canvas.getBoundingClientRect().left + laneW * lane + laneW / 2;
+  const y = canvas.getBoundingClientRect().top + canvas.clientHeight * HIT_LINE_Y_RATIO;
+  const emojis = ['✨', '⭐', '💫', '🌟', '✦'];
+
+  for (let i = 0; i < 5; i++) {
+    const el = document.createElement('div');
+    el.className = 'note-particle';
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    el.style.setProperty('--tx', (Math.random() * 100 - 50) + 'px');
+    el.style.setProperty('--ty', (-60 - Math.random() * 60) + 'px');
+    el.style.animationDelay = (i * 0.05) + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1000);
+  }
+}
+
+function showComboBurst(combo) {
+  const el = document.getElementById('comboBurst');
+  el.textContent = combo + 'x COMBO!';
+  el.style.display = 'block';
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = 'comboBurst 0.8s ease-out forwards';
+  setTimeout(() => { el.style.display = 'none'; }, 850);
+}
+
+// --- HUD ---
+function updateHUD() {
+  document.getElementById('scoreDisplay').textContent = state.score.toLocaleString();
+  document.getElementById('comboDisplay').textContent = state.combo + 'x';
+  document.getElementById('bestDisplay').textContent = state.bestScore.toLocaleString();
+
+  const totalHits = state.perfectHits + state.greatHits + state.goodHits;
+  const acc = state.totalNotes > 0 ? Math.round((totalHits / Math.max(1, state.totalNotes * 0.01 + state.hitNotes + state.missHits)) * 100) : 100;
+  const safeAcc = Math.min(100, Math.max(0, Math.round(
+    state.hitNotes + state.missHits > 0
+      ? (state.hitNotes / (state.hitNotes + state.missHits)) * 100
+      : 100
+  )));
+  document.getElementById('accDisplay').textContent = safeAcc + '%';
+}
+
+function updateHearts() {
+  const hearts = document.querySelectorAll('.heart');
+  hearts.forEach((h, i) => {
+    h.classList.toggle('lost', i >= state.life);
+  });
+}
+
+function updateLaneButtons() {
+  const container = document.getElementById('lanesContainer');
+  const keys = ['D', 'F', 'J', 'K'];
+  const allBtns = container.querySelectorAll('.lane-btn');
+  allBtns.forEach((btn, i) => {
+    btn.style.display = i < state.lanes ? '' : 'none';
+  });
+}
+
+// --- SETTINGS ---
+function setDifficulty(diff, btn) {
+  state.difficulty = diff;
+  document.querySelectorAll('.diff-btn').forEach(b => {
+    if (b.classList.contains('easy') || b.classList.contains('medium') || b.classList.contains('hard')) {
+      b.classList.remove('active');
+    }
+  });
+  btn.classList.add('active');
+
+  // Regenerate patterns
+  SONGS.forEach(s => {
+    if (!s.audioBuffer) s.pattern = generatePattern(s.bpm, 65, diff);
+  });
+}
+
+function setLanes(n, btn) {
+  state.lanes = n;
+  document.getElementById('lane2btn').classList.toggle('active', n === 2);
+  document.getElementById('lane4btn').classList.toggle('active', n === 4);
+  updateLaneButtons();
+
+  // Adjust lane buttons visibility
+  const allBtns = document.querySelectorAll('.lane-btn');
+  allBtns.forEach((b, i) => b.style.display = i < n ? '' : 'none');
+}
+
+function setNoteSkin(skin) {
+  state.noteSkin = skin;
+}
+
+// --- SONGS ---
+function selectSong(id) {
+  const song = SONGS.find(s => s.id === id);
+  if (!song) return;
+  if (song.isCustomSlot) {
+    document.getElementById('audioFileInput').click();
+    return;
+  }
+  state.activeSong = song;
+  document.querySelectorAll('.song-card').forEach(c => {
+    c.classList.toggle('active', c.dataset.id === id);
+  });
+  stopGame();
+  showNotification('🎵 ' + song.name.toUpperCase());
+}
+
+function renderSongs() {
+  const grid = document.getElementById('songsGrid');
+  grid.innerHTML = '';
+
+  SONGS.forEach(song => {
+    const card = document.createElement('div');
+    card.className = 'song-card' + (song === state.activeSong ? ' active' : '') + (song.locked ? ' locked' : '');
+    card.dataset.id = song.id;
+    card.dataset.genre = song.genre;
+    card.onclick = () => selectSong(song.id);
+
+    const diffClass = { easy: 'diff-easy', medium: 'diff-medium', hard: 'diff-hard' }[song.difficulty] || 'diff-medium';
+
+    card.innerHTML = `
+      <span class="song-emoji">${song.emoji}</span>
+      <div class="song-name">${song.name}</div>
+      <div class="song-artist">${song.artist}</div>
+      <div class="song-meta">
+        <span class="badge bpm">${song.bpm} BPM</span>
+        <span class="badge ${diffClass}">${song.difficulty.toUpperCase()}</span>
+        ${song.locked ? '<span class="badge locked">🔒</span>' : ''}
+        ${song.audioBuffer ? '<span class="badge diff-easy">LOADED</span>' : ''}
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// --- LEADERBOARD ---
+function renderLeaderboard() {
+  const lb = JSON.parse(localStorage.getItem('beatbang_lb') || '[]');
+  const container = document.getElementById('leaderboard');
+
+  if (lb.length === 0) {
+    container.innerHTML = '<div style="font-family:Comic Neue,cursive;color:#888;padding:16px;text-align:center;font-size:14px">No scores yet! Start playing! 🎮</div>';
+    return;
+  }
+
+  const rankClasses = ['gold', 'silver', 'bronze'];
+  const rankEmojis = ['🥇', '🥈', '🥉'];
+
+  container.innerHTML = lb.slice(0, 7).map((entry, i) => `
+    <div class="lb-entry">
+      <span class="lb-rank ${rankClasses[i] || ''}">${i < 3 ? rankEmojis[i] : '#' + (i + 1)}</span>
+      <span class="lb-name">${entry.name}</span>
+      <span class="lb-score">${entry.score.toLocaleString()}</span>
+      <span class="lb-grade ${entry.grade}">${entry.grade}</span>
+    </div>
+  `).join('');
+}
+
+// --- PLAYER NAME ---
+function showNameModal() {
+  document.getElementById('nameInput').value = state.playerName;
+  document.getElementById('nameModal').classList.add('active');
+  document.getElementById('nameInput').focus();
+}
+
+function saveName() {
+  const name = document.getElementById('nameInput').value.trim() || 'Anonymous';
+  state.playerName = name;
+  localStorage.setItem('beatbang_name', name);
+  document.getElementById('playerNameDisplay').textContent = name;
+  document.getElementById('nameModal').classList.remove('active');
+}
+
+document.getElementById('nameInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveName();
+  if (e.key === 'Escape') document.getElementById('nameModal').classList.remove('active');
+});
+
+// --- DRAG & DROP ---
+const dropZone = document.getElementById('dropZone');
+
+dropZone.addEventListener('dragover', e => {
+  e.preventDefault();
+  dropZone.classList.add('drag-over');
+});
+
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('audio/')) {
+    const fakeInput = { files: [file] };
+    loadCustomAudio(fakeInput);
+  }
+});
+
+// --- KEYBOARD ---
+const KEY_MAP = { 'd': 0, 'f': 1, 'j': 2, 'k': 3 };
+
+document.addEventListener('keydown', e => {
+  if (e.repeat) return;
+  if (document.getElementById('nameModal').classList.contains('active')) return;
+
+  const key = e.key.toLowerCase();
+  if (key in KEY_MAP) {
+    tapLane(KEY_MAP[key]);
+  }
+  if (key === ' ' || key === 'enter') {
+    e.preventDefault();
+    if (!state.isPlaying) startGame();
+    else pauseGame();
+  }
+  if (key === 'escape') stopGame();
+});
+
+// --- NOTIFICATIONS ---
+function showNotification(msg) {
+  const el = document.getElementById('notification');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// --- AUTOPLAY CHECKBOX ---
+document.getElementById('autoplayCheck').addEventListener('change', function() {
+  state.autoplay = this.checked;
+});
+
+// --- PLAYER NAME DISPLAY ---
+document.getElementById('playerNameDisplay').textContent = state.playerName;
+document.getElementById('bestDisplay').textContent = state.bestScore;
+
+// --- INIT ---
+renderSongs();
+renderLeaderboard();
+renderGame();
+
+// Initial waveform animation
+(function animInit() {
+  renderWaveform();
+  if (!state.isPlaying) requestAnimationFrame(animInit);
+})();
+
+// Key hints
+showNotification('🎵 USE D F J K KEYS!');
+</script>
 </body>
 </html>
