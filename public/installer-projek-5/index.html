@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Download App</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    body{
+      height:100vh;
+      background:#0f0f0f;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      color:white;
+      overflow:hidden;
+    }
+
+    .card{
+      width:350px;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:24px;
+      padding:32px;
+      text-align:center;
+      box-shadow:0 10px 40px rgba(0,0,0,0.4);
+    }
+
+    .logo{
+      width:90px;
+      height:90px;
+      margin:auto;
+      margin-bottom:20px;
+      border-radius:24px;
+      background:linear-gradient(135deg,#ffffff,#7d7d7d);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:40px;
+      color:black;
+      font-weight:bold;
+    }
+
+    h1{
+      margin-bottom:10px;
+      font-size:28px;
+    }
+
+    p{
+      opacity:0.7;
+      line-height:1.5;
+      margin-bottom:25px;
+    }
+
+    .download-btn{
+      display:inline-block;
+      width:100%;
+      padding:15px;
+      border-radius:16px;
+      background:white;
+      color:black;
+      text-decoration:none;
+      font-weight:bold;
+      transition:0.2s;
+    }
+
+    .download-btn:hover{
+      transform:scale(1.03);
+    }
+
+    .version{
+      margin-top:18px;
+      font-size:13px;
+      opacity:0.5;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+
+    <div class="logo">
+      B
+    </div>
+
+    <h1>BigBang App</h1>
+
+    <p>
+      Installer BigBang APP official by Pajil Production. Click the button below to download the installer for Windows.
+    </p>
+
+    <!-- GANTI FILE INSTALLER DISINI -->
+    <a href="BigBang-win32-win64.zip" download class="download-btn">
+      Download for Windows
+    </a>
+
+    <div class="version">
+      Version 1.0
+    </div>
+
+  </div>
+
+</body>
+</html>
