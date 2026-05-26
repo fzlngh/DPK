@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BEAT BANG! - Rhythm Tap Game</title>
+<link rel="manifest" href="/manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -1181,7 +1182,7 @@ const SONGS = [
     artist: 'Lo-Fi Crew',
     emoji: '🌊',
     genre: 'POP',
-    bpm: 90,
+    bpm: 120,
     difficulty: 'easy',
     audioFile: null,
     pattern: generatePattern(90, 60, 'easy'),
@@ -1193,7 +1194,7 @@ const SONGS = [
     artist: 'Swing Kings',
     emoji: '🎷',
     genre: 'JAZZ',
-    bpm: 110,
+    bpm: 140,
     difficulty: 'medium',
     audioFile: null,
     pattern: generatePattern(110, 60, 'medium'),
@@ -1205,7 +1206,7 @@ const SONGS = [
     artist: 'The Riffs',
     emoji: '🎸',
     genre: 'ROCK',
-    bpm: 140,
+    bpm: 160,
     difficulty: 'hard',
     audioFile: null,
     pattern: generatePattern(140, 60, 'hard'),
@@ -1871,7 +1872,6 @@ function pauseGame() {
     document.getElementById('statusBubble').textContent = '🎵 PLAYING!';
     gameLoop();
   } else {
-    // Pause
     state.isPaused = true;
     state.pauseStart = audioCtx.currentTime;
     if (audioSource) { try { audioSource.stop(); } catch(e) {} audioSource = null; }
@@ -1967,7 +1967,6 @@ function closeResult() {
   stopGame();
 }
 
-// --- HIT DETECTION ---
 function tapLane(lane) {
   if (!state.isPlaying || state.isPaused) {
     if (!state.isPlaying) startGame();
@@ -1977,11 +1976,9 @@ function tapLane(lane) {
   const nowTime = getAudioTime();
   const btn = document.querySelectorAll('.lane-btn')[lane];
 
-  // Visual feedback
   btn.classList.add('pressed');
   setTimeout(() => btn.classList.remove('pressed'), 100);
 
-  // Find nearest note in this lane
   let bestNote = null;
   let bestDiff = Infinity;
 
@@ -2026,12 +2023,10 @@ function onHit(type, lane) {
   else if (type === 'great') state.greatHits++;
   else state.goodHits++;
 
-  // Combo milestones
   if (state.combo > 0 && state.combo % 10 === 0) {
     showComboBurst(state.combo);
   }
 
-  // Lane flash
   const btn = document.querySelectorAll('.lane-btn')[lane % state.lanes];
   btn.classList.add('hit-' + type);
   setTimeout(() => {
@@ -2053,7 +2048,6 @@ function onMiss() {
     return;
   }
 
-  // Screen shake
   const wrap = document.getElementById('app');
   wrap.classList.add('shake');
   setTimeout(() => wrap.classList.remove('shake'), 300);
@@ -2107,7 +2101,6 @@ function showComboBurst(combo) {
   setTimeout(() => { el.style.display = 'none'; }, 850);
 }
 
-// --- HUD ---
 function updateHUD() {
   document.getElementById('scoreDisplay').textContent = state.score.toLocaleString();
   document.getElementById('comboDisplay').textContent = state.combo + 'x';
@@ -2139,7 +2132,6 @@ function updateLaneButtons() {
   });
 }
 
-// --- SETTINGS ---
 function setDifficulty(diff, btn) {
   state.difficulty = diff;
   document.querySelectorAll('.diff-btn').forEach(b => {
@@ -2149,7 +2141,6 @@ function setDifficulty(diff, btn) {
   });
   btn.classList.add('active');
 
-  // Regenerate patterns
   SONGS.forEach(s => {
     if (!s.audioBuffer) s.pattern = generatePattern(s.bpm, 65, diff);
   });
