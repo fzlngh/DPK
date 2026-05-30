@@ -5,6 +5,7 @@ import SettingsOverlay from './SettingsOverlay';
 import LeaderboardPanel from './LeaderboardPanel';
 import ResultModal from './ResultModal';
 import CountdownOverlay from './CountdownOverlay';
+import BootScreen from './BootScreen';
 
 // ─────────────────────────────────────────────
 // TYPES
@@ -105,6 +106,7 @@ export default function BeatBangGame() {
   // React UI state
   const [songs,        setSongs]        = useState<Song[]>(songsRef.current);
   const [activeSongId, setActiveSongId] = useState('demo1');
+  const [booting,      setBooting]      = useState(true);
   const [isPlaying,    setIsPlaying]    = useState(false);
   const [isPaused,     setIsPaused]     = useState(false);
   const [score,        setScore]        = useState(0);
@@ -845,7 +847,7 @@ export default function BeatBangGame() {
 
         {/* TOP HUD */}
         <div className="bb-hud">
-          <div className="bb-logo">BEAT<span style={{color:'#FF2D2D'}}>BANG!</span> demo version 2.0</div>
+          <div className="bb-logo">BEAT<span style={{color:'#FF2D2D'}}>BANG!</span></div>
 
           <div className="bb-hud-stats">
             {[
@@ -1040,6 +1042,9 @@ export default function BeatBangGame() {
         transform: notifOn ? 'translateX(0)' : 'translateX(130%)',
         transition:'transform 0.3s', pointerEvents:'none',
       }}>{notif}</div>
+
+      {/* ── BOOT SCREEN ── */}
+      {booting && <BootScreen onDone={() => setBooting(false)} />}
     </>
   );
 }
