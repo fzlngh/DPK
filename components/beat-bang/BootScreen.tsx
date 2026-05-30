@@ -6,31 +6,35 @@ interface Props {
   onDone: () => void;
 }
 
-// Boot log lines — typed out one by one
+// Total boot phase: ~2.6s → logo: ~1.4s → total ≈ 4s
 const BOOT_LINES = [
   { text: 'BEAT BANG! OS v2.0 — RHYTHM ENGINE INIT', delay: 0,    color: '#00bbff' },
-  { text: '> Loading audio subsystem.............. OK', delay: 280,  color: '#00C853' },
-  { text: '> Calibrating lane sensors............. OK', delay: 520,  color: '#00C853' },
-  { text: '> Syncing BPM clock.................... OK', delay: 760,  color: '#00C853' },
-  { text: '> Generating note patterns............. OK', delay: 980,  color: '#00C853' },
-  { text: '> Mounting leaderboard database........ OK', delay: 1180, color: '#00C853' },
-  { text: '> Warming up visual renderer........... OK', delay: 1360, color: '#00C853' },
-  { text: '> Checking audio buffers............... OK', delay: 1520, color: '#00C853' },
-  { text: '> Injecting rhythm algorithms.......... OK', delay: 1660, color: '#00C853' },
-  { text: '', delay: 1800, color: '#fff' },
-  { text: '!! WARNING: HIGH SCORE DEPENDENCY DETECTED', delay: 1860, color: '#FFE000' },
-  { text: '!! ADDICTION RISK: EXTREME', delay: 2020, color: '#FF6B00' },
-  { text: '', delay: 2100, color: '#fff' },
-  { text: '▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ALL SYSTEMS GO', delay: 2200, color: '#00C853' },
-  { text: 'PRESS ANY KEY OR WAIT...', delay: 2500, color: '#FFE000' },
+  { text: '> Loading audio subsystem.............. OK', delay: 180,  color: '#00C853' },
+  { text: '> Calibrating lane sensors............. OK', delay: 340,  color: '#00C853' },
+  { text: '> Syncing BPM clock.................... OK', delay: 500,  color: '#00C853' },
+  { text: '> Generating note patterns............. OK', delay: 660,  color: '#00C853' },
+  { text: '> Mounting leaderboard database........ OK', delay: 820,  color: '#00C853' },
+  { text: '> Warming up visual renderer........... OK', delay: 980,  color: '#00C853' },
+  { text: '> Checking audio buffers............... OK', delay: 1120, color: '#00C853' },
+  { text: '> Injecting rhythm algorithms.......... OK', delay: 1260, color: '#00C853' },
+  { text: '', delay: 1380, color: '#fff' },
+  { text: '!! WARNING: HIGH SCORE DEPENDENCY DETECTED', delay: 1440, color: '#FFE000' },
+  { text: '!! ADDICTION RISK: EXTREME',                delay: 1620, color: '#FF6B00' },
+  { text: '', delay: 1740, color: '#fff' },
+  { text: '▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ALL SYSTEMS GO',    delay: 1900, color: '#00C853' },
+  { text: 'PRESS ANY KEY OR WAIT...',                  delay: 2100, color: '#FFE000' },
 ];
+
+// Timing constants (ms)
+const LOGO_PHASE_AT  = 2600;   // switch to logo
+const AUTO_DONE_AT   = 50000;   // auto-dismiss (4s total)
+const LOGO_HOLD_MS   = AUTO_DONE_AT - LOGO_PHASE_AT; // 1400ms for logo
 
 export default function BootScreen({ onDone }: Props) {
   const [phase, setPhase]               = useState<'boot'|'logo'|'out'>('boot');
   const [visibleLines, setVisibleLines] = useState<typeof BOOT_LINES>([]);
   const [loadPct, setLoadPct]           = useState(0);
   const [glitch, setGlitch]             = useState(false);
-  const [logoVisible, setLogoVisible]   = useState(false);
   const [tagline, setTagline]           = useState('');
   const [cursorOn, setCursorOn]         = useState(true);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -41,7 +45,7 @@ export default function BootScreen({ onDone }: Props) {
     if (doneRef.current) return;
     doneRef.current = true;
     setPhase('out');
-    setTimeout(onDone, 600);
+    setTimeout(onDone, 500);
   };
 
   // Cursor blink
@@ -62,51 +66,55 @@ export default function BootScreen({ onDone }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Boot line sequencing
+  // Boot sequencing
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
 
-    BOOT_LINES.forEach((line, i) => {
+    // Reveal log lines
+    BOOT_LINES.forEach(line => {
       timers.push(setTimeout(() => {
         setVisibleLines(prev => [...prev, line]);
       }, line.delay));
     });
 
-    // Load bar animation
+    // Progress bar — finishes just before logo phase
     let pct = 0;
+    const totalMs = LOGO_PHASE_AT;
+    const stepMs  = 50;
+    const steps   = totalMs / stepMs;
     const barIv = setInterval(() => {
-      pct = Math.min(100, pct + Math.random() * 6 + 2);
-      setLoadPct(Math.floor(pct));
+      pct = Math.min(100, pct + 100 / steps + Math.random() * 2 - 1);
+      setLoadPct(Math.floor(Math.min(100, pct)));
       if (pct >= 100) clearInterval(barIv);
-    }, 60);
+    }, stepMs);
 
-    // Glitch effect
-    timers.push(setTimeout(() => { setGlitch(true); setTimeout(() => setGlitch(false), 120); }, 400));
-    timers.push(setTimeout(() => { setGlitch(true); setTimeout(() => setGlitch(false), 80); }, 1100));
-    timers.push(setTimeout(() => { setGlitch(true); setTimeout(() => setGlitch(false), 160); }, 1900));
+    // Glitch flashes
+    [[300, 100], [900, 70], [1700, 130]].forEach(([at, dur]) => {
+      timers.push(setTimeout(() => { setGlitch(true); setTimeout(() => setGlitch(false), dur); }, at));
+    });
 
-    // Transition to logo phase
+    // Switch to logo phase
     timers.push(setTimeout(() => {
       setPhase('logo');
-      setLogoVisible(true);
       typeTagline('TAP TO THE BEAT • FEEL THE RHYTHM 🎵');
-    }, 3000));
+    }, LOGO_PHASE_AT));
 
-    // Auto-done after logo reveal
-    timers.push(setTimeout(finish, 5200));
+    // Auto-dismiss at exactly 4 seconds
+    timers.push(setTimeout(finish, AUTO_DONE_AT));
 
     return () => { timers.forEach(clearTimeout); clearInterval(barIv); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Typewriter for tagline
   function typeTagline(full: string) {
     let i = 0;
+    // Type fast enough to finish in ~800ms
+    const msPerChar = Math.floor(800 / full.length);
     const iv = setInterval(() => {
       i++;
       setTagline(full.slice(0, i));
       if (i >= full.length) clearInterval(iv);
-    }, 45);
+    }, msPerChar);
   }
 
   // Canvas: scanlines + particles
@@ -120,7 +128,6 @@ export default function BootScreen({ onDone }: Props) {
       canvas.width  = window.innerWidth;
       canvas.height = window.innerHeight;
       const W = canvas.width, H = canvas.height;
-
       ctx.clearRect(0, 0, W, H);
 
       // Scanlines
@@ -130,27 +137,23 @@ export default function BootScreen({ onDone }: Props) {
       }
 
       // Floating particles
-      ctx.save();
       for (let i = 0; i < 30; i++) {
         const seed = i * 137.508;
         const x = ((seed * 0.61803 + t * 0.0003 * (i % 3 === 0 ? 1 : -0.5)) % 1) * W;
         const y = ((seed * 0.38197 + t * 0.0002) % 1) * H;
         const r = (Math.sin(t * 0.005 + i) * 0.5 + 0.5) * 3 + 1;
         const alpha = (Math.sin(t * 0.008 + seed) * 0.5 + 0.5) * 0.6;
-        ctx.beginPath();
-        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
         ctx.fillStyle = i % 3 === 0 ? `rgba(0,187,255,${alpha})`
                       : i % 3 === 1 ? `rgba(255,107,107,${alpha})`
                       : `rgba(255,224,0,${alpha})`;
         ctx.fill();
       }
-      ctx.restore();
 
-      // Horizontal glitch lines (occasional)
+      // Occasional glitch line
       if (Math.random() < 0.02) {
-        const ly = Math.random() * H;
         ctx.fillStyle = 'rgba(0,187,255,0.15)';
-        ctx.fillRect(0, ly, W, Math.random() * 3 + 1);
+        ctx.fillRect(0, Math.random() * H, W, Math.random() * 3 + 1);
       }
 
       t++;
@@ -161,6 +164,8 @@ export default function BootScreen({ onDone }: Props) {
     return () => cancelAnimationFrame(animRef.current);
   }, []);
 
+  const barColor = loadPct < 50 ? '#00bbff' : loadPct < 80 ? '#00C853' : loadPct < 92 ? '#FF6B00' : '#FF2D2D';
+
   return (
     <div
       onClick={finish}
@@ -170,11 +175,10 @@ export default function BootScreen({ onDone }: Props) {
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer',
         opacity: phase === 'out' ? 0 : 1,
-        transition: phase === 'out' ? 'opacity 0.55s ease' : 'none',
+        transition: phase === 'out' ? 'opacity 0.5s ease' : 'none',
         overflow: 'hidden',
       }}
     >
-      {/* Canvas background effects */}
       <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
 
       {/* ── BOOT PHASE ── */}
@@ -182,18 +186,15 @@ export default function BootScreen({ onDone }: Props) {
         <div style={{
           position: 'relative', zIndex: 1,
           width: 'min(680px, 95vw)',
-          display: 'flex', flexDirection: 'column',
-          gap: 0,
           filter: glitch ? 'hue-rotate(90deg) brightness(1.4)' : 'none',
-          transition: 'filter 0.05s',
+          transition: 'filter 0.04s',
         }}>
-          {/* CRT top bar */}
+          {/* BIOS bar */}
           <div style={{
             background: '#00bbff', color: '#080808',
             fontFamily: 'monospace', fontSize: 13, fontWeight: 700,
             padding: '5px 14px', letterSpacing: 2,
             display: 'flex', justifyContent: 'space-between',
-            borderBottom: '2px solid #00bbff',
           }}>
             <span>BEAT BANG! SYSTEM BIOS v2.0</span>
             <span>{new Date().toLocaleDateString()}</span>
@@ -201,14 +202,10 @@ export default function BootScreen({ onDone }: Props) {
 
           {/* Terminal log */}
           <div style={{
-            background: '#080808',
-            border: '2px solid #1a1a1a',
-            borderTop: 'none',
-            padding: '16px 20px',
-            minHeight: 320,
+            background: '#080808', border: '2px solid #1a1a1a', borderTop: 'none',
+            padding: '16px 20px', minHeight: 300,
             fontFamily: '"Courier New", Courier, monospace',
-            fontSize: 'clamp(11px, 1.6vw, 14px)',
-            lineHeight: 1.9,
+            fontSize: 'clamp(11px,1.6vw,14px)', lineHeight: 1.9,
           }}>
             {visibleLines.map((line, i) => (
               <div key={i} style={{ color: line.color, whiteSpace: 'pre' }}>
@@ -234,25 +231,25 @@ export default function BootScreen({ onDone }: Props) {
             }}>
               <div style={{
                 height: '100%', width: loadPct + '%',
-                background: loadPct < 60 ? '#00C853' : loadPct < 90 ? '#FF6B00' : '#FF2D2D',
-                transition: 'width 0.1s, background 0.3s',
-                boxShadow: '0 0 8px currentColor',
+                background: barColor,
+                transition: 'width 0.08s linear, background 0.3s',
+                boxShadow: `0 0 10px ${barColor}`,
               }} />
               <div style={{
-                position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                position: 'absolute', inset: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontFamily: 'monospace', fontSize: 10, color: '#fff', mixBlendMode: 'difference',
               }}>{loadPct}%</div>
             </div>
-            <span style={{ fontFamily: 'monospace', fontSize: 12, color: loadPct < 100 ? '#00C853' : '#FFE000', minWidth: 40 }}>
+            <span style={{ fontFamily: 'monospace', fontSize: 12, minWidth: 42,
+              color: loadPct < 100 ? '#00C853' : '#FFE000' }}>
               {loadPct < 100 ? 'WAIT' : 'DONE!'}
             </span>
           </div>
 
-          {/* Skip hint */}
           <div style={{
-            textAlign: 'center', marginTop: 12,
-            fontFamily: 'monospace', fontSize: 11, color: '#333',
-            letterSpacing: 2,
+            textAlign: 'center', marginTop: 10,
+            fontFamily: 'monospace', fontSize: 11, color: '#333', letterSpacing: 2,
           }}>
             PRESS ANY KEY OR CLICK TO SKIP
           </div>
@@ -265,124 +262,87 @@ export default function BootScreen({ onDone }: Props) {
           position: 'relative', zIndex: 1,
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           textAlign: 'center',
-          animation: 'bootLogoIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards',
+          animation: 'bootLogoIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards',
         }}>
-
-          {/* Glowing ring */}
+          {/* Glow ring */}
           <div style={{
-            position: 'absolute',
-            width: 320, height: 320,
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(0,187,255,0.12) 0%, transparent 70%)',
-            animation: 'bootPulse 1.8s ease-in-out infinite',
-            top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+            position: 'absolute', width: 320, height: 320, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(0,187,255,0.14) 0%, transparent 70%)',
+            animation: 'bootPulse 1.4s ease-in-out infinite',
+            top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
             pointerEvents: 'none',
           }} />
 
-          {/* Main logo */}
           <div style={{
             fontFamily: 'Bangers, cursive',
-            fontSize: 'clamp(72px, 14vw, 130px)',
-            letterSpacing: 6,
-            color: '#FFE000',
-            textShadow: '6px 6px 0 #FF2D2D, 12px 12px 0 #1a1a1a',
-            lineHeight: 0.95,
-            animation: 'bootGlitch 0.1s steps(1) 0.3s 3',
-          }}>
-            BEAT
-          </div>
+            fontSize: 'clamp(72px,14vw,130px)', letterSpacing: 6,
+            color: '#FFE000', textShadow: '6px 6px 0 #FF2D2D, 12px 12px 0 #1a1a1a',
+            lineHeight: 0.95, animation: 'bootGlitch 0.1s steps(1) 0.2s 3',
+          }}>BEAT</div>
           <div style={{
             fontFamily: 'Bangers, cursive',
-            fontSize: 'clamp(72px, 14vw, 130px)',
-            letterSpacing: 6,
-            color: '#FF2D2D',
-            textShadow: '6px 6px 0 #FFE000, 12px 12px 0 #1a1a1a',
-            lineHeight: 0.95,
-            marginBottom: 20,
-          }}>
-            BANG!
-          </div>
+            fontSize: 'clamp(72px,14vw,130px)', letterSpacing: 6,
+            color: '#FF2D2D', textShadow: '6px 6px 0 #FFE000, 12px 12px 0 #1a1a1a',
+            lineHeight: 0.95, marginBottom: 18,
+          }}>BANG!</div>
 
-          {/* Note icons */}
-          <div style={{ display: 'flex', gap: 12, marginBottom: 24, animation: 'bootNotesIn 0.5s 0.4s both' }}>
+          <div style={{ display: 'flex', gap: 12, marginBottom: 20, animation: 'bootNotesIn 0.4s 0.2s both' }}>
             {['🎵','🥁','🎶','⭐','🎵'].map((e, i) => (
               <span key={i} style={{
                 fontSize: 28,
-                animation: `bootBeat 0.8s ${i * 0.12}s ease-in-out infinite alternate`,
-                display: 'inline-block',
-                filter: 'drop-shadow(2px 2px 0 #1a1a1a)',
+                animation: `bootBeat 0.7s ${i*0.1}s ease-in-out infinite alternate`,
+                display: 'inline-block', filter: 'drop-shadow(2px 2px 0 #1a1a1a)',
               }}>{e}</span>
             ))}
           </div>
 
-          {/* Tagline typewriter */}
           <div style={{
             fontFamily: 'Permanent Marker, cursive',
-            fontSize: 'clamp(14px, 2.5vw, 20px)',
-            color: '#fff',
-            background: '#1a1a1a',
-            padding: '8px 24px',
-            border: '3px solid #FFE000',
+            fontSize: 'clamp(14px,2.5vw,20px)',
+            color: '#fff', background: '#1a1a1a',
+            padding: '8px 24px', border: '3px solid #FFE000',
             boxShadow: '4px 4px 0 #FFE000',
-            minWidth: 340, minHeight: 42,
-            letterSpacing: 1,
+            minWidth: 340, minHeight: 42, letterSpacing: 1,
           }}>
-            {tagline}
-            {cursorOn && <span style={{ opacity: 0.8 }}>|</span>}
+            {tagline}{cursorOn && <span style={{ opacity: 0.8 }}>|</span>}
           </div>
 
-          {/* Press to start */}
           <div style={{
-            marginTop: 36,
-            fontFamily: 'Bangers, cursive',
-            fontSize: 'clamp(18px, 3vw, 26px)',
-            letterSpacing: 4,
-            color: '#00bbff',
-            animation: 'bootBlink 1s step-end infinite',
-          }}>
-            ▶ PRESS ANY KEY TO START ◀
-          </div>
-
-          {/* Version */}
-          <div style={{
-            position: 'absolute', bottom: -60, left: '50%', transform: 'translateX(-50%)',
-            fontFamily: 'monospace', fontSize: 11, color: '#333', whiteSpace: 'nowrap', letterSpacing: 2,
-          }}>
-            v2.0 • BEAT BANG! RHYTHM ENGINE • ALL RIGHTS RESERVED
-          </div>
+            marginTop: 32, fontFamily: 'Bangers, cursive',
+            fontSize: 'clamp(18px,3vw,26px)', letterSpacing: 4, color: '#00bbff',
+            animation: 'bootBlink 0.8s step-end infinite',
+          }}>▶ PRESS ANY KEY TO START ◀</div>
         </div>
       )}
 
-      {/* Inline keyframes */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Permanent+Marker&display=swap');
-
         @keyframes bootLogoIn {
-          0%   { opacity:0; transform: scale(0.6) rotate(-4deg); }
-          100% { opacity:1; transform: scale(1) rotate(0deg); }
+          0%   { opacity:0; transform:scale(0.65) rotate(-4deg); }
+          100% { opacity:1; transform:scale(1)    rotate(0deg);  }
         }
         @keyframes bootPulse {
-          0%,100% { transform: translate(-50%,-50%) scale(0.9); opacity:0.6; }
-          50%      { transform: translate(-50%,-50%) scale(1.15); opacity:1; }
+          0%,100% { transform:translate(-50%,-50%) scale(0.9);  opacity:0.6; }
+          50%     { transform:translate(-50%,-50%) scale(1.15); opacity:1;   }
         }
         @keyframes bootBeat {
-          0%   { transform: translateY(0) scale(1); }
-          100% { transform: translateY(-10px) scale(1.2); }
+          0%   { transform:translateY(0)    scale(1);   }
+          100% { transform:translateY(-10px) scale(1.2); }
         }
         @keyframes bootNotesIn {
-          0%   { opacity:0; transform: translateY(20px); }
-          100% { opacity:1; transform: translateY(0); }
+          0%   { opacity:0; transform:translateY(18px); }
+          100% { opacity:1; transform:translateY(0);    }
         }
         @keyframes bootBlink {
           0%,100% { opacity:1; }
-          50%      { opacity:0; }
+          50%     { opacity:0; }
         }
         @keyframes bootGlitch {
-          0%   { text-shadow: 6px 6px 0 #FF2D2D, 12px 12px 0 #1a1a1a; transform: translate(0,0); }
-          25%  { text-shadow: -4px 4px 0 #00bbff, 12px 12px 0 #FF2D2D; transform: translate(4px,-2px); }
-          50%  { text-shadow: 4px -4px 0 #FF2D2D, -4px 4px 0 #00C853; transform: translate(-3px,2px); }
-          75%  { text-shadow: -6px 2px 0 #FFE000, 8px -6px 0 #1a1a1a; transform: translate(2px,3px); }
-          100% { text-shadow: 6px 6px 0 #FF2D2D, 12px 12px 0 #1a1a1a; transform: translate(0,0); }
+          0%   { text-shadow:6px 6px 0 #FF2D2D,12px 12px 0 #1a1a1a; transform:translate(0,0);     }
+          25%  { text-shadow:-4px 4px 0 #00bbff,12px 12px 0 #FF2D2D; transform:translate(4px,-2px); }
+          50%  { text-shadow:4px -4px 0 #FF2D2D,-4px 4px 0 #00C853;  transform:translate(-3px,2px); }
+          75%  { text-shadow:-6px 2px 0 #FFE000,8px -6px 0 #1a1a1a;  transform:translate(2px,3px);  }
+          100% { text-shadow:6px 6px 0 #FF2D2D,12px 12px 0 #1a1a1a;  transform:translate(0,0);     }
         }
       `}</style>
     </div>
