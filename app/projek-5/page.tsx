@@ -1,8 +1,3 @@
-export default function Projek5Page() {
-  return (
-    <iframe
-      src="/projek-5/index.html"
-      className="w-full h-screen border-none"
-    />
-  );
-}
+'use client';
+
+export { default } from '@/components/beat-bang/BeatBangGame';
