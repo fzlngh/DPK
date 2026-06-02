@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const runtime = process.env.NEXT_PUBLIC_API_RUNTIME as "nodejs" | "experimental-edge" | "edge" | undefined;
 
 const MIDTRANS_SERVER_KEY = process.env.MIDTRANS_SERVER_KEY || 'Mid-server-4hyH2SvI_MjY859ZPRRxWhMD';
 const MIDTRANS_API_URL    = 'https://app.sandbox.midtrans.com/snap/v1/transactions';
