@@ -317,23 +317,6 @@ export default function TopupModal({ currentPoints, history, onClose, onSuccess 
                 </div>
               </div>
 
-              {/* Setup guide */}
-              <details style={{ marginTop: 16 }}>
-                <summary style={{
-                  fontFamily: 'Bangers, cursive', fontSize: 13, letterSpacing: 1,
-                  cursor: 'pointer', color: '#555', padding: '6px 0',
-                  borderTop: '2px dashed #ccc',
-                }}>⚙️ Setup Guide (Developer)</summary>
-                <div style={{
-                  fontFamily: 'monospace', fontSize: 11, color: '#666',
-                  padding: '10px 0', lineHeight: 1.8,
-                }}>
-                  <strong>1. Ganti CLIENT_KEY</strong> di TopupModal.tsx<br/>
-                  <strong>2. Buat API route:</strong> app/api/midtrans/route.ts<br/>
-                  <strong>3. Install:</strong> npm install midtrans-client<br/>
-                  <strong>4.</strong> Lihat README untuk contoh kode lengkap
-                </div>
-              </details>
             </>
           )}
 

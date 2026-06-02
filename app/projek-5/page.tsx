@@ -1,3 +1,5 @@
 'use client';
 
-export { default } from '@/components/beat-bang/BeatBangGame';
+import BeatBangGame from '@/components/beat-bang/BeatBangGame';
+
+export default BeatBangGame;

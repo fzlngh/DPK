@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect, useRef, useCallback } from 'react';
 import SettingsOverlay from './SettingsOverlay';
 import LeaderboardPanel from './LeaderboardPanel';
