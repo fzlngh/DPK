@@ -44,9 +44,9 @@ export async function POST(req: NextRequest) {
         'alfamart',
       ],
       callbacks: {
-        finish: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/beat-bang?payment=finish`,
-        error:  `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/beat-bang?payment=error`,
-        pending:`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/beat-bang?payment=pending`,
+        finish: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://dhiyaa-fazila.my.id'}/beat-bang?payment=finish`,
+        error:  `${process.env.NEXT_PUBLIC_BASE_URL || 'https://dhiyaa-fazila.my.id'}/beat-bang?payment=error`,
+        pending:`${process.env.NEXT_PUBLIC_BASE_URL || 'https://dhiyaa-fazila.my.id'}/beat-bang?payment=pending`,
       },
     };
 
