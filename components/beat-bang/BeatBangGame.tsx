@@ -6,6 +6,9 @@ import LeaderboardPanel from './LeaderboardPanel';
 import ResultModal from './ResultModal';
 import CountdownOverlay from './CountdownOverlay';
 import BootScreen from './BootScreen';
+import TopupModal from './TopupModal';
+import { useBeatPoints, PREMIUM_SONGS } from './useBeatPoints';
+import type { TopupPackage } from './useBeatPoints';
 
 // ─────────────────────────────────────────────
 // TYPES
@@ -18,6 +21,7 @@ export interface Song {
   bpm: number; difficulty: Difficulty; color: string; pattern: NoteEvent[];
   audioBuffer?: AudioBuffer | null; duration?: number;
   isCustomSlot?: boolean; locked?: boolean;
+  premium?: boolean; price?: number;
 }
 export interface NoteEvent { time: number; lane: number; hit?: boolean; missed?: boolean; }
 export interface LeaderboardEntry {
@@ -62,11 +66,17 @@ const HIT_LINE_Y_RATIO = 0.82;
 
 function buildSongs(): Song[] {
   return [
+    // ── FREE SONGS ──
     { id: 'demo1', name: 'Cosmic Groove',   artist: 'Beat Bang!',  emoji: '🚀', genre: 'EDM',    bpm: 128, difficulty: 'medium', color: '#4FC3F7', pattern: generatePattern(128, 60, 'medium') },
     { id: 'demo2', name: 'Neon Rush',        artist: 'SynthWave',   emoji: '⚡', genre: 'EDM',    bpm: 160, difficulty: 'hard',   color: '#FF6B6B', pattern: generatePattern(160, 60, 'hard')   },
     { id: 'demo3', name: 'Chill Vibes',      artist: 'Lo-Fi Crew',  emoji: '🌊', genre: 'POP',    bpm: 120, difficulty: 'easy',   color: '#81C784', pattern: generatePattern(90,  60, 'easy')   },
     { id: 'demo4', name: 'Jazz Hands',       artist: 'Swing Kings', emoji: '🎷', genre: 'JAZZ',   bpm: 140, difficulty: 'medium', color: '#CE93D8', pattern: generatePattern(110, 60, 'medium') },
     { id: 'demo5', name: 'Rock Solid',       artist: 'The Riffs',   emoji: '🎸', genre: 'ROCK',   bpm: 160, difficulty: 'hard',   color: '#FFCC02', pattern: generatePattern(140, 60, 'hard')   },
+    // ── PREMIUM SONGS (butuh BeatPoints) ──
+    { id: 'premium1', name: 'Galaxy Overdrive', artist: 'StarForce',   emoji: '🌌', genre: 'EDM',   bpm: 175, difficulty: 'hard',   color: '#AA00FF', pattern: generatePattern(175, 75, 'hard'),   premium: true, price: 20  },
+    { id: 'premium2', name: 'Sakura Storm',     artist: 'J-Rhythm',    emoji: '🌸', genre: 'J-POP', bpm: 148, difficulty: 'medium', color: '#FF69B4', pattern: generatePattern(148, 75, 'medium'), premium: true, price: 30  },
+    { id: 'premium3', name: 'Inferno King',     artist: 'HellBeats',   emoji: '👑', genre: 'METAL', bpm: 200, difficulty: 'hard',   color: '#FF4500', pattern: generatePattern(200, 75, 'hard'),   premium: true, price: 50  },
+    // ── CUSTOM SLOTS ──
     { id: 'custom1', name: 'Your Music Here', artist: 'Upload MP3/WAV', emoji: '📁', genre: 'CUSTOM', bpm: 120, difficulty: 'medium', color: '#A5D6A7', pattern: [], isCustomSlot: true },
     { id: 'custom2', name: 'Your Music Here', artist: 'Upload MP3/WAV', emoji: '📁', genre: 'CUSTOM', bpm: 120, difficulty: 'medium', color: '#80CBC4', pattern: [], isCustomSlot: true },
   ];
@@ -104,9 +114,14 @@ export default function BeatBangGame() {
   });
 
   // React UI state
+  // BeatPoints
+  const { points: beatPoints, history: bpHistory, creditPoints, purchaseSong, isSongOwned } = useBeatPoints();
+  const [topupOpen,    setTopupOpen]    = useState(false);
+
   const [songs,        setSongs]        = useState<Song[]>(songsRef.current);
   const [activeSongId, setActiveSongId] = useState('demo1');
   const [booting,      setBooting]      = useState(true);
+  const [purchaseModal,setPurchaseModal]= useState<Song|null>(null);
   const [isPlaying,    setIsPlaying]    = useState(false);
   const [isPaused,     setIsPaused]     = useState(false);
   const [score,        setScore]        = useState(0);
@@ -595,8 +610,31 @@ export default function BeatBangGame() {
 
   function handleSelectSong(song: Song) {
     if(song.isCustomSlot){ fileInputRef.current?.click(); return; }
+    // Check premium — show purchase modal if not owned
+    if(song.premium && !isSongOwned(song.id)){
+      setPurchaseModal(song);
+      return;
+    }
     gs.current.activeSong=song; setActiveSongId(song.id); handleStop();
     showNotif(`🎵 ${song.name.toUpperCase()}`);
+  }
+
+  function handlePurchaseSong(song: Song) {
+    const ok = purchaseSong(song.id);
+    if(ok){
+      showNotif(`💎 ${song.name.toUpperCase()} UNLOCKED!`);
+      setPurchaseModal(null);
+      gs.current.activeSong=song; setActiveSongId(song.id); handleStop();
+    } else {
+      showNotif('❌ BEATPOINTS TIDAK CUKUP!');
+      setPurchaseModal(null);
+      setTopupOpen(true);
+    }
+  }
+
+  function handleTopupSuccess(pkg: TopupPackage, orderId: string) {
+    creditPoints(pkg, orderId);
+    showNotif(`✅ +${pkg.points + pkg.bonus} BEATPOINTS DITAMBAHKAN!`);
   }
 
   async function handleAudioUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -882,6 +920,11 @@ export default function BeatBangGame() {
               🎵 SONGS
             </button>
 
+            {/* BeatPoints + Topup */}
+            <button className="bb-ctrl-btn" style={{background:'#FFE000',color:'#1a1a1a',borderColor:'#1a1a1a',fontWeight:700}} onClick={()=>setTopupOpen(true)}>
+              💎 {beatPoints.toLocaleString()} BP
+            </button>
+
             {/* Settings */}
             <button className="bb-ctrl-btn" style={{background:'#1a1a1a',color:'#FFE000',borderColor:'#444'}} onClick={()=>setSettingsOpen(true)}>
               ⚙️
@@ -968,20 +1011,99 @@ export default function BeatBangGame() {
           {!lbOpen ? (
             <>
               {/* Song list */}
-              {songs.map(song=>(
+              {/* Free songs */}
+              <div style={{fontFamily:'Bangers,cursive',fontSize:12,letterSpacing:2,color:'#888',padding:'6px 0 4px',borderBottom:'2px dashed #ddd',marginBottom:8}}>
+                🎵 FREE SONGS
+              </div>
+              {songs.filter(s=>!s.premium&&!s.isCustomSlot).map(song=>(
                 <div key={song.id}
-                  className={`bb-song-card${activeSongId===song.id?' active':''}${song.locked?' locked':''}`}
+                  className={`bb-song-card${activeSongId===song.id?' active':''}`}
                   onClick={()=>{ handleSelectSong(song); setSidebarOpen(false); }}
                 >
-                  <span style={{fontSize:30,flexShrink:0}}>{song.emoji}</span>
+                  <span style={{fontSize:28,flexShrink:0}}>{song.emoji}</span>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontFamily:'Permanent Marker,cursive',fontSize:13,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{song.name}</div>
                     <div style={{fontSize:11,color:'#666',marginBottom:4}}>{song.artist}</div>
                     <div style={{display:'flex',gap:4,flexWrap:'wrap'}}>
                       <span style={{fontFamily:'Bangers,cursive',fontSize:10,padding:'1px 6px',border:'2px solid #1a1a1a',background:'#FF6B00',color:'#1a1a1a',borderRadius:2}}>{song.bpm} BPM</span>
                       <span style={{fontFamily:'Bangers,cursive',fontSize:10,padding:'1px 6px',border:'2px solid #1a1a1a',background:diffColor[song.difficulty],color:'#fff',borderRadius:2}}>{song.difficulty.toUpperCase()}</span>
-                      {song.audioBuffer&&<span style={{fontFamily:'Bangers,cursive',fontSize:10,padding:'1px 6px',border:'2px solid #1a1a1a',background:'#00C853',color:'#fff',borderRadius:2}}>LOADED</span>}
                     </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Premium songs */}
+              <div style={{fontFamily:'Bangers,cursive',fontSize:12,letterSpacing:2,color:'#888',padding:'12px 0 4px',borderBottom:'2px dashed #ddd',marginBottom:8,display:'flex',alignItems:'center',gap:8}}>
+                💎 PREMIUM SONGS
+                <span style={{fontSize:10,fontFamily:'Comic Neue,cursive',fontWeight:700,color:'#FFE000',background:'#1a1a1a',padding:'1px 7px',borderRadius:2}}>butuh BeatPoints</span>
+              </div>
+              {songs.filter(s=>s.premium).map(song=>{
+                const owned = isSongOwned(song.id);
+                const canAfford = beatPoints >= (song.price||0);
+                return (
+                  <div key={song.id}
+                    className={`bb-song-card${activeSongId===song.id&&owned?' active':''}`}
+                    onClick={()=>{ handleSelectSong(song); if(owned) setSidebarOpen(false); }}
+                    style={{
+                      background: owned
+                        ? (activeSongId===song.id ? '#00bbff' : '#fff')
+                        : 'linear-gradient(135deg,#1a1a1a 0%,#2a2a2a 100%)',
+                      border: owned ? '3px solid #1a1a1a' : '3px solid #FFE000',
+                      boxShadow: owned ? '3px 3px 0 #1a1a1a' : '3px 3px 0 #FFE000',
+                      position:'relative', overflow:'hidden',
+                    }}
+                  >
+                    {/* Lock overlay */}
+                    {!owned && (
+                      <div style={{
+                        position:'absolute',inset:0,
+                        background:'rgba(0,0,0,0.55)',
+                        display:'flex',alignItems:'center',justifyContent:'flex-end',
+                        paddingRight:12, pointerEvents:'none',
+                      }}>
+                        <div style={{
+                          fontFamily:'Bangers,cursive',fontSize:22,color:'#FFE000',
+                          textShadow:'2px 2px 0 #1a1a1a',
+                        }}>🔒</div>
+                      </div>
+                    )}
+                    <span style={{fontSize:28,flexShrink:0,filter:owned?'none':'grayscale(0.5)'}}>{song.emoji}</span>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontFamily:'Permanent Marker,cursive',fontSize:13,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',color:owned?'inherit':'#ccc'}}>{song.name}</div>
+                      <div style={{fontSize:11,color:owned?'#666':'#777',marginBottom:4}}>{song.artist}</div>
+                      <div style={{display:'flex',gap:4,flexWrap:'wrap',alignItems:'center'}}>
+                        <span style={{fontFamily:'Bangers,cursive',fontSize:10,padding:'1px 6px',border:'2px solid #1a1a1a',background:'#FF6B00',color:'#1a1a1a',borderRadius:2}}>{song.bpm} BPM</span>
+                        <span style={{fontFamily:'Bangers,cursive',fontSize:10,padding:'1px 6px',border:'2px solid #1a1a1a',background:diffColor[song.difficulty],color:'#fff',borderRadius:2}}>{song.difficulty.toUpperCase()}</span>
+                        {owned
+                          ? <span style={{fontFamily:'Bangers,cursive',fontSize:10,padding:'1px 6px',border:'2px solid #00C853',background:'#00C853',color:'#fff',borderRadius:2}}>✓ OWNED</span>
+                          : <span style={{
+                              fontFamily:'Bangers,cursive',fontSize:11,padding:'2px 8px',
+                              border:'2px solid #FFE000',
+                              background: canAfford ? '#FFE000' : '#555',
+                              color: canAfford ? '#1a1a1a' : '#aaa',
+                              borderRadius:2,
+                            }}>💎 {song.price} BP</span>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Custom upload slots */}
+              <div style={{fontFamily:'Bangers,cursive',fontSize:12,letterSpacing:2,color:'#888',padding:'12px 0 4px',borderBottom:'2px dashed #ddd',marginBottom:8}}>
+                📁 YOUR MUSIC
+              </div>
+              {songs.filter(s=>s.isCustomSlot).map(song=>(
+                <div key={song.id}
+                  className={`bb-song-card${activeSongId===song.id?' active':''}`}
+                  onClick={()=>{ handleSelectSong(song); setSidebarOpen(false); }}
+                >
+                  <span style={{fontSize:28,flexShrink:0}}>{song.emoji}</span>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontFamily:'Permanent Marker,cursive',fontSize:13,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{song.name}</div>
+                    <div style={{fontSize:11,color:'#666',marginBottom:4}}>{song.artist}</div>
+                    {song.audioBuffer&&<span style={{fontFamily:'Bangers,cursive',fontSize:10,padding:'1px 6px',border:'2px solid #1a1a1a',background:'#00C853',color:'#fff',borderRadius:2}}>LOADED</span>}
                   </div>
                 </div>
               ))}
@@ -1045,6 +1167,116 @@ export default function BeatBangGame() {
 
       {/* ── BOOT SCREEN ── */}
       {booting && <BootScreen onDone={() => setBooting(false)} />}
+
+      {/* ── TOPUP MODAL ── */}
+      {topupOpen && (
+        <TopupModal
+          currentPoints={beatPoints}
+          history={bpHistory}
+          onClose={() => setTopupOpen(false)}
+          onSuccess={handleTopupSuccess}
+        />
+      )}
+
+      {/* ── PURCHASE SONG MODAL ── */}
+      {purchaseModal && (
+        <div style={{
+          position:'fixed',inset:0,zIndex:7500,
+          background:'rgba(0,0,0,0.82)',backdropFilter:'blur(6px)',
+          display:'flex',alignItems:'center',justifyContent:'center',
+        }} onClick={e=>{ if(e.target===e.currentTarget) setPurchaseModal(null); }}>
+          <div style={{
+            background:'#FFFDF0',border:'6px solid #1a1a1a',
+            boxShadow:'12px 12px 0 #1a1a1a',
+            width:'min(420px,92vw)',overflow:'hidden',
+          }}>
+            {/* Header */}
+            <div style={{background:'#1a1a1a',padding:'14px 20px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+              <div style={{fontFamily:'Bangers,cursive',fontSize:24,letterSpacing:3,color:'#FFE000'}}>🔓 BUKA LAGU</div>
+              <button onClick={()=>setPurchaseModal(null)} style={{
+                fontFamily:'Bangers,cursive',fontSize:18,color:'#FF2D2D',
+                background:'none',border:'2px solid #FF2D2D',padding:'2px 10px',cursor:'pointer',
+              }}>✕</button>
+            </div>
+            <div style={{padding:24}}>
+              {/* Song info */}
+              <div style={{
+                display:'flex',alignItems:'center',gap:14,
+                background:'#1a1a1a',padding:'14px 16px',marginBottom:20,
+                border:'3px solid #FFE000',boxShadow:'4px 4px 0 #FFE000',
+              }}>
+                <span style={{fontSize:40}}>{purchaseModal.emoji}</span>
+                <div>
+                  <div style={{fontFamily:'Permanent Marker,cursive',fontSize:17,color:'#fff'}}>{purchaseModal.name}</div>
+                  <div style={{fontFamily:'Comic Neue,cursive',fontSize:12,color:'#aaa'}}>{purchaseModal.artist} • {purchaseModal.bpm} BPM</div>
+                  <div style={{
+                    fontFamily:'Bangers,cursive',fontSize:13,letterSpacing:1,
+                    color: diffColor[purchaseModal.difficulty],
+                  }}>{purchaseModal.difficulty.toUpperCase()}</div>
+                </div>
+              </div>
+
+              {/* Price info */}
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+                <span style={{fontFamily:'Bangers,cursive',fontSize:16,letterSpacing:2}}>HARGA</span>
+                <span style={{fontFamily:'Bangers,cursive',fontSize:28,color:'#1E90FF'}}>💎 {purchaseModal.price} BP</span>
+              </div>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20}}>
+                <span style={{fontFamily:'Bangers,cursive',fontSize:14,letterSpacing:1,color:'#555'}}>SALDO KAMU</span>
+                <span style={{
+                  fontFamily:'Bangers,cursive',fontSize:22,
+                  color: beatPoints >= (purchaseModal.price||0) ? '#00C853' : '#FF2D2D',
+                }}>💎 {beatPoints} BP</span>
+              </div>
+
+              {/* Insufficient notice */}
+              {beatPoints < (purchaseModal.price||0) && (
+                <div style={{
+                  background:'#FF2D2D22',border:'2px solid #FF2D2D',
+                  padding:'8px 12px',marginBottom:16,
+                  fontFamily:'Comic Neue,cursive',fontSize:13,color:'#FF2D2D',fontWeight:700,
+                }}>
+                  ❌ BeatPoints tidak cukup! Kurang {(purchaseModal.price||0) - beatPoints} BP.
+                </div>
+              )}
+
+              {/* Buttons */}
+              <div style={{display:'flex',gap:10}}>
+                {beatPoints >= (purchaseModal.price||0) ? (
+                  <button
+                    onClick={()=>handlePurchaseSong(purchaseModal)}
+                    style={{
+                      flex:1,fontFamily:'Bangers,cursive',fontSize:20,letterSpacing:2,
+                      padding:'12px 0',border:'4px solid #1a1a1a',
+                      background:'#00C853',color:'#fff',
+                      boxShadow:'4px 4px 0 #1a1a1a',cursor:'pointer',
+                    }}
+                  >✓ BELI SEKARANG</button>
+                ) : (
+                  <button
+                    onClick={()=>{ setPurchaseModal(null); setTopupOpen(true); }}
+                    style={{
+                      flex:1,fontFamily:'Bangers,cursive',fontSize:20,letterSpacing:2,
+                      padding:'12px 0',border:'4px solid #1a1a1a',
+                      background:'#FFE000',color:'#1a1a1a',
+                      boxShadow:'4px 4px 0 #1a1a1a',cursor:'pointer',
+                    }}
+                  >💳 TOP UP BP</button>
+                )}
+                <button
+                  onClick={()=>setPurchaseModal(null)}
+                  style={{
+                    fontFamily:'Bangers,cursive',fontSize:18,letterSpacing:1,
+                    padding:'12px 18px',border:'4px solid #1a1a1a',
+                    background:'#fff',color:'#1a1a1a',
+                    boxShadow:'4px 4px 0 #1a1a1a',cursor:'pointer',
+                  }}
+                >BATAL</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
