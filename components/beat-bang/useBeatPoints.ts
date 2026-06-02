@@ -28,71 +28,100 @@ export interface TopupHistory {
 // PACKAGES
 // ─────────────────────────────────────────────
 export const TOPUP_PACKAGES: TopupPackage[] = [
-  { id: 'bp_50',   name: 'Starter Pack',  points: 50,   price: 5000,   bonus: 0,   emoji: '🎵' },
-  { id: 'bp_120',  name: 'Beat Rider',    points: 100,  price: 10000,  bonus: 20,  emoji: '⭐', popular: true },
-  { id: 'bp_250',  name: 'Rhythm Master', points: 200,  price: 20000,  bonus: 50,  emoji: '🔥' },
-  { id: 'bp_600',  name: 'Sound Legend',  points: 500,  price: 50000,  bonus: 100, emoji: '👑' },
+  { id: 'bp_50',  name: 'Starter Pack',  points: 50,  price: 5000,  bonus: 0,   emoji: '🎵' },
+  { id: 'bp_120', name: 'Beat Rider',    points: 100, price: 10000, bonus: 20,  emoji: '⭐', popular: true },
+  { id: 'bp_250', name: 'Rhythm Master', points: 200, price: 20000, bonus: 50,  emoji: '🔥' },
+  { id: 'bp_600', name: 'Sound Legend',  points: 500, price: 50000, bonus: 100, emoji: '👑' },
 ];
 
 // ─────────────────────────────────────────────
 // PREMIUM SONG IDs (lagu yang butuh BP)
 // ─────────────────────────────────────────────
 export const PREMIUM_SONGS: Record<string, { cost: number; emoji: string }> = {
-  premium1: { cost: 20,  emoji: '💎' },
-  premium2: { cost: 30,  emoji: '💎' },
-  premium3: { cost: 50,  emoji: '👑' },
+  premium1: { cost: 20, emoji: '💎' },
+  premium2: { cost: 30, emoji: '💎' },
+  premium3: { cost: 50, emoji: '👑' },
 };
 
 // ─────────────────────────────────────────────
-// HOOK
+// SSR-SAFE localStorage helpers
+// ─────────────────────────────────────────────
+const isBrowser = () => typeof window !== 'undefined';
+
+const ls = {
+  get: (key: string, fallback = ''): string => {
+    if (!isBrowser()) return fallback;
+    return localStorage.getItem(key) ?? fallback;
+  },
+  set: (key: string, value: string): void => {
+    if (!isBrowser()) return;
+    localStorage.setItem(key, value);
+  },
+  getJSON: <T>(key: string, fallback: T): T => {
+    if (!isBrowser()) return fallback;
+    try { return JSON.parse(localStorage.getItem(key) ?? 'null') ?? fallback; }
+    catch { return fallback; }
+  },
+  setJSON: <T>(key: string, value: T): void => {
+    if (!isBrowser()) return;
+    localStorage.setItem(key, JSON.stringify(value));
+  },
+};
+
+// ─────────────────────────────────────────────
+// KEYS
 // ─────────────────────────────────────────────
 const BP_KEY       = 'bb_beatpoints';
 const BP_OWNED_KEY = 'bb_owned_songs';
 const BP_HIST_KEY  = 'bb_topup_history';
 
+// ─────────────────────────────────────────────
+// HOOK
+// ─────────────────────────────────────────────
 export function useBeatPoints() {
-  const [points,   setPoints]   = useState(0);
-  const [owned,    setOwned]    = useState<string[]>([]);
-  const [history,  setHistory]  = useState<TopupHistory[]>([]);
+  // Start with 0 / [] — hydrated client-side in useEffect
+  const [points,  setPoints]  = useState(0);
+  const [owned,   setOwned]   = useState<string[]>([]);
+  const [history, setHistory] = useState<TopupHistory[]>([]);
 
-  // Load from localStorage on mount
+  // Hydrate from localStorage only on the client
   useEffect(() => {
-    setPoints(parseInt(localStorage.getItem(BP_KEY)   || '0'));
-    setOwned(JSON.parse(localStorage.getItem(BP_OWNED_KEY) || '[]'));
-    setHistory(JSON.parse(localStorage.getItem(BP_HIST_KEY) || '[]'));
+    setPoints(parseInt(ls.get(BP_KEY, '0')));
+    setOwned(ls.getJSON<string[]>(BP_OWNED_KEY, []));
+    setHistory(ls.getJSON<TopupHistory[]>(BP_HIST_KEY, []));
   }, []);
 
-  // Persist helpers
+  // ── persist helpers ──
   const savePoints = useCallback((n: number) => {
-    localStorage.setItem(BP_KEY, String(n));
+    ls.set(BP_KEY, String(n));
     setPoints(n);
   }, []);
 
   const saveOwned = useCallback((list: string[]) => {
-    localStorage.setItem(BP_OWNED_KEY, JSON.stringify(list));
+    ls.setJSON(BP_OWNED_KEY, list);
     setOwned(list);
   }, []);
 
   const saveHistory = useCallback((h: TopupHistory[]) => {
-    localStorage.setItem(BP_HIST_KEY, JSON.stringify(h));
+    ls.setJSON(BP_HIST_KEY, h);
     setHistory(h);
   }, []);
 
-  // Called after Midtrans success
+  // ── called after Midtrans success ──
   const creditPoints = useCallback((pkg: TopupPackage, orderId: string) => {
-    const total = pkg.points + pkg.bonus;
-    const newPoints = parseInt(localStorage.getItem(BP_KEY) || '0') + total;
+    const total     = pkg.points + pkg.bonus;
+    const newPoints = parseInt(ls.get(BP_KEY, '0')) + total;
     savePoints(newPoints);
 
     const newEntry: TopupHistory = {
       orderId,
       packageId: pkg.id,
-      points: total,
-      price: pkg.price,
-      date: new Date().toLocaleString('id-ID'),
-      status: 'success',
+      points:    total,
+      price:     pkg.price,
+      date:      new Date().toLocaleString('id-ID'),
+      status:    'success',
     };
-    const hist: TopupHistory[] = JSON.parse(localStorage.getItem(BP_HIST_KEY) || '[]');
+    const hist = ls.getJSON<TopupHistory[]>(BP_HIST_KEY, []);
     hist.unshift(newEntry);
     hist.splice(50, 999);
     saveHistory(hist);
@@ -100,13 +129,13 @@ export function useBeatPoints() {
     return newPoints;
   }, [savePoints, saveHistory]);
 
-  // Purchase a premium song
+  // ── purchase a premium song ──
   const purchaseSong = useCallback((songId: string): boolean => {
     const cost = PREMIUM_SONGS[songId]?.cost ?? 0;
-    const cur  = parseInt(localStorage.getItem(BP_KEY) || '0');
+    const cur  = parseInt(ls.get(BP_KEY, '0'));
     if (cur < cost) return false;
     savePoints(cur - cost);
-    const list: string[] = JSON.parse(localStorage.getItem(BP_OWNED_KEY) || '[]');
+    const list = ls.getJSON<string[]>(BP_OWNED_KEY, []);
     if (!list.includes(songId)) {
       list.push(songId);
       saveOwned(list);
@@ -114,9 +143,10 @@ export function useBeatPoints() {
     return true;
   }, [savePoints, saveOwned]);
 
-  const isSongOwned = useCallback((songId: string) => {
-    const list: string[] = JSON.parse(localStorage.getItem(BP_OWNED_KEY) || '[]');
-    return list.includes(songId);
+  // SSR-safe: returns false on server (no localStorage)
+  const isSongOwned = useCallback((songId: string): boolean => {
+    if (!isBrowser()) return false;
+    return ls.getJSON<string[]>(BP_OWNED_KEY, []).includes(songId);
   }, []);
 
   return { points, owned, history, creditPoints, purchaseSong, isSongOwned, savePoints };

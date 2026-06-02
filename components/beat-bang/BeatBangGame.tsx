@@ -10,6 +10,24 @@ import TopupModal from './TopupModal';
 import { useBeatPoints, PREMIUM_SONGS } from './useBeatPoints';
 import type { TopupPackage } from './useBeatPoints';
 
+
+// ── SSR-safe localStorage helper ──
+const ls = {
+  get: (k: string, fb = ''): string =>
+    typeof window === 'undefined' ? fb : (localStorage.getItem(k) ?? fb),
+  set: (k: string, v: string): void => {
+    if (typeof window !== 'undefined') localStorage.setItem(k, v);
+  },
+  getJSON: <T>(k: string, fb: T): T => {
+    if (typeof window === 'undefined') return fb;
+    try { return JSON.parse(localStorage.getItem(k) ?? 'null') ?? fb; }
+    catch { return fb; }
+  },
+  setJSON: <T>(k: string, v: T): void => {
+    if (typeof window !== 'undefined') localStorage.setItem(k, JSON.stringify(v));
+  },
+};
+
 // ─────────────────────────────────────────────
 // TYPES
 // ─────────────────────────────────────────────
@@ -148,9 +166,9 @@ export default function BeatBangGame() {
 
   // ── init ──
   useEffect(() => {
-    const name = localStorage.getItem('bb_name') || 'Anonymous';
-    const best = parseInt(localStorage.getItem('bb_best') || '0');
-    const lb: LeaderboardEntry[] = JSON.parse(localStorage.getItem('bb_lb') || '[]');
+    const name = ls.get('bb_name', 'Anonymous');
+    const best = parseInt(ls.get('bb_best', '0'));
+    const lb: LeaderboardEntry[] = ls.getJSON<LeaderboardEntry[]>('bb_lb', []);
     setSettings(s => ({ ...s, playerName: name }));
     gs.current.playerName = name;
     setBestScore(best);
@@ -593,16 +611,16 @@ export default function BeatBangGame() {
     const s=gs.current; if(!s.isPlaying) return;
     s.isPlaying=false; cancelAnimationFrame(animFrameRef.current); setIsPlaying(false);
     const finalScore=s.score;
-    const best=parseInt(localStorage.getItem('bb_best')||'0');
-    if(finalScore>best){ localStorage.setItem('bb_best',String(finalScore)); setBestScore(finalScore); }
+    const best=parseInt(ls.get('bb_best','0'));
+    if(finalScore>best){ ls.set('bb_best',String(finalScore)); setBestScore(finalScore); }
     const totalHits=s.perfectHits+s.greatHits+s.goodHits;
     const accV=s.totalNotes>0?Math.round((totalHits/s.totalNotes)*100):0;
     const grade=getGrade(accV);
     if(!s.autoplay){
-      const lb:LeaderboardEntry[]=JSON.parse(localStorage.getItem('bb_lb')||'[]');
+      const lb:LeaderboardEntry[]=ls.getJSON<LeaderboardEntry[]>('bb_lb',[]);
       lb.push({name:s.playerName,score:finalScore,acc:accV,song:s.activeSong.name,date:new Date().toLocaleDateString(),grade,difficulty:s.difficulty});
       lb.sort((a,b)=>b.score-a.score); lb.splice(20,999);
-      localStorage.setItem('bb_lb',JSON.stringify(lb)); setLeaderboard(lb);
+      ls.setJSON('bb_lb',lb); setLeaderboard(lb);
     }
     setResult({score:finalScore,acc:accV,maxCombo:s.maxCombo,perfectHits:s.perfectHits,grade,song:s.activeSong.name});
     renderIdle();
@@ -655,7 +673,7 @@ export default function BeatBangGame() {
   }
 
   function handleSaveSettings(ns: GameSettings) {
-    setSettings(ns); localStorage.setItem('bb_name',ns.playerName);
+    setSettings(ns); ls.set('bb_name',ns.playerName);
     setSettingsOpen(false); showNotif('⚙️ SETTINGS SAVED!');
     songsRef.current.forEach(s=>{ if(!s.audioBuffer) s.pattern=generatePattern(s.bpm,65,ns.difficulty); });
     setSongs([...songsRef.current]);
