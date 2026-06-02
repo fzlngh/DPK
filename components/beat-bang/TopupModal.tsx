@@ -109,7 +109,7 @@ export default function TopupModal({ currentPoints, history, onClose, onSuccess 
         },
         onClose: () => {
           setLoading(false);
-          showStatus('', '');
+          showStatus('', 'info');
         },
       });
 
