@@ -171,7 +171,7 @@ export default function BeatBangGame() {
   useEffect(() => {
     const name = ls.get('bb_name', 'Anonymous');
     const best = parseInt(ls.get('bb_best', '0'));
-    const lb: LeaderboardEntry[] = ls.getJSON<LeaderboardEntry[]>('bb_lb', []);
+    const lb: LeaderboardEntry[] = ls.getJSON('bb_lb', []) as LeaderboardEntry[];
     setSettings(s => ({ ...s, playerName: name }));
     gs.current.playerName = name;
     setBestScore(best);
