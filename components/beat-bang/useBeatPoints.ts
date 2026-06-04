@@ -19,7 +19,10 @@ export interface TopupHistory {
   orderId: string;
   packageId: string;
   points: number;
-  price: number;
+  price: number;           // harga final setelah diskon
+  originalPrice?: number;  // harga sebelum diskon
+  promoCode?: string;      // kode promo yang dipakai
+  bonusBP?: number;        // bonus BP dari promo
   date: string;
   status: 'success' | 'pending' | 'failed';
 }
@@ -108,18 +111,27 @@ export function useBeatPoints() {
   }, []);
 
   // ── called after Midtrans success ──
-  const creditPoints = useCallback((pkg: TopupPackage, orderId: string) => {
-    const total     = pkg.points + pkg.bonus;
+  const creditPoints = useCallback((
+    pkg: TopupPackage,
+    orderId: string,
+    bonusBP = 0,
+    promoCode?: string,
+    finalPrice?: number,
+  ) => {
+    const total     = pkg.points + pkg.bonus + bonusBP;
     const newPoints = parseInt(ls.get(BP_KEY, '0')) + total;
     savePoints(newPoints);
 
     const newEntry: TopupHistory = {
       orderId,
-      packageId: pkg.id,
-      points:    total,
-      price:     pkg.price,
-      date:      new Date().toLocaleString('id-ID'),
-      status:    'success',
+      packageId:     pkg.id,
+      points:        total,
+      price:         finalPrice ?? pkg.price,
+      originalPrice: finalPrice !== undefined && finalPrice !== pkg.price ? pkg.price : undefined,
+      promoCode:     promoCode || undefined,
+      bonusBP:       bonusBP || undefined,
+      date:          new Date().toLocaleString('id-ID'),
+      status:        'success',
     };
     const hist = ls.getJSON<TopupHistory[]>(BP_HIST_KEY, []);
     hist.unshift(newEntry);
