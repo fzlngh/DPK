@@ -9,7 +9,7 @@ import { TOPUP_PACKAGES } from './useBeatPoints';
 // ─────────────────────────────────────────────
 // Ganti CLIENT_KEY dengan Midtrans Sandbox Client Key kamu
 // Dapatkan di: https://dashboard.sandbox.midtrans.com → Settings → Access Keys
-const MIDTRANS_CLIENT_KEY = 'SB-Mid-client-XXXXXXXXXXXXXXXX'; // ← ganti ini
+const MIDTRANS_CLIENT_KEY = 'Mid-client-99bbm-ul_TD7ThtG'; // ← ganti ini
 const MIDTRANS_SNAP_URL   = 'https://app.sandbox.midtrans.com/snap/snap.js';
 
 // API endpoint untuk create transaction (buat di Next.js route handler)
