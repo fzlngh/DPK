@@ -1,3 +1,8 @@
-import BeatBangGame from '@/components/beat-bang/BeatBangGame';
-
-export default BeatBangGame;
+export default function Projek6Page() {
+  return (
+    <iframe
+      src="/projek-5/index.html"
+      className="w-full h-screen border-none"
+    />
+  );
+}
