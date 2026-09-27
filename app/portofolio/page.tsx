@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import Image from "next/image";
 import { DM_Sans, DM_Serif_Display, DM_Mono } from "next/font/google";
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -203,6 +204,30 @@ function useHeaderScrollState() {
   return scrolled;
 }
 
+function useActiveSection() {
+  const [activeSection, setActiveSection] = useState("home");
+
+  useEffect(() => {
+    const sections = NAV_LINKS.map(({ href }) => document.querySelector<HTMLElement>(href)).filter(
+      (section): section is HTMLElement => section !== null
+    );
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+        if (visible) setActiveSection(visible.target.id);
+      },
+      { rootMargin: "-22% 0px -62% 0px" }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
+
+  return activeSection;
+}
+
 function useScrollProgress() {
   useEffect(() => {
     const onScroll = () => {
@@ -223,13 +248,20 @@ function useScrollProgress() {
 function useCursor() {
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
-  const [enabled, setEnabled] = useState(false);
-
-  useEffect(() => {
-    const fine = window.matchMedia("(pointer: fine)").matches;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setEnabled(fine && !reduced);
-  }, []);
+  const enabled = useSyncExternalStore(
+    (onChange) => {
+      const finePointer = window.matchMedia("(pointer: fine)");
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      finePointer.addEventListener("change", onChange);
+      reducedMotion.addEventListener("change", onChange);
+      return () => {
+        finePointer.removeEventListener("change", onChange);
+        reducedMotion.removeEventListener("change", onChange);
+      };
+    },
+    () => window.matchMedia("(pointer: fine)").matches && !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    () => false
+  );
 
   useEffect(() => {
     if (!enabled) return;
@@ -310,9 +342,13 @@ function Photo() {
   const [failed, setFailed] = useState(false);
   if (failed) return <InitialsAvatar />;
   return (
-    <img
+    <Image
       src={ASSETS.photo}
       alt="Dhiyaa Fazila Nugraha"
+      width={600}
+      height={600}
+      sizes="(max-width: 768px) 190px, 300px"
+      priority
       onError={() => setFailed(true)}
       className="h-full w-full rounded-full object-cover object-top grayscale-[20%] transition-[filter] duration-300 hover:grayscale-0"
     />
@@ -323,6 +359,7 @@ export default function PortfolioPage() {
   useRevealOnScroll();
   useScrollProgress();
   const scrolled = useHeaderScrollState();
+  const activeSection = useActiveSection();
   const { enabled: cursorEnabled, dotRef, ringRef } = useCursor();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -335,16 +372,17 @@ export default function PortfolioPage() {
     >
       <style>{`
         :root {
-          --bg: #06060a;
-          --surface: #0f0f16;
-          --surface2: #17171f;
-          --border: rgba(255, 255, 255, 0.08);
-          --border-hover: rgba(255, 255, 255, 0.18);
-          --text: #eef0f5;
-          --muted: #8a8ea3;
-          --accent: #8b7bff;
-          --accent2: #35e0c4;
-          --white: #f6f6f8;
+          color-scheme: dark;
+          --bg: #080d0c;
+          --surface: #101816;
+          --surface2: #17231f;
+          --border: rgba(220, 242, 229, 0.11);
+          --border-hover: rgba(220, 242, 229, 0.24);
+          --text: #e3eee8;
+          --muted: #91a39a;
+          --accent: #c6f36b;
+          --accent2: #ff856e;
+          --white: #f5f8f2;
         }
 
         html {
@@ -358,7 +396,10 @@ export default function PortfolioPage() {
           .reveal,
           .fill-bar,
           .marquee-track,
-          .blob {
+          .blob,
+          .hero-item,
+          .ring-spin,
+          .pulse-dot {
             animation: none !important;
             transition: none !important;
           }
@@ -377,7 +418,12 @@ export default function PortfolioPage() {
 
         ::selection {
           background: var(--accent);
-          color: #06060a;
+          color: #080d0c;
+        }
+
+        :where(a, button):focus-visible {
+          outline: 2px solid var(--accent);
+          outline-offset: 4px;
         }
 
         .scroll-progress {
@@ -420,7 +466,7 @@ export default function PortfolioPage() {
           width: 36px;
           height: 36px;
           border-radius: 50%;
-          border: 1px solid rgba(139, 123, 255, 0.4);
+          border: 1px solid rgba(198, 243, 107, 0.45);
           pointer-events: none;
           z-index: 299;
         }
@@ -543,6 +589,20 @@ export default function PortfolioPage() {
         .nav-underline:hover::after {
           transform: scaleX(1);
         }
+
+        .nav-underline[aria-current="location"] {
+          color: var(--white);
+        }
+
+        .nav-underline[aria-current="location"]::after {
+          transform: scaleX(1);
+        }
+
+        .project-art {
+          background-image: linear-gradient(rgba(198, 243, 107, 0.06) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(198, 243, 107, 0.06) 1px, transparent 1px);
+          background-size: 22px 22px;
+        }
       `}</style>
 
       <div className="grain" />
@@ -555,8 +615,8 @@ export default function PortfolioPage() {
       )}
 
       <header
-        className={`fixed inset-x-0 top-0 z-[100] flex items-center justify-between px-[6%] py-6 transition-colors duration-300 ${
-          scrolled ? "border-b border-[var(--border)] bg-[#06060acc] backdrop-blur-xl" : ""
+          className={`fixed inset-x-0 top-0 z-[100] flex items-center justify-between px-[6%] py-6 transition-colors duration-300 ${
+          scrolled ? "border-b border-[var(--border)] bg-[#080d0cf2] backdrop-blur-xl" : ""
         }`}
       >
         <div className="ff-mono text-sm tracking-wide text-[var(--muted)]">
@@ -568,6 +628,7 @@ export default function PortfolioPage() {
             <a
               key={link.href}
               href={link.href}
+              aria-current={activeSection === link.href.slice(1) ? "location" : undefined}
               className="nav-underline text-[13px] tracking-wide text-[var(--muted)] transition-colors hover:text-[var(--text)]"
             >
               {link.label}
@@ -577,6 +638,8 @@ export default function PortfolioPage() {
 
         <button
           aria-label="Toggle menu"
+          aria-expanded={menuOpen}
+          aria-controls="mobile-navigation"
           onClick={() => setMenuOpen((v) => !v)}
           className="rounded-md border border-[var(--border)] px-3 py-2 text-[var(--text)] transition-colors hover:border-[var(--border-hover)] md:hidden"
         >
@@ -584,7 +647,13 @@ export default function PortfolioPage() {
         </button>
 
         <nav
-          className={`fixed right-0 top-0 flex h-full w-64 flex-col gap-6 border-l border-[var(--border)] bg-[#06060af7] px-8 pb-8 pt-24 backdrop-blur-xl transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] md:hidden ${
+          id="mobile-navigation"
+          aria-label="Mobile"
+          inert={!menuOpen}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") setMenuOpen(false);
+          }}
+          className={`fixed right-0 top-0 z-[110] flex h-full w-full flex-col gap-6 border-l border-[var(--border-hover)] bg-[#101816] px-8 pb-8 pt-24 shadow-2xl shadow-black/70 backdrop-blur-xl transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] sm:w-80 md:hidden ${
             menuOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
@@ -593,18 +662,26 @@ export default function PortfolioPage() {
               key={link.href}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className="text-base text-[var(--text)]"
+              aria-current={activeSection === link.href.slice(1) ? "location" : undefined}
+              className="text-base text-[var(--text)] transition-colors hover:text-[var(--accent)]"
             >
               {link.label}
             </a>
           ))}
         </nav>
+        {menuOpen && (
+          <button
+            type="button"
+            aria-label="Close navigation menu"
+            onClick={() => setMenuOpen(false)}
+            className="fixed inset-0 z-[105] bg-black/50 md:hidden"
+          />
+        )}
       </header>
 
       <main>
         <section id="home" className="relative grid min-h-screen items-center gap-14 overflow-hidden px-[6%] pt-28 md:grid-cols-2 md:pt-0">
-          <div className="blob pointer-events-none absolute -right-40 -top-52 h-[560px] w-[560px] rounded-full bg-[radial-gradient(circle,rgba(139,123,255,0.10)_0%,transparent_70%)]" />
-          <div className="blob blob-delay pointer-events-none absolute -bottom-24 -left-24 h-[380px] w-[380px] rounded-full bg-[radial-gradient(circle,rgba(53,224,196,0.08)_0%,transparent_70%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(198,243,107,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(198,243,107,0.035)_1px,transparent_1px)] bg-[size:72px_72px] [mask-image:linear-gradient(to_bottom,black,transparent_82%)]" />
 
           <div className="relative z-10 order-2 text-center md:order-1 md:text-left">
             <div
@@ -683,7 +760,7 @@ export default function PortfolioPage() {
           </div>
         </div>
 
-        <section id="about" className="px-[6%] py-24 md:py-28">
+        <section id="about" className="scroll-mt-24 px-[6%] py-24 md:py-28">
           <div className="reveal mb-4 flex items-center gap-3 ff-mono text-[11px] uppercase tracking-[0.14em] text-[var(--accent2)]">
             About
             <span className="h-px w-10 bg-[var(--border)]" />
@@ -726,7 +803,7 @@ export default function PortfolioPage() {
           </div>
         </section>
 
-        <section id="experience" className="px-[6%] py-24 md:py-28">
+        <section id="experience" className="scroll-mt-24 px-[6%] py-24 md:py-28">
           <div className="reveal mb-4 flex items-center gap-3 ff-mono text-[11px] uppercase tracking-[0.14em] text-[var(--accent2)]">
             Experience
             <span className="h-px w-10 bg-[var(--border)]" />
@@ -735,34 +812,7 @@ export default function PortfolioPage() {
             Competitions and <em className="italic text-[var(--accent)]">training.</em>
           </h2>
 
-          <div className="relative flex flex-col gap-1">
-            <div className="absolute bottom-0 left-[7px] top-0 hidden w-px bg-[var(--border)] md:block" />
-            {EXPERIENCE.map((item, i) => (
-              <div
-                key={item.title}
-                className={`reveal relative flex flex-col gap-2 border-b border-[var(--border)] py-7 last:border-none md:pl-10 ${
-                  i % 2 === 0 ? "" : "reveal-d1"
-                }`}
-              >
-                <span className="absolute left-0 top-9 hidden h-3.5 w-3.5 rounded-full border-2 border-[var(--accent)] bg-[var(--bg)] md:block" />
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="rounded-full border border-[var(--border)] bg-[var(--surface2)] px-3 py-1 ff-mono text-[10px] uppercase tracking-wider text-[var(--accent2)]">
-                    {item.tag}
-                  </span>
-                  <span className="ff-mono text-xs tracking-wide text-[var(--muted)]">{item.period}</span>
-                </div>
-                <h3 className="ff-serif text-lg text-[var(--white)] md:text-xl">{item.title}</h3>
-                <ul className="flex flex-col gap-1.5 text-sm leading-relaxed text-[var(--muted)]">
-                  {item.points.map((point, idx) => (
-                    <li key={idx} className="flex gap-2">
-                      <span className="mt-2 h-1 w-1 flex-shrink-0 rounded-full bg-[var(--accent)]" />
-                      {point}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+          <ExperienceList />
         </section>
 
         <section className="px-[6%] pb-6">
@@ -788,7 +838,7 @@ export default function PortfolioPage() {
           </div>
         </section>
 
-        <section id="projects" className="px-[6%] py-24 md:py-28">
+        <section id="projects" className="scroll-mt-24 px-[6%] py-24 md:py-28">
           <div className="reveal mb-4 flex items-center gap-3 ff-mono text-[11px] uppercase tracking-[0.14em] text-[var(--accent2)]">
             Projects
             <span className="h-px w-10 bg-[var(--border)]" />
@@ -797,46 +847,10 @@ export default function PortfolioPage() {
             Things I&apos;ve <em className="italic text-[var(--accent)]">built.</em>
           </h2>
 
-          <div className="reveal reveal-d2 flex flex-col gap-px overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--border)]">
-            {PROJECTS.map((project) => (
-              <div
-                key={project.title}
-                className={`relative grid grid-cols-1 items-center gap-6 bg-[var(--surface)] p-8 transition-colors sm:grid-cols-[1fr_auto] ${
-                  project.comingSoon ? "opacity-60" : "hover:bg-[var(--surface2)]"
-                }`}
-              >
-                <div>
-                  <div className="mb-2 ff-mono text-[11px] tracking-wide text-[var(--muted)]">
-                    {project.index} / {project.category}
-                  </div>
-                  <div className="mb-2 ff-serif text-xl text-[var(--white)] md:text-2xl">{project.title}</div>
-                  <p className="mb-4 max-w-[480px] text-sm leading-relaxed text-[var(--muted)]">
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {project.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded border border-[var(--border)] bg-[var(--surface2)] px-2.5 py-1 ff-mono text-[11px] text-[var(--muted)]"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  {project.comingSoon && (
-                    <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface2)] px-3 py-1.5 ff-mono text-[11px] text-[var(--muted)]">
-                      <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
-                      Coming soon
-                    </div>
-                  )}
-                </div>
-                <div className="hidden text-xl text-[var(--border-hover)] sm:block">{"\u2192"}</div>
-              </div>
-            ))}
-          </div>
+          <ProjectList />
         </section>
 
-        <section id="skills" className="px-[6%] py-24 md:py-28">
+        <section id="skills" className="scroll-mt-24 px-[6%] py-24 md:py-28">
           <div className="reveal mb-4 flex items-center gap-3 ff-mono text-[11px] uppercase tracking-[0.14em] text-[var(--accent2)]">
             Skills
             <span className="h-px w-10 bg-[var(--border)]" />
@@ -866,7 +880,7 @@ export default function PortfolioPage() {
           </div>
         </section>
 
-        <section id="contact" className="px-[6%] pb-28 pt-8 md:pt-12">
+        <section id="contact" className="scroll-mt-24 px-[6%] pb-28 pt-8 md:pt-12">
           <div className="reveal mb-4 flex items-center gap-3 ff-mono text-[11px] uppercase tracking-[0.14em] text-[var(--accent2)]">
             Contact
             <span className="h-px w-10 bg-[var(--border)]" />
@@ -904,7 +918,7 @@ export default function PortfolioPage() {
             <a
               href={ASSETS.cv}
               download
-              className="inline-block rounded-md bg-[var(--accent)] px-8 py-[13px] text-[13px] font-medium tracking-wide text-[#06060a] transition-transform hover:brightness-95"
+              className="inline-block rounded-md bg-[var(--accent)] px-8 py-[13px] text-[13px] font-medium tracking-wide text-[#080d0c] transition-transform hover:brightness-95"
             >
               Download CV
             </a>
@@ -916,6 +930,131 @@ export default function PortfolioPage() {
         <p className="ff-mono text-xs tracking-wide text-[var(--muted)]">© 2026 Dhiyaa Fazila Nugraha</p>
         <p className="ff-mono text-xs tracking-wide text-[var(--muted)]">Built with care in Jakarta, Indonesia</p>
       </footer>
+    </div>
+  );
+}
+
+function ExperienceList() {
+  const filters: Array<"All" | ExperienceItem["tag"]> = [
+    "All",
+    "Award",
+    "Competition",
+    "Training",
+    "Training & Competition",
+  ];
+  const [activeFilter, setActiveFilter] = useState<(typeof filters)[number]>("All");
+  const visibleExperience =
+    activeFilter === "All" ? EXPERIENCE : EXPERIENCE.filter((item) => item.tag === activeFilter);
+
+  return (
+    <>
+      <div className="reveal mb-8 flex flex-wrap gap-2" role="group" aria-label="Filter experience by type">
+        {filters.map((filter) => (
+          <button
+            key={filter}
+            type="button"
+            aria-pressed={activeFilter === filter}
+            onClick={() => setActiveFilter(filter)}
+            className={`rounded-full border px-4 py-2 ff-mono text-[11px] transition-colors ${
+              activeFilter === filter
+                ? "border-[var(--accent)] bg-[var(--accent)] text-[#080d0c]"
+                : "border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] hover:border-[var(--border-hover)] hover:text-[var(--text)]"
+            }`}
+          >
+            {filter}
+          </button>
+        ))}
+      </div>
+      <div className="relative flex flex-col gap-1" aria-live="polite">
+        <div className="absolute bottom-0 left-[7px] top-0 hidden w-px bg-[var(--border)] md:block" />
+        {visibleExperience.map((item, index) => (
+          <article
+            key={item.title}
+            className={`relative flex flex-col gap-2 border-b border-[var(--border)] py-7 last:border-none md:pl-10 ${
+              index % 2 === 0 ? "" : "md:translate-x-2"
+            }`}
+          >
+            <span className="absolute left-0 top-9 hidden h-3.5 w-3.5 rounded-full border-2 border-[var(--accent)] bg-[var(--bg)] md:block" />
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="rounded-full border border-[var(--border)] bg-[var(--surface2)] px-3 py-1 ff-mono text-[10px] uppercase tracking-wider text-[var(--accent2)]">
+                {item.tag}
+              </span>
+              <span className="ff-mono text-xs tracking-wide text-[var(--muted)]">{item.period}</span>
+            </div>
+            <h3 className="ff-serif text-lg text-[var(--white)] md:text-xl">{item.title}</h3>
+            <ul className="flex flex-col gap-1.5 text-sm leading-relaxed text-[var(--muted)]">
+              {item.points.map((point) => (
+                <li key={point} className="flex gap-2">
+                  <span className="mt-2 h-1 w-1 flex-shrink-0 rounded-full bg-[var(--accent)]" />
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </>
+  );
+}
+
+function ProjectList() {
+  const [expandedProject, setExpandedProject] = useState<string | null>(null);
+
+  return (
+    <div className="reveal reveal-d2 flex flex-col gap-px overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--border)]">
+      {PROJECTS.map((project) => {
+        const isExpanded = expandedProject === project.index;
+        return (
+          <article key={project.title} className="bg-[var(--surface)] transition-colors hover:bg-[var(--surface2)]">
+            <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-[minmax(0,1fr)_180px] sm:p-8">
+              <div>
+                <div className="mb-2 ff-mono text-[11px] tracking-wide text-[var(--muted)]">
+                  {project.index} / {project.category}
+                </div>
+                <h3 className="mb-2 ff-serif text-xl text-[var(--white)] md:text-2xl">{project.title}</h3>
+                {project.comingSoon && (
+                  <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface2)] px-3 py-1.5 ff-mono text-[11px] text-[var(--muted)]">
+                    <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
+                    Coming soon
+                  </div>
+                )}
+                <button
+                  type="button"
+                  aria-expanded={isExpanded}
+                  aria-controls={`project-details-${project.index}`}
+                  onClick={() => setExpandedProject(isExpanded ? null : project.index)}
+                  className="flex items-center gap-2 ff-mono text-xs text-[var(--accent)] hover:text-[var(--white)]"
+                >
+                  {isExpanded ? "Hide details" : "Explore details"}
+                  <span aria-hidden="true" className={`transition-transform ${isExpanded ? "rotate-180" : ""}`}>
+                    ↓
+                  </span>
+                </button>
+              </div>
+              <div className="project-art flex min-h-32 items-center justify-center border border-[var(--border)] bg-[var(--surface2)] ff-mono text-4xl text-[var(--accent)]">
+                {project.index}
+              </div>
+            </div>
+            <div
+              id={`project-details-${project.index}`}
+              hidden={!isExpanded}
+              className="border-t border-[var(--border)] px-6 py-6 sm:px-8"
+            >
+              <p className="mb-4 max-w-[640px] text-sm leading-relaxed text-[var(--muted)]">{project.description}</p>
+              <div className="flex flex-wrap gap-2">
+                {project.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded border border-[var(--border)] bg-[var(--surface2)] px-2.5 py-1 ff-mono text-[11px] text-[var(--muted)]"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </article>
+        );
+      })}
     </div>
   );
 }

@@ -3,16 +3,6 @@
 import Link from "next/link";
 import { motion, Variants } from "framer-motion";
 
-type Menu = {
-  name: string;
-  path: string;
-};
-
-const feedbackMenu: Menu = {
-  name: "Feedback",
-  path: "/feedback",
-};
-
 const container: Variants = {
   hidden: { opacity: 0 },
   show: {
@@ -118,26 +108,6 @@ export default function Home() {
           </motion.div>
 
         </div>
-
-        {/* Feedback button */}
-        <motion.div variants={item}>
-          <Link
-            href={feedbackMenu.path}
-            className="group flex items-center justify-between w-full p-5 rounded-2xl bg-[#141518] border border-white/[0.06] hover:border-[#e8d5a3]/25 transition-all duration-200"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-[#1c1e22] border border-white/[0.07] flex items-center justify-center text-[#6b7280] text-sm flex-shrink-0">
-                ◎
-              </div>
-              <p className="text-sm font-medium text-[#6b7280] group-hover:text-[#e8e9eb] transition-colors duration-200">
-                {feedbackMenu.name}
-              </p>
-            </div>
-            <span className="text-[#6b7280] group-hover:text-[#e8d5a3] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200 text-base flex-shrink-0 ml-4">
-              ↗
-            </span>
-          </Link>
-        </motion.div>
 
         {/* Footer */}
         <motion.p
