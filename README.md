@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DPK
 
-## Getting Started
+Next.js application deployed to Cloudflare Workers with the OpenNext Cloudflare adapter.
 
-First, run the development server:
+## Local development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+To build and preview in the Cloudflare Workers runtime:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run preview
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deploy to Cloudflare
 
-## Learn More
+This app uses server rendering and an API route. Deploy it as a **Cloudflare Worker**, not a Cloudflare Pages project. Pages expects a static output directory such as `.vercel/output/static`; OpenNext instead generates `.open-next/worker.js` and `.open-next/assets`.
 
-To learn more about Next.js, take a look at the following resources:
+For a direct deployment from a configured Cloudflare account, run:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run deploy
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+For automatic deployments from GitHub, connect the repository through **Workers & Pages > Create application > Import a repository** (or connect the repository under an existing Worker at **Settings > Builds**). Configure:
 
-## Deploy on Vercel
+- Root directory: `/`
+- Production branch: `main`
+- Build command: `npx opennextjs-cloudflare build`
+- Deploy command: `npx wrangler deploy`
+- Worker name: `dashboard-next`, matching `name` in `wrangler.toml`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Do not set a Pages build output directory. Add application-specific runtime variables and secrets in the Worker settings before deploying.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See the [OpenNext Cloudflare guide](https://opennext.js.org/cloudflare/get-started) and [Cloudflare Workers Builds documentation](https://developers.cloudflare.com/workers/ci-cd/builds/) for details.

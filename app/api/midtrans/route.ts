@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-export const runtime = 'edge';
 // ─────────────────────────────────────────────
 // MIDTRANS SANDBOX CONFIG
 // https://dashboard.sandbox.midtrans.com → Settings → Access Keys
