@@ -172,6 +172,15 @@ function useRevealOnScroll() {
   useEffect(() => {
     const items = document.querySelectorAll<HTMLElement>(".reveal");
     const bars = document.querySelectorAll<HTMLElement>(".fill-bar");
+    const revealVisible = () => {
+      const viewportHeight = window.innerHeight;
+      [...items, ...bars].forEach((item) => {
+        const bounds = item.getBoundingClientRect();
+        if (bounds.top < viewportHeight && bounds.bottom > 0) {
+          item.classList.add("is-visible");
+        }
+      });
+    };
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -186,8 +195,15 @@ function useRevealOnScroll() {
 
     items.forEach((item) => observer.observe(item));
     bars.forEach((bar) => observer.observe(bar));
+    revealVisible();
+    window.addEventListener("scroll", revealVisible, { passive: true });
+    window.addEventListener("resize", revealVisible);
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", revealVisible);
+      window.removeEventListener("resize", revealVisible);
+    };
   }, []);
 }
 
