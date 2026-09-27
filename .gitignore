@@ -6,3 +6,7 @@ node_modules
 .env.production
 .env.example
 .vercel/
+.github/
+.codex/
+.cursor/
+
