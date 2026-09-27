@@ -646,38 +646,39 @@ export default function PortfolioPage() {
           {menuOpen ? "\u2715" : "\u2630"}
         </button>
 
-        <nav
-          id="mobile-navigation"
-          aria-label="Mobile"
-          inert={!menuOpen}
-          onKeyDown={(event) => {
-            if (event.key === "Escape") setMenuOpen(false);
-          }}
-          className={`fixed right-0 top-0 z-[110] flex h-full w-full flex-col gap-6 border-l border-[var(--border-hover)] bg-[#101816] px-8 pb-8 pt-24 shadow-2xl shadow-black/70 backdrop-blur-xl transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] sm:w-80 md:hidden ${
-            menuOpen ? "translate-x-0" : "translate-x-full"
-          }`}
-        >
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-              aria-current={activeSection === link.href.slice(1) ? "location" : undefined}
-              className="text-base text-[var(--text)] transition-colors hover:text-[var(--accent)]"
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
-        {menuOpen && (
-          <button
-            type="button"
-            aria-label="Close navigation menu"
-            onClick={() => setMenuOpen(false)}
-            className="fixed inset-0 z-[105] bg-black/50 md:hidden"
-          />
-        )}
       </header>
+
+      {menuOpen && (
+        <button
+          type="button"
+          aria-label="Close navigation menu"
+          onClick={() => setMenuOpen(false)}
+          className="fixed inset-0 z-[205] bg-black/55 md:hidden"
+        />
+      )}
+      <nav
+        id="mobile-navigation"
+        aria-label="Mobile"
+        inert={!menuOpen}
+        onClick={() => setMenuOpen(false)}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") setMenuOpen(false);
+        }}
+        className={`fixed right-0 top-0 z-[210] flex h-dvh w-[85vw] max-w-80 flex-col gap-6 border-l border-[var(--border-hover)] bg-[#101816] px-8 pb-8 pt-24 shadow-2xl shadow-black/70 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] md:hidden ${
+          menuOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {NAV_LINKS.map((link) => (
+          <a
+            key={link.href}
+            href={link.href}
+            aria-current={activeSection === link.href.slice(1) ? "location" : undefined}
+            className="text-base text-[var(--text)] transition-colors hover:text-[var(--accent)]"
+          >
+            {link.label}
+          </a>
+        ))}
+      </nav>
 
       <main>
         <section id="home" className="relative grid min-h-screen items-center gap-14 overflow-hidden px-[6%] pt-28 md:grid-cols-2 md:pt-0">
