@@ -177,22 +177,15 @@ const SIGNALS: Signal[] = [
   { name: "triangle", glyph: "▲" },
   { name: "diamond", glyph: "◆" },
   { name: "cross", glyph: "✚" },
-  { name: "hexagon", glyph: "⬡" },
-  { name: "flower", glyph: "✿" },
-  { name: "sun", glyph: "☼" },
-  { name: "ring", glyph: "◎" },
 ];
 
-function makeSignalBoard(target: Signal) {
-  const decoys = SIGNALS.filter((signal) => signal.name !== target.name);
-  const targetPosition = Math.floor(Math.random() * 9);
-
-  return Array.from({ length: 9 }, (_, index) =>
-    index === targetPosition
-      ? target
-      : decoys[Math.floor(Math.random() * decoys.length)]
-  );
-}
+const EXPLORE_MILESTONES = [
+  { id: "about", label: "About", signal: SIGNALS[0] },
+  { id: "experience", label: "Experience", signal: SIGNALS[1] },
+  { id: "projects", label: "Projects", signal: SIGNALS[2] },
+  { id: "skills", label: "Skills", signal: SIGNALS[3] },
+  { id: "contact", label: "Contact", signal: SIGNALS[4] },
+];
 
 function useRevealOnScroll() {
   useEffect(() => {
@@ -268,6 +261,36 @@ function useActiveSection() {
   }, []);
 
   return activeSection;
+}
+
+function usePortfolioJourneyProgress() {
+  const [visitedSections, setVisitedSections] = useState<string[]>([]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const newlyVisited = entries
+          .filter((entry) => entry.isIntersecting)
+          .map((entry) => entry.target.id);
+
+        if (newlyVisited.length > 0) {
+          setVisitedSections((current) =>
+            [...new Set([...current, ...newlyVisited])]
+          );
+        }
+      },
+      { rootMargin: "-15% 0px -60% 0px", threshold: 0 }
+    );
+
+    EXPLORE_MILESTONES.forEach(({ id }) => {
+      const section = document.getElementById(id);
+      if (section) observer.observe(section);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return visitedSections;
 }
 
 function useScrollProgress() {
@@ -402,6 +425,7 @@ export default function PortfolioPage() {
   useScrollProgress();
   const scrolled = useHeaderScrollState();
   const activeSection = useActiveSection();
+  const visitedSections = usePortfolioJourneyProgress();
   const { enabled: cursorEnabled, dotRef, ringRef } = useCursor();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -736,7 +760,7 @@ export default function PortfolioPage() {
       </nav>
 
       <main>
-        <section id="home" className="relative grid min-h-screen items-center gap-14 overflow-hidden px-[6%] pt-28 md:grid-cols-2 md:pt-0">
+        <section id="home" className="relative grid min-h-screen items-center gap-14 overflow-hidden px-[6%] pb-16 pt-28 md:grid-cols-2 md:pb-0 md:pt-0">
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(198,243,107,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(198,243,107,0.035)_1px,transparent_1px)] bg-[size:72px_72px] [mask-image:linear-gradient(to_bottom,black,transparent_82%)]" />
 
           <div className="relative z-10 order-2 text-center md:order-1 md:text-left">
@@ -802,7 +826,7 @@ export default function PortfolioPage() {
           </div>
         </section>
 
-        <div className="overflow-hidden border-y border-[var(--border)] bg-[var(--surface)] py-4">
+        <div className="mt-8 overflow-hidden border-y border-[var(--border)] bg-[var(--surface)] py-4 md:mt-0">
           <div className="marquee-track">
             {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
               <span
@@ -815,6 +839,39 @@ export default function PortfolioPage() {
             ))}
           </div>
         </div>
+
+        <section id="play" className="scroll-mt-24 px-[6%] pb-8 pt-14 md:py-20">
+          <div className="reveal relative overflow-hidden rounded-3xl border border-[var(--border)] bg-[radial-gradient(ellipse_at_top_right,rgba(198,243,107,0.12),transparent_48%),var(--surface)] p-6 sm:p-9 md:p-12">
+            <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full border border-[var(--border)] opacity-60" />
+            <div className="pointer-events-none absolute -right-4 -top-8 h-40 w-40 rounded-full border border-[var(--border)] opacity-60" />
+            <div className="relative grid gap-10 md:grid-cols-[1fr_320px] md:items-center">
+              <div>
+                <div className="mb-4 flex items-center gap-3 ff-mono text-[11px] uppercase tracking-[0.14em] text-[var(--accent2)]">
+                  The portfolio quest <span className="h-px w-10 bg-[var(--border)]" />
+                </div>
+                <h2 className="mb-4 ff-serif text-[clamp(28px,4vw,42px)] leading-tight text-[var(--white)]">
+                  Explore. Collect. <em className="italic text-[var(--accent)]">Complete.</em>
+                </h2>
+                <p className="max-w-lg text-sm leading-7 text-[var(--muted)]">
+                  Temukan satu sinyal di setiap bagian portofolio. Progres bertambah saat kamu
+                  menjelajahi About, Experience, Projects, Skills, dan Contact.
+                </p>
+                <a
+                  href={`#${EXPLORE_MILESTONES.find(({ id }) => !visitedSections.includes(id))?.id ?? "contact"}`}
+                  className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] px-4 py-3 ff-mono text-[11px] font-medium text-[#080d0c] transition hover:brightness-95"
+                >
+                  {visitedSections.length === 0
+                    ? "Mulai jelajah"
+                    : visitedSections.length === EXPLORE_MILESTONES.length
+                      ? "Lihat hadiah"
+                      : "Lanjut jelajah"}
+                  <span aria-hidden="true">↘</span>
+                </a>
+              </div>
+              <ExploreGame visitedSections={visitedSections} />
+            </div>
+          </div>
+        </section>
 
         <section id="about" className="scroll-mt-24 px-[6%] py-24 md:py-28">
           <div className="reveal mb-4 flex items-center gap-3 ff-mono text-[11px] uppercase tracking-[0.14em] text-[var(--accent2)]">
@@ -904,32 +961,6 @@ export default function PortfolioPage() {
           </h2>
 
           <ProjectList />
-        </section>
-
-        <section id="play" className="scroll-mt-24 px-[6%] py-16 md:py-20">
-          <div className="reveal relative overflow-hidden rounded-3xl border border-[var(--border)] bg-[radial-gradient(ellipse_at_top_right,rgba(198,243,107,0.12),transparent_48%),var(--surface)] p-6 sm:p-9 md:p-12">
-            <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full border border-[var(--border)] opacity-60" />
-            <div className="pointer-events-none absolute -right-4 -top-8 h-40 w-40 rounded-full border border-[var(--border)] opacity-60" />
-            <div className="relative grid gap-10 md:grid-cols-[1fr_280px] md:items-center">
-              <div>
-                <div className="mb-4 flex items-center gap-3 ff-mono text-[11px] uppercase tracking-[0.14em] text-[var(--accent2)]">
-                  A tiny challenge <span className="h-px w-10 bg-[var(--border)]" />
-                </div>
-                <h2 className="mb-4 ff-serif text-[clamp(28px,4vw,42px)] leading-tight text-[var(--white)]">
-                  Catch the <em className="italic text-[var(--accent)]">signal.</em>
-                </h2>
-                <p className="max-w-lg text-sm leading-7 text-[var(--muted)]">
-                  A quick 20-second focus break. Find the matching symbol in the grid as many
-                  times as you can. Works with a mouse, touch, or keyboard.
-                </p>
-                <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-black/15 px-3 py-2 ff-mono text-[11px] text-[var(--muted)]">
-                  <span aria-hidden="true" className="text-[var(--accent)]">↗</span>
-                  One target · nine signals · 20 seconds
-                </div>
-              </div>
-              <SignalGame />
-            </div>
-          </div>
         </section>
 
         <section id="skills" className="scroll-mt-24 px-[6%] py-24 md:py-28">
@@ -1079,152 +1110,69 @@ function ExperienceList() {
   );
 }
 
-function SignalGame() {
-  const [target, setTarget] = useState<Signal>(SIGNALS[0]);
-  const [board, setBoard] = useState<Signal[]>([]);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [untimed, setUntimed] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(20);
-  const [score, setScore] = useState(0);
-  const [misses, setMisses] = useState(0);
-  const [message, setMessage] = useState("Ready when you are.");
-
-  useEffect(() => {
-    if (!isPlaying || untimed) return;
-
-    const timer = window.setTimeout(() => {
-      if (timeLeft <= 1) {
-        setTimeLeft(0);
-        setIsPlaying(false);
-        setMessage("Time is up! Start another round whenever you’re ready.");
-      } else {
-        setTimeLeft(timeLeft - 1);
-      }
-    }, 1000);
-
-    return () => window.clearTimeout(timer);
-  }, [isPlaying, timeLeft, untimed]);
-
-  function startGame() {
-    const nextTarget = SIGNALS[Math.floor(Math.random() * SIGNALS.length)];
-    setTarget(nextTarget);
-    setBoard(makeSignalBoard(nextTarget));
-    setScore(0);
-    setMisses(0);
-    setTimeLeft(20);
-    setMessage(`Find the ${nextTarget.name} signal.`);
-    setIsPlaying(true);
-  }
-
-  function chooseSignal(signal: Signal) {
-    if (!isPlaying) return;
-    if (signal.name === target.name) {
-      setScore((current) => current + 1);
-      setMessage(`Correct! Find the ${target.name} again.`);
-      setBoard(makeSignalBoard(target));
-      return;
-    }
-    setMisses((current) => current + 1);
-    setMessage(`Not that one. Find the ${target.name} signal.`);
-  }
+function ExploreGame({ visitedSections }: { visitedSections: string[] }) {
+  const progress = visitedSections.length;
+  const complete = progress === EXPLORE_MILESTONES.length;
 
   return (
     <div className="relative rounded-2xl border border-[var(--border)] bg-[#080d0c]/75 p-5 shadow-2xl shadow-black/20 sm:p-6">
-      <div className="mb-5 flex items-center justify-between gap-4">
+      <div className="mb-4 flex items-end justify-between gap-3">
         <div>
           <p className="mb-1 ff-mono text-[10px] uppercase tracking-[0.14em] text-[var(--muted)]">
-            Find this signal
+            Sinyal terkumpul
           </p>
-          <div className="flex items-center gap-2" aria-label={`Target: ${target.name}`}>
-            <span aria-hidden="true" className="text-2xl leading-none text-[var(--accent)]">
-              {target.glyph}
-            </span>
-            <span className="ff-mono text-sm capitalize text-[var(--text)]">{target.name}</span>
-          </div>
-        </div>
-        <div className="text-right">
-          <p className="mb-1 ff-mono text-[10px] uppercase tracking-[0.14em] text-[var(--muted)]">
-            Time
-          </p>
-          <p
-            className="ff-mono text-xl tabular-nums text-[var(--white)]"
-            aria-label={untimed ? "No time limit" : `${timeLeft} seconds remaining`}
-          >
-            {untimed ? "∞" : timeLeft}
-            {!untimed && <span className="ml-1 text-xs text-[var(--muted)]">s</span>}
+          <p className="ff-serif text-2xl text-[var(--white)]">
+            {progress}<span className="text-[var(--muted)]"> / {EXPLORE_MILESTONES.length}</span>
           </p>
         </div>
+        <span className="ff-mono text-xs text-[var(--accent)]">{Math.round((progress / EXPLORE_MILESTONES.length) * 100)}%</span>
       </div>
-
-      {!untimed ? (
+      <div
+        className="mb-5 h-1.5 overflow-hidden rounded-full bg-white/10"
+        role="progressbar"
+        aria-label="Progres eksplorasi portofolio"
+        aria-valuemin={0}
+        aria-valuemax={EXPLORE_MILESTONES.length}
+        aria-valuenow={progress}
+      >
         <div
-          className="mb-5 h-1 overflow-hidden rounded-full bg-white/10"
-          role="progressbar"
-          aria-label="Time remaining"
-          aria-valuemin={0}
-          aria-valuemax={20}
-          aria-valuenow={timeLeft}
-        >
-          <div
-            className="h-full rounded-full bg-[var(--accent)] transition-[width] duration-500"
-            style={{ width: `${(timeLeft / 20) * 100}%` }}
-          />
-        </div>
-      ) : (
-        <div className="mb-5 h-1" aria-hidden="true" />
-      )}
-
-      <label className="mb-3 flex w-fit cursor-pointer items-center gap-2 ff-mono text-[10px] text-[var(--muted)]">
-        <input
-          type="checkbox"
-          checked={untimed}
-          onChange={(event) => setUntimed(event.target.checked)}
-          className="h-3.5 w-3.5 accent-[var(--accent)]"
+          className="h-full rounded-full bg-[var(--accent)] transition-[width] duration-500"
+          style={{ width: `${(progress / EXPLORE_MILESTONES.length) * 100}%` }}
         />
-        Untimed mode
-      </label>
-
-      <div className="grid grid-cols-3 gap-2.5" role="group" aria-label="Signal grid">
-        {Array.from({ length: 9 }, (_, index) => {
-          const signal = board[index];
+      </div>
+      <div className="grid grid-cols-5 gap-2" role="group" aria-label="Sinyal dari setiap bagian">
+        {EXPLORE_MILESTONES.map(({ id, signal }) => {
+          const collected = visitedSections.includes(id);
           return (
-            <button
-              key={index}
-              type="button"
-              disabled={!isPlaying}
-              onClick={() => signal && chooseSignal(signal)}
-              aria-label={
-                signal
-                  ? `${signal.name} signal${signal.name === target.name ? ", target" : ""}`
-                  : `Signal ${index + 1}`
-              }
-              className={`signal-cell flex aspect-square items-center justify-center rounded-xl border text-[clamp(19px,4vw,26px)] transition duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
-                !isPlaying
-                  ? "cursor-not-allowed border-[var(--border)] bg-white/[0.025] text-[var(--muted)]/35"
-                  : "border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] hover:-translate-y-0.5 hover:border-[var(--accent)] hover:bg-[var(--surface2)] hover:text-[var(--accent)] active:scale-95"
+            <div
+              key={id}
+              role="img"
+              className={`flex aspect-square items-center justify-center rounded-xl border text-xl transition-all duration-300 ${
+                collected
+                  ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
+                  : "border-[var(--border)] bg-white/[0.025] text-[var(--muted)]/40"
               }`}
+              aria-label={`${signal.name} signal ${collected ? "terkumpul" : "belum terkumpul"}`}
+              title={`${signal.name} signal`}
             >
-              <span aria-hidden="true">{signal?.glyph ?? "·"}</span>
-            </button>
+              {collected ? signal.glyph : "·"}
+            </div>
           );
         })}
       </div>
-
-      <div className="mt-5 flex items-end justify-between gap-3">
-        <div className="flex gap-5 ff-mono text-[10px] uppercase tracking-wide text-[var(--muted)]">
-          <p>Score <span className="ml-1 text-sm text-[var(--accent)]">{score}</span></p>
-          <p>Misses <span className="ml-1 text-sm text-[var(--text)]">{misses}</span></p>
-        </div>
-        <button
-          type="button"
-          onClick={startGame}
-          className="shrink-0 rounded-lg bg-[var(--accent)] px-4 py-2.5 ff-mono text-[11px] font-medium text-[#080d0c] transition hover:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]"
+      <p className="mt-4 min-h-10 ff-mono text-[10px] leading-relaxed text-[var(--muted)]" aria-live="polite">
+        {complete
+          ? "Quest selesai! Semua sinyal sudah kamu temukan. Terima kasih sudah menjelajahi portofolio ini."
+          : `Jelajahi ${EXPLORE_MILESTONES.find(({ id }) => !visitedSections.includes(id))?.label} untuk menemukan sinyal berikutnya.`}
+      </p>
+      {complete && (
+        <a
+          href="#contact"
+          className="mt-2 inline-flex items-center gap-2 rounded-lg border border-[var(--accent)] px-3 py-2 ff-mono text-[10px] text-[var(--accent)] transition hover:bg-[var(--accent)] hover:text-[#080d0c]"
         >
-          {isPlaying ? "Restart" : timeLeft === 0 ? "Play again" : "Start game"}
-        </button>
-      </div>
-      <p className="sr-only" role="status" aria-live="polite">{message}</p>
-      <p className="sr-only">Game status: {isPlaying ? "in progress" : "not in progress"}.</p>
+          Explorer badge unlocked <span aria-hidden="true">✦</span>
+        </a>
+      )}
     </div>
   );
 }
