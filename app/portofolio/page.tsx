@@ -29,6 +29,7 @@ const NAV_LINKS = [
   { href: "#about", label: "About" },
   { href: "#experience", label: "Experience" },
   { href: "#projects", label: "Projects" },
+  { href: "#play", label: "Play" },
   { href: "#skills", label: "Skills" },
   { href: "#contact", label: "Contact" },
 ];
@@ -167,6 +168,31 @@ const MARQUEE_ITEMS = [
   "UI/UX Design",
   "IoT Builder",
 ];
+
+type Signal = { name: string; glyph: string };
+
+const SIGNALS: Signal[] = [
+  { name: "star", glyph: "✦" },
+  { name: "circle", glyph: "●" },
+  { name: "triangle", glyph: "▲" },
+  { name: "diamond", glyph: "◆" },
+  { name: "cross", glyph: "✚" },
+  { name: "hexagon", glyph: "⬡" },
+  { name: "flower", glyph: "✿" },
+  { name: "sun", glyph: "☼" },
+  { name: "ring", glyph: "◎" },
+];
+
+function makeSignalBoard(target: Signal) {
+  const decoys = SIGNALS.filter((signal) => signal.name !== target.name);
+  const targetPosition = Math.floor(Math.random() * 9);
+
+  return Array.from({ length: 9 }, (_, index) =>
+    index === targetPosition
+      ? target
+      : decoys[Math.floor(Math.random() * decoys.length)]
+  );
+}
 
 function useRevealOnScroll() {
   useEffect(() => {
@@ -619,6 +645,19 @@ export default function PortfolioPage() {
             linear-gradient(90deg, rgba(198, 243, 107, 0.06) 1px, transparent 1px);
           background-size: 22px 22px;
         }
+
+        @keyframes signalEnter {
+          from { opacity: 0; transform: translateY(8px) scale(0.96); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .signal-cell {
+          animation: signalEnter 0.25s ease-out both;
+        }
+        .signal-cell:nth-child(2n) { animation-delay: 25ms; }
+        .signal-cell:nth-child(3n) { animation-delay: 50ms; }
+        @media (prefers-reduced-motion: reduce) {
+          .signal-cell { animation: none; }
+        }
       `}</style>
 
       <div className="grain" />
@@ -639,7 +678,7 @@ export default function PortfolioPage() {
           <span className="text-[var(--accent)]">Fazil</span>.dev
         </div>
 
-        <nav aria-label="Primary" className="hidden items-center gap-9 md:flex">
+        <nav aria-label="Primary" className="hidden items-center gap-5 lg:gap-8 md:flex">
           {NAV_LINKS.map((link) => (
             <a
               key={link.href}
@@ -867,6 +906,32 @@ export default function PortfolioPage() {
           <ProjectList />
         </section>
 
+        <section id="play" className="scroll-mt-24 px-[6%] py-16 md:py-20">
+          <div className="reveal relative overflow-hidden rounded-3xl border border-[var(--border)] bg-[radial-gradient(ellipse_at_top_right,rgba(198,243,107,0.12),transparent_48%),var(--surface)] p-6 sm:p-9 md:p-12">
+            <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full border border-[var(--border)] opacity-60" />
+            <div className="pointer-events-none absolute -right-4 -top-8 h-40 w-40 rounded-full border border-[var(--border)] opacity-60" />
+            <div className="relative grid gap-10 md:grid-cols-[1fr_280px] md:items-center">
+              <div>
+                <div className="mb-4 flex items-center gap-3 ff-mono text-[11px] uppercase tracking-[0.14em] text-[var(--accent2)]">
+                  A tiny challenge <span className="h-px w-10 bg-[var(--border)]" />
+                </div>
+                <h2 className="mb-4 ff-serif text-[clamp(28px,4vw,42px)] leading-tight text-[var(--white)]">
+                  Catch the <em className="italic text-[var(--accent)]">signal.</em>
+                </h2>
+                <p className="max-w-lg text-sm leading-7 text-[var(--muted)]">
+                  A quick 20-second focus break. Find the matching symbol in the grid as many
+                  times as you can. Works with a mouse, touch, or keyboard.
+                </p>
+                <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-black/15 px-3 py-2 ff-mono text-[11px] text-[var(--muted)]">
+                  <span aria-hidden="true" className="text-[var(--accent)]">↗</span>
+                  One target · nine signals · 20 seconds
+                </div>
+              </div>
+              <SignalGame />
+            </div>
+          </div>
+        </section>
+
         <section id="skills" className="scroll-mt-24 px-[6%] py-24 md:py-28">
           <div className="reveal mb-4 flex items-center gap-3 ff-mono text-[11px] uppercase tracking-[0.14em] text-[var(--accent2)]">
             Skills
@@ -1011,6 +1076,156 @@ function ExperienceList() {
         ))}
       </div>
     </>
+  );
+}
+
+function SignalGame() {
+  const [target, setTarget] = useState<Signal>(SIGNALS[0]);
+  const [board, setBoard] = useState<Signal[]>([]);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [untimed, setUntimed] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(20);
+  const [score, setScore] = useState(0);
+  const [misses, setMisses] = useState(0);
+  const [message, setMessage] = useState("Ready when you are.");
+
+  useEffect(() => {
+    if (!isPlaying || untimed) return;
+
+    const timer = window.setTimeout(() => {
+      if (timeLeft <= 1) {
+        setTimeLeft(0);
+        setIsPlaying(false);
+        setMessage("Time is up! Start another round whenever you’re ready.");
+      } else {
+        setTimeLeft(timeLeft - 1);
+      }
+    }, 1000);
+
+    return () => window.clearTimeout(timer);
+  }, [isPlaying, timeLeft, untimed]);
+
+  function startGame() {
+    const nextTarget = SIGNALS[Math.floor(Math.random() * SIGNALS.length)];
+    setTarget(nextTarget);
+    setBoard(makeSignalBoard(nextTarget));
+    setScore(0);
+    setMisses(0);
+    setTimeLeft(20);
+    setMessage(`Find the ${nextTarget.name} signal.`);
+    setIsPlaying(true);
+  }
+
+  function chooseSignal(signal: Signal) {
+    if (!isPlaying) return;
+    if (signal.name === target.name) {
+      setScore((current) => current + 1);
+      setMessage(`Correct! Find the ${target.name} again.`);
+      setBoard(makeSignalBoard(target));
+      return;
+    }
+    setMisses((current) => current + 1);
+    setMessage(`Not that one. Find the ${target.name} signal.`);
+  }
+
+  return (
+    <div className="relative rounded-2xl border border-[var(--border)] bg-[#080d0c]/75 p-5 shadow-2xl shadow-black/20 sm:p-6">
+      <div className="mb-5 flex items-center justify-between gap-4">
+        <div>
+          <p className="mb-1 ff-mono text-[10px] uppercase tracking-[0.14em] text-[var(--muted)]">
+            Find this signal
+          </p>
+          <div className="flex items-center gap-2" aria-label={`Target: ${target.name}`}>
+            <span aria-hidden="true" className="text-2xl leading-none text-[var(--accent)]">
+              {target.glyph}
+            </span>
+            <span className="ff-mono text-sm capitalize text-[var(--text)]">{target.name}</span>
+          </div>
+        </div>
+        <div className="text-right">
+          <p className="mb-1 ff-mono text-[10px] uppercase tracking-[0.14em] text-[var(--muted)]">
+            Time
+          </p>
+          <p
+            className="ff-mono text-xl tabular-nums text-[var(--white)]"
+            aria-label={untimed ? "No time limit" : `${timeLeft} seconds remaining`}
+          >
+            {untimed ? "∞" : timeLeft}
+            {!untimed && <span className="ml-1 text-xs text-[var(--muted)]">s</span>}
+          </p>
+        </div>
+      </div>
+
+      {!untimed ? (
+        <div
+          className="mb-5 h-1 overflow-hidden rounded-full bg-white/10"
+          role="progressbar"
+          aria-label="Time remaining"
+          aria-valuemin={0}
+          aria-valuemax={20}
+          aria-valuenow={timeLeft}
+        >
+          <div
+            className="h-full rounded-full bg-[var(--accent)] transition-[width] duration-500"
+            style={{ width: `${(timeLeft / 20) * 100}%` }}
+          />
+        </div>
+      ) : (
+        <div className="mb-5 h-1" aria-hidden="true" />
+      )}
+
+      <label className="mb-3 flex w-fit cursor-pointer items-center gap-2 ff-mono text-[10px] text-[var(--muted)]">
+        <input
+          type="checkbox"
+          checked={untimed}
+          onChange={(event) => setUntimed(event.target.checked)}
+          className="h-3.5 w-3.5 accent-[var(--accent)]"
+        />
+        Untimed mode
+      </label>
+
+      <div className="grid grid-cols-3 gap-2.5" role="group" aria-label="Signal grid">
+        {Array.from({ length: 9 }, (_, index) => {
+          const signal = board[index];
+          return (
+            <button
+              key={index}
+              type="button"
+              disabled={!isPlaying}
+              onClick={() => signal && chooseSignal(signal)}
+              aria-label={
+                signal
+                  ? `${signal.name} signal${signal.name === target.name ? ", target" : ""}`
+                  : `Signal ${index + 1}`
+              }
+              className={`signal-cell flex aspect-square items-center justify-center rounded-xl border text-[clamp(19px,4vw,26px)] transition duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
+                !isPlaying
+                  ? "cursor-not-allowed border-[var(--border)] bg-white/[0.025] text-[var(--muted)]/35"
+                  : "border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] hover:-translate-y-0.5 hover:border-[var(--accent)] hover:bg-[var(--surface2)] hover:text-[var(--accent)] active:scale-95"
+              }`}
+            >
+              <span aria-hidden="true">{signal?.glyph ?? "·"}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-5 flex items-end justify-between gap-3">
+        <div className="flex gap-5 ff-mono text-[10px] uppercase tracking-wide text-[var(--muted)]">
+          <p>Score <span className="ml-1 text-sm text-[var(--accent)]">{score}</span></p>
+          <p>Misses <span className="ml-1 text-sm text-[var(--text)]">{misses}</span></p>
+        </div>
+        <button
+          type="button"
+          onClick={startGame}
+          className="shrink-0 rounded-lg bg-[var(--accent)] px-4 py-2.5 ff-mono text-[11px] font-medium text-[#080d0c] transition hover:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]"
+        >
+          {isPlaying ? "Restart" : timeLeft === 0 ? "Play again" : "Start game"}
+        </button>
+      </div>
+      <p className="sr-only" role="status" aria-live="polite">{message}</p>
+      <p className="sr-only">Game status: {isPlaying ? "in progress" : "not in progress"}.</p>
+    </div>
   );
 }
 
