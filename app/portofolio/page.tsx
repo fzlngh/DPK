@@ -26,11 +26,11 @@ const ASSETS = {
 
 const NAV_LINKS = [
   { href: "#home", label: "Home" },
+  { href: "#skills", label: "Skills" },
   { href: "#about", label: "About" },
   { href: "#experience", label: "Experience" },
   { href: "#projects", label: "Projects" },
   { href: "#play", label: "Play" },
-  { href: "#skills", label: "Skills" },
   { href: "#contact", label: "Contact" },
 ];
 
@@ -120,39 +120,43 @@ type Project = {
   category: string;
   title: string;
   description: string;
-  tags: string[];
   image: string;
-  comingSoon: boolean;
+  tags: string[];
+  links: { label: string; href: string }[];
 };
 
 const PROJECTS: Project[] = [
   {
     index: "01",
-    category: "Terminal Application",
-    title: "Cashier System",
-    description:
-      "A modular POS application built in Python with an interactive terminal UI, structured architecture, and clean business logic for managing transactions.",
-    tags: ["Python", "CLI", "Modular Architecture"],
-    image: "/portofolio/projects/cashier-system.jpg",
-    comingSoon: true,
+    category: "Project",
+    title: "Atlet Guardian",
+    description: "An IoT based PWA that serves as the companion software for an advanced fitness band. It features an integrated AI model that acts as a virtual coach, assisting users with personalized workouts tailored to their specific needs.",
+    image: "/portofolio/projects/athlet-guardian.jpg",
+    tags: ["Frontend", "Backend", "IoT", "Fullstack", "Engineering"],
+    links: [{ label: "GitHub", href: "https://github.com/Vkzapple/Atlet-Guardian" }],
   },
   {
     index: "02",
-    category: "Web Development",
-    title: "Portfolio Website",
+    category: "IoT & Web Development",
+    title: "LUMINA",
     description:
-      "This portfolio itself, built with Next.js and crafted for performance, smooth motion, and responsive design across desktop and mobile.",
-    tags: ["Next.js", "TypeScript", "CSS"],
-    image: "/portofolio/projects/portfolio-site.jpg",
-    comingSoon: true,
+      "A face-recognition-based food and beverage lunch management system, built for the ITechnoCup competition.",
+    image: "/portofolio/projects/lumina.jpg",
+    tags: ["IoT", "Face Recognition", "Web Development"],
+    links: [{ label: "GitHub", href: "https://github.com/fzlngh/Lumina" }],
   },
-];
-
-const SKILL_GROUPS: { title: string; items: string[] }[] = [
-  { title: "Hard Skills", items: ["Fullstack Developer", "Collaborative Robotic Operation", "Cloud Engineer"] },
-  { title: "Software", items: ["VS Code", "Jupyter", "Schneider EcoStructure", "Google Apps Script"] },
-  { title: "Languages", items: ["Indonesian", "English", "Japanese"] },
-  { title: "Soft Skills", items: ["Teaching", "Leadership"] },
+  {
+    index: "03",
+    category: "Full-Stack Development",
+    title: "TEMANAI",
+    description: "A progressive web app (PWA) chatbot that you can install directly on your phone. The backend is powered by Go and the go-chi framework. The AI helps with simple tasks and runs on three separate engines that act as fallbacks for one another if one goes down.",
+    image: "/portofolio/projects/temanai.jpg",
+    tags: ["Frontend", "Backend", "Go", "React", "PWA", "AI"],
+    links: [
+      { label: "Frontend", href: "https://github.com/fzlngh/frontend-temanAI" },
+      { label: "Backend", href: "https://github.com/fzlngh/backend-temanAI" },
+    ],
+  },
 ];
 
 const CONTACT_LINKS = [
@@ -167,6 +171,8 @@ const MARQUEE_ITEMS = [
   "Collaborative Robotic Operator",
   "UI/UX Design",
   "IoT Builder",
+  "5 Competition Placements",
+  "SMK Negeri 1 Jakarta · SIJA",
 ];
 
 type Signal = { name: string; glyph: string };
@@ -395,17 +401,17 @@ function useMagnetic() {
   return ref;
 }
 
-function InitialsAvatar() {
+function InitialsAvatar({ shape = "circle" }: { shape?: "circle" | "portrait" }) {
   return (
-    <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--accent2)] ff-serif text-4xl text-black">
+    <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br from-[var(--accent)] to-[var(--accent2)] ff-serif text-4xl text-white ${shape === "portrait" ? "rounded-[28px]" : "rounded-full"}`}>
       DFN
     </div>
   );
 }
 
-function Photo() {
+function Photo({ shape = "circle" }: { shape?: "circle" | "portrait" }) {
   const [failed, setFailed] = useState(false);
-  if (failed) return <InitialsAvatar />;
+  if (failed) return <InitialsAvatar shape={shape} />;
   return (
     <Image
       src={ASSETS.photo}
@@ -415,7 +421,7 @@ function Photo() {
       sizes="(max-width: 768px) 190px, 300px"
       priority
       onError={() => setFailed(true)}
-      className="h-full w-full rounded-full object-cover object-top grayscale-[20%] transition-[filter] duration-300 hover:grayscale-0"
+      className={`h-full w-full object-cover object-top grayscale-[10%] transition-[filter] duration-300 hover:grayscale-0 ${shape === "portrait" ? "rounded-[28px]" : "rounded-full"}`}
     />
   );
 }
@@ -434,21 +440,21 @@ export default function PortfolioPage() {
 
   return (
     <div
-      className={`${dmSans.variable} ${dmSerif.variable} ${dmMono.variable} relative min-h-screen overflow-x-hidden bg-[var(--bg)] text-[var(--text)]`}
+      className={`portfolio ${dmSans.variable} ${dmSerif.variable} ${dmMono.variable} relative min-h-screen overflow-x-hidden bg-[var(--bg)] text-[var(--text)]`}
     >
       <style>{`
         :root {
-          color-scheme: dark;
-          --bg: #080d0c;
-          --surface: #101816;
-          --surface2: #17231f;
-          --border: rgba(220, 242, 229, 0.11);
-          --border-hover: rgba(220, 242, 229, 0.24);
-          --text: #e3eee8;
-          --muted: #91a39a;
-          --accent: #c6f36b;
-          --accent2: #ff856e;
-          --white: #f5f8f2;
+          color-scheme: light;
+          --bg: #f7fbff;
+          --surface: #ffffff;
+          --surface2: #edf7ff;
+          --border: rgba(23, 50, 77, 0.12);
+          --border-hover: rgba(23, 50, 77, 0.25);
+          --text: #17324d;
+          --muted: #526b82;
+          --accent: #087da8;
+          --accent2: #176d9a;
+          --white: #102b46;
         }
 
         html {
@@ -715,6 +721,13 @@ export default function PortfolioPage() {
           ))}
         </nav>
 
+        <a
+          href="#contact"
+          className="header-cta hidden items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold transition-colors md:inline-flex"
+        >
+          Let&apos;s talk <span aria-hidden="true" className="ml-2">↗</span>
+        </a>
+
         <button
           aria-label="Toggle menu"
           aria-expanded={menuOpen}
@@ -760,67 +773,83 @@ export default function PortfolioPage() {
       </nav>
 
       <main>
-        <section id="home" className="relative grid min-h-screen items-center gap-14 overflow-hidden px-[6%] pb-16 pt-28 md:grid-cols-2 md:pb-0 md:pt-0">
+        <section id="home" className="portfolio-hero relative grid min-h-screen items-center gap-14 overflow-hidden px-[6%] pb-16 pt-28 md:grid-cols-2 md:pb-0 md:pt-0">
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(198,243,107,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(198,243,107,0.035)_1px,transparent_1px)] bg-[size:72px_72px] [mask-image:linear-gradient(to_bottom,black,transparent_82%)]" />
 
-          <div className="relative z-10 order-2 text-center md:order-1 md:text-left">
+          <div className="hero-copy relative z-10 order-1 text-center md:text-left">
             <div
               className="hero-item mb-6 inline-flex items-center gap-2 ff-mono text-xs uppercase tracking-[0.18em] text-[var(--accent2)]"
               style={{ animationDelay: "0.15s" }}
             >
               <span className="h-px w-6 bg-[var(--accent2)]" />
-              Available for opportunities
+              Student builder
             </div>
 
             <h1
-              className="hero-item mb-6 ff-serif text-[clamp(42px,7vw,72px)] font-normal leading-[1.05] text-[var(--white)]"
+              className="hero-item mb-6 ff-serif text-[clamp(48px,7.6vw,88px)] font-normal leading-[0.98] text-[var(--white)]"
               style={{ animationDelay: "0.28s" }}
             >
-              Hi, I&apos;m
+              I build ideas
               <br />
-              <em className="italic text-[var(--accent)]">Fazil.</em>
+              into <em className="italic text-[var(--accent)]">real things.</em>
             </h1>
 
             <p
-              className="hero-item mx-auto mb-10 max-w-[440px] text-[15px] leading-[1.8] text-[var(--muted)] md:mx-0"
+              className="hero-item mx-auto mb-8 max-w-[500px] text-[15px] leading-[1.8] text-[var(--muted)] md:mx-0"
               style={{ animationDelay: "0.4s" }}
             >
-              A vocational student at SMK Negeri 1 Jakarta, majoring in Information Systems,
-              Networking, and Applications. I build fullstack software, operate collaborative
-              robots, and design cloud infrastructure that solves real problems.
+              I&apos;m Dhiyaa Fazila Nugraha (Fazil), a SIJA student at SMK Negeri 1 Jakarta. I
+              create fullstack software, work with collaborative robots, and explore cloud and
+              IoT systems through hands-on projects.
             </p>
 
             <div
-              className="hero-item flex flex-wrap justify-center gap-4 md:justify-start"
+              className="hero-item flex flex-wrap justify-center gap-3 md:justify-start"
               style={{ animationDelay: "0.52s" }}
             >
               <a
                 ref={primaryCtaRef as React.RefObject<HTMLAnchorElement>}
                 href="#experience"
-                className="inline-block rounded-md bg-[var(--accent)] px-8 py-[13px] text-[13px] font-medium tracking-wide text-[#06060a] transition-transform will-change-transform hover:brightness-95"
+                className="hero-primary inline-block rounded-full bg-[var(--accent)] px-7 py-[14px] text-[13px] font-medium tracking-wide text-white transition-transform will-change-transform hover:brightness-95"
               >
-                View Experience
+                Explore my work <span aria-hidden="true" className="ml-2">↘</span>
               </a>
               <a
                 ref={ghostCtaRef as React.RefObject<HTMLAnchorElement>}
                 href="#contact"
-                className="inline-block rounded-md border border-[var(--border)] px-8 py-[13px] text-[13px] font-medium tracking-wide text-[var(--text)] transition-transform will-change-transform hover:border-[var(--border-hover)]"
+                className="hero-secondary inline-block rounded-full border border-[var(--border)] px-7 py-[14px] text-[13px] font-medium tracking-wide text-[var(--text)] transition-transform will-change-transform hover:border-[var(--border-hover)]"
               >
-                Get in Touch
+                Get in touch
               </a>
+            </div>
+            <div className="hero-proof hero-item mt-9 flex flex-wrap items-center justify-center gap-x-5 gap-y-3 text-left md:justify-start" style={{ animationDelay: "0.64s" }}>
+              <div className="flex items-center gap-2">
+                <span aria-hidden="true" className="proof-stars">✦</span>
+                <span className="text-xs font-semibold">Award-winning projects</span>
+              </div>
+              <span className="proof-divider hidden h-5 w-px sm:block" aria-hidden="true" />
+              <span className="text-xs">5 competition placements</span>
             </div>
           </div>
 
-          <div className="hero-item relative z-10 order-1 flex justify-center md:order-2" style={{ animationDelay: "0.35s" }}>
-            <div className="relative h-[190px] w-[190px] md:h-[300px] md:w-[300px]">
-              <div className="ring-spin absolute -inset-px rounded-full bg-[conic-gradient(from_0deg,var(--accent)_0%,transparent_40%,var(--accent2)_60%,transparent_80%,var(--accent)_100%)]" />
-              <div className="absolute inset-[3px] rounded-full bg-[var(--bg)]" />
-              <div className="absolute inset-[7px] overflow-hidden rounded-full">
+          <div className="hero-visual hero-item relative z-10 order-2 flex justify-center md:justify-end" style={{ animationDelay: "0.35s" }}>
+            <div className="hero-portrait relative h-[290px] w-[260px] sm:h-[350px] sm:w-[320px] md:mr-[5%] md:h-[440px] md:w-[390px]">
+              <div className="hero-halo absolute -inset-12 rounded-full" aria-hidden="true" />
+              <div className="portrait-frame absolute inset-0 overflow-hidden rounded-[46%_46%_28px_28px]">
                 <Photo />
               </div>
-              <div className="absolute bottom-3 right-0 z-10 flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface2)]/80 px-3 py-2 ff-mono text-[11px] text-[var(--muted)] backdrop-blur-md">
-                <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                Open to work
+              <div className="hero-award absolute -left-6 top-[19%] z-10 rounded-2xl border px-4 py-3 shadow-xl sm:-left-12">
+                <span className="block ff-mono text-[10px] uppercase tracking-wider">Recent highlight</span>
+                <strong className="mt-1 block text-sm">1st place · Creative Robotics</strong>
+                <span className="mt-1 block text-xs">GliterJak DKI Jakarta, 2026</span>
+              </div>
+              <div className="hero-school absolute -bottom-4 right-0 z-10 rounded-2xl border px-4 py-3 shadow-xl sm:-right-5">
+                <span className="block ff-mono text-[10px] uppercase tracking-wider">Currently studying</span>
+                <strong className="mt-1 block text-sm">SIJA · SMK Negeri 1 Jakarta</strong>
+              </div>
+              <div className="hero-availability absolute right-3 top-5 z-10 flex items-center gap-2 rounded-full border px-3 py-2 ff-mono text-[10px]">
+                <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                Open to opportunities
               </div>
             </div>
           </div>
@@ -840,78 +869,80 @@ export default function PortfolioPage() {
           </div>
         </div>
 
-        <section id="play" className="scroll-mt-24 px-[6%] pb-8 pt-14 md:py-20">
-          <div className="reveal relative overflow-hidden rounded-3xl border border-[var(--border)] bg-[radial-gradient(ellipse_at_top_right,rgba(198,243,107,0.12),transparent_48%),var(--surface)] p-6 sm:p-9 md:p-12">
-            <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full border border-[var(--border)] opacity-60" />
-            <div className="pointer-events-none absolute -right-4 -top-8 h-40 w-40 rounded-full border border-[var(--border)] opacity-60" />
-            <div className="relative grid gap-10 md:grid-cols-[1fr_320px] md:items-center">
-              <div>
-                <div className="mb-4 flex items-center gap-3 ff-mono text-[11px] uppercase tracking-[0.14em] text-[var(--accent2)]">
-                  The portfolio quest <span className="h-px w-10 bg-[var(--border)]" />
-                </div>
-                <h2 className="mb-4 ff-serif text-[clamp(28px,4vw,42px)] leading-tight text-[var(--white)]">
-                  Explore. Collect. <em className="italic text-[var(--accent)]">Complete.</em>
-                </h2>
-                <p className="max-w-lg text-sm leading-7 text-[var(--muted)]">
-                  Temukan satu sinyal di setiap bagian portofolio. Progres bertambah saat kamu
-                  menjelajahi About, Experience, Projects, Skills, dan Contact.
-                </p>
-                <a
-                  href={`#${EXPLORE_MILESTONES.find(({ id }) => !visitedSections.includes(id))?.id ?? "contact"}`}
-                  className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] px-4 py-3 ff-mono text-[11px] font-medium text-[#080d0c] transition hover:brightness-95"
-                >
-                  {visitedSections.length === 0
-                    ? "Mulai jelajah"
-                    : visitedSections.length === EXPLORE_MILESTONES.length
-                      ? "Lihat hadiah"
-                      : "Lanjut jelajah"}
-                  <span aria-hidden="true">↘</span>
-                </a>
-              </div>
-              <ExploreGame visitedSections={visitedSections} />
+        <section id="skills" className="skills-showcase scroll-mt-24 px-[6%] py-20 md:py-28">
+          <div className="mx-auto max-w-6xl">
+            <div className="reveal mb-4 text-center ff-mono text-[11px] uppercase tracking-[0.16em] text-[var(--accent2)]">
+              What I can do <span className="mx-2" aria-hidden="true">/</span> what I bring
+            </div>
+            <h2 className="reveal reveal-d1 mx-auto mb-12 max-w-3xl text-center ff-serif text-[clamp(30px,4.5vw,48px)] leading-tight text-[var(--white)]">
+              Curious by nature. <em className="italic text-[var(--accent)]">Practical by design.</em>
+            </h2>
+
+            <div className="skills-grid grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                { title: "Fullstack development", detail: "From modular Python applications to responsive web experiences.", tags: ["Fullstack Developer", "Python", "Google Apps Script"] },
+                { title: "Cloud computing", detail: "Built and competed with a serverless hospital administration platform on AWS.", tags: ["Cloud Engineer", "AWS", "Infrastructure"] },
+                { title: "Collaborative robotics", detail: "Trained in collaborative robot operation, programming, and system integration.", tags: ["Robotic Operation", "Programming", "Schneider EcoStructure"] },
+                { title: "IoT & hardware", detail: "Connected software and hardware in projects for monitoring and everyday use.", tags: ["IoT", "Wiring", "VS Code", "Jupyter"] },
+                { title: "UI/UX design", detail: "Designed digital product concepts for community services and school workflows.", tags: ["WargaKlik", "LUMINA", "UI/UX"] },
+                { title: "Research & teamwork", detail: "Combined scientific research with teaching, leadership, and collaborative project work.", tags: ["PHscope", "Teaching", "Leadership", "Indonesian · English · Japanese"] },
+              ].map((card, index) => (
+                <article key={card.title} className={`skill-card reveal ${index % 3 === 1 ? "reveal-d1" : index % 3 === 2 ? "reveal-d2" : ""}`}>
+                  <span className="skill-number ff-mono" aria-hidden="true">0{index + 1}</span>
+                  <h3 className="mt-5 ff-serif text-xl text-[var(--white)]">{card.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{card.detail}</p>
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {card.tags.map((tag) => <span key={tag} className="skill-tag rounded-full px-3 py-1.5 text-[11px]">{tag}</span>)}
+                  </div>
+                </article>
+              ))}
             </div>
           </div>
         </section>
 
-        <section id="about" className="scroll-mt-24 px-[6%] py-24 md:py-28">
-          <div className="reveal mb-4 flex items-center gap-3 ff-mono text-[11px] uppercase tracking-[0.14em] text-[var(--accent2)]">
-            About
-            <span className="h-px w-10 bg-[var(--border)]" />
-          </div>
-          <h2 className="reveal reveal-d1 mb-14 ff-serif text-[clamp(28px,4vw,44px)] leading-tight text-[var(--white)]">
-            Building with <em className="italic text-[var(--accent)]">intention.</em>
-          </h2>
-
-          <div className="grid gap-16 md:grid-cols-[1fr_1.4fr]">
-            <div className="reveal reveal-d1 flex flex-col">
-              {ABOUT_STATS.map((stat) => (
-                <div
-                  key={stat.label}
-                  className="flex items-baseline justify-between gap-4 border-b border-[var(--border)] py-6 first:pt-0"
-                >
-                  <span className="flex-shrink-0 ff-mono text-xs tracking-wide text-[var(--muted)]">{stat.label}</span>
-                  <span className="text-right text-sm text-[var(--text)]">{stat.value}</span>
-                </div>
-              ))}
+        <section id="about" className="profile-band scroll-mt-24 px-[6%] py-16 md:py-20">
+          <div className="profile-band__inner mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-[0.82fr_1.18fr] md:gap-16">
+            <div className="profile-photo-wrap reveal relative mx-auto w-full max-w-[360px]">
+              <div className="profile-photo overflow-hidden rounded-[28px]">
+                <Photo shape="portrait" />
+              </div>
+              <div className="profile-photo-caption absolute -bottom-4 -right-3 rounded-2xl px-4 py-3 shadow-lg sm:-right-5">
+                <strong className="block text-sm">Dhiyaa Fazila Nugraha</strong>
+                <span className="mt-1 block text-xs">Student builder · SIJA</span>
+              </div>
             </div>
-
-            <div className="reveal reveal-d2 flex flex-col gap-5 text-[15px] leading-[1.9] text-[var(--muted)]">
-              <p>
-                I&apos;m <span className="font-medium text-[var(--text)]">Dhiyaa Fazila Nugraha</span>, a student
-                specializing in network systems, information technology, and application development.
-                My program, SIJA, gives me a structured foundation in both theoretical knowledge and
-                hands on engineering.
-              </p>
-              <p>
-                I have a strong drive toward{" "}
-                <span className="font-medium text-[var(--text)]">software engineering and robotics</span>, with
-                hands on experience as a fullstack developer and a collaborative robotic operator. I&apos;ve
-                also competed across UI/UX design, IoT, cloud computing, and scientific writing.
-              </p>
-              <p>
-                My long term goal is to work at a global level, collaborating across cultures and
-                contributing to technology that genuinely makes a difference.
-              </p>
+            <div className="reveal reveal-d1">
+              <div className="profile-eyebrow mb-4 flex items-center gap-3 ff-mono text-[11px] uppercase tracking-[0.14em]">
+                A little about me <span className="h-px w-10" />
+              </div>
+              <h2 className="mb-6 ff-serif text-[clamp(32px,4.5vw,52px)] leading-tight">
+                Learning by <em className="italic">making.</em>
+              </h2>
+              <div className="profile-copy flex flex-col gap-4 text-[15px] leading-[1.8]">
+                <p>
+                  I&apos;m a student in Information Systems, Networking, and Applications (SIJA) at
+                  SMK Negeri 1 Jakarta, building a foundation across networks, software, and
+                  hands-on engineering.
+                </p>
+                <p>
+                  I enjoy working where software meets the physical world—from fullstack tools and
+                  cloud platforms to IoT projects and collaborative robots. I&apos;ve also explored
+                  UI/UX design and scientific research through student competitions.
+                </p>
+              </div>
+              <ul className="profile-highlights mt-7 grid gap-3 sm:grid-cols-2">
+                <li><span aria-hidden="true">✦</span> First place in creative robotics</li>
+                <li><span aria-hidden="true">✦</span> Third place in cloud computing</li>
+                <li><span aria-hidden="true">✦</span> SIJA four-year program</li>
+                <li><span aria-hidden="true">✦</span> Based in Depok, Indonesia</li>
+              </ul>
+              <div className="profile-facts mt-8 flex flex-wrap gap-2">
+                {ABOUT_STATS.filter((stat) => ["Major", "Focus", "Status"].includes(stat.label)).map((stat) => (
+                  <span key={stat.label} className="rounded-full border px-3 py-2 text-xs">
+                    <strong>{stat.label}:</strong> {stat.value}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -963,78 +994,86 @@ export default function PortfolioPage() {
           <ProjectList />
         </section>
 
-        <section id="skills" className="scroll-mt-24 px-[6%] py-24 md:py-28">
-          <div className="reveal mb-4 flex items-center gap-3 ff-mono text-[11px] uppercase tracking-[0.14em] text-[var(--accent2)]">
-            Skills
-            <span className="h-px w-10 bg-[var(--border)]" />
-          </div>
-          <h2 className="reveal reveal-d1 mb-14 ff-serif text-[clamp(28px,4vw,44px)] leading-tight text-[var(--white)]">
-            Tools of the <em className="italic text-[var(--accent)]">trade.</em>
-          </h2>
-
-          <div className="grid gap-10 sm:grid-cols-2">
-            {SKILL_GROUPS.map((group, i) => (
-              <div key={group.title} className={`reveal ${i % 2 === 0 ? "reveal-d1" : "reveal-d2"}`}>
-                <div className="mb-5 ff-mono text-[11px] uppercase tracking-[0.12em] text-[var(--accent2)]">
-                  {group.title}
+        <section id="play" className="scroll-mt-24 px-[6%] pb-16 pt-12 md:py-20">
+          <div className="reveal relative mx-auto max-w-6xl overflow-hidden rounded-3xl border border-[var(--border)] bg-[radial-gradient(ellipse_at_top_right,rgba(25,191,229,0.12),transparent_48%),var(--surface)] p-6 sm:p-9 md:p-12">
+            <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full border border-[var(--border)] opacity-60" />
+            <div className="pointer-events-none absolute -right-4 -top-8 h-40 w-40 rounded-full border border-[var(--border)] opacity-60" />
+            <div className="relative grid gap-10 md:grid-cols-[1fr_320px] md:items-center">
+              <div>
+                <div className="mb-4 flex items-center gap-3 ff-mono text-[11px] uppercase tracking-[0.14em] text-[var(--accent2)]">
+                  The portfolio quest <span className="h-px w-10 bg-[var(--border)]" />
                 </div>
-                <div className="flex flex-wrap gap-3">
-                  {group.items.map((skill) => (
-                    <span
-                      key={skill}
-                      className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm text-[var(--text)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--accent)] hover:text-[var(--accent)]"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
+                <h2 className="mb-4 ff-serif text-[clamp(28px,4vw,42px)] leading-tight text-[var(--white)]">
+                  Explore. Collect. <em className="italic text-[var(--accent)]">Complete.</em>
+                </h2>
+                <p className="max-w-lg text-sm leading-7 text-[var(--muted)]">
+                  Temukan satu sinyal di setiap bagian portofolio. Progres bertambah saat kamu
+                  menjelajahi About, Experience, Projects, Skills, dan Contact.
+                </p>
+                <a
+                  href={`#${EXPLORE_MILESTONES.find(({ id }) => !visitedSections.includes(id))?.id ?? "contact"}`}
+                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-5 py-3 ff-mono text-[11px] font-medium text-white transition hover:brightness-95"
+                >
+                  {visitedSections.length === 0
+                    ? "Mulai jelajah"
+                    : visitedSections.length === EXPLORE_MILESTONES.length
+                      ? "Lihat hadiah"
+                      : "Lanjut jelajah"}
+                  <span aria-hidden="true">↘</span>
+                </a>
               </div>
-            ))}
+              <ExploreGame visitedSections={visitedSections} />
+            </div>
           </div>
         </section>
 
-        <section id="contact" className="scroll-mt-24 px-[6%] pb-28 pt-8 md:pt-12">
-          <div className="reveal mb-4 flex items-center gap-3 ff-mono text-[11px] uppercase tracking-[0.14em] text-[var(--accent2)]">
-            Contact
-            <span className="h-px w-10 bg-[var(--border)]" />
-          </div>
-          <h2 className="reveal reveal-d1 mb-10 ff-serif text-[clamp(28px,4vw,44px)] leading-tight text-[var(--white)]">
-            Let&apos;s <em className="italic text-[var(--accent)]">connect.</em>
-          </h2>
-
-          <div className="reveal reveal-d2 max-w-[600px]">
-            <p className="mb-10 text-[15px] leading-[1.8] text-[var(--muted)]">
-              I&apos;m open to opportunities, collaborations, or just a good conversation about
-              technology. Reach out through any of the channels below, or grab a copy of my CV.
-            </p>
-
-            <div className="mb-8 flex flex-col gap-px overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--border)]">
-              {CONTACT_LINKS.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  target={link.href.startsWith("http") ? "_blank" : undefined}
-                  rel="noreferrer"
-                  className="group flex items-center justify-between bg-[var(--surface)] px-6 py-5 transition-colors hover:bg-[var(--surface2)]"
-                >
-                  <span className="ff-mono text-xs tracking-wide text-[var(--muted)]">{link.label}</span>
-                  <span className="flex items-center gap-3 text-sm text-[var(--text)]">
-                    {link.value}
-                    <span className="text-[var(--border-hover)] transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-[var(--accent)]">
-                      {"\u2197"}
-                    </span>
-                  </span>
-                </a>
-              ))}
+        <section id="contact" className="contact-band scroll-mt-24 px-[6%] py-16 md:py-24">
+          <div className="contact-inner mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-[1fr_0.95fr] md:gap-16">
+            <div className="reveal">
+              <div className="contact-eyebrow mb-4 flex items-center gap-3 ff-mono text-[11px] uppercase tracking-[0.14em]">
+                Contact <span className="h-px w-10" />
+              </div>
+              <h2 className="mb-5 ff-serif text-[clamp(34px,5vw,56px)] leading-tight text-[var(--white)]">
+                Let&apos;s make <em className="italic text-[var(--accent)]">something matter.</em>
+              </h2>
+              <p className="mb-7 max-w-lg text-[15px] leading-[1.8] text-[var(--muted)]">
+                Open to opportunities, project collaborations, and conversations about technology.
+                Reach out or take a look at my CV.
+              </p>
+              <ul className="contact-benefits mb-8 flex flex-col gap-3 text-sm text-[var(--text)]">
+                <li><span aria-hidden="true">✓</span> Fullstack software and web projects</li>
+                <li><span aria-hidden="true">✓</span> Cloud, IoT, and robotics collaboration</li>
+                <li><span aria-hidden="true">✓</span> Based in Depok, Indonesia</li>
+              </ul>
+              <a href={ASSETS.cv} download className="contact-cv inline-flex min-h-11 items-center rounded-full border px-5 py-3 text-sm font-semibold transition-colors">
+                Download CV <span aria-hidden="true" className="ml-2">↓</span>
+              </a>
             </div>
 
-            <a
-              href={ASSETS.cv}
-              download
-              className="inline-block rounded-md bg-[var(--accent)] px-8 py-[13px] text-[13px] font-medium tracking-wide text-[#080d0c] transition-transform hover:brightness-95"
-            >
-              Download CV
-            </a>
+            <div className="contact-card reveal reveal-d1 rounded-[28px] p-6 sm:p-8">
+              <span className="contact-card-label ff-mono text-[10px] uppercase tracking-[0.16em]">Say hello</span>
+              <h3 className="mt-3 ff-serif text-2xl text-[var(--white)]">Find me here</h3>
+              <div className="my-6 flex flex-col gap-2">
+                {CONTACT_LINKS.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target={link.href.startsWith("http") ? "_blank" : undefined}
+                    rel={link.href.startsWith("http") ? "noreferrer" : undefined}
+                    className="contact-link group flex min-h-14 items-center justify-between gap-3 rounded-2xl px-4 py-3 transition-colors"
+                  >
+                    <span className="contact-link-copy">
+                      <span className="block ff-mono text-[10px] uppercase tracking-wider text-[var(--muted)]">{link.label}</span>
+                      <span className="mt-1 block text-sm font-semibold text-[var(--text)]">{link.value}</span>
+                    </span>
+                    <span aria-hidden="true" className="contact-arrow text-lg transition-transform group-hover:translate-x-1">↗</span>
+                  </a>
+                ))}
+              </div>
+              <a href="mailto:nugrahafazila@gmail.com" className="contact-email inline-flex min-h-12 w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition-colors">
+                Email me <span aria-hidden="true" className="ml-2">↗</span>
+              </a>
+            </div>
           </div>
         </section>
       </main>
@@ -1192,12 +1231,6 @@ function ProjectList() {
                   {project.index} / {project.category}
                 </div>
                 <h3 className="mb-2 ff-serif text-xl text-[var(--white)] md:text-2xl">{project.title}</h3>
-                {project.comingSoon && (
-                  <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface2)] px-3 py-1.5 ff-mono text-[11px] text-[var(--muted)]">
-                    <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
-                    Coming soon
-                  </div>
-                )}
                 <button
                   type="button"
                   aria-expanded={isExpanded}
@@ -1210,10 +1243,21 @@ function ProjectList() {
                     ↓
                   </span>
                 </button>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {project.links.map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex min-h-11 items-center rounded-full border border-[var(--border)] px-4 py-2 ff-mono text-xs text-[var(--accent)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface2)]"
+                    >
+                      {link.label} <span aria-hidden="true" className="ml-2">↗</span>
+                    </a>
+                  ))}
+                </div>
               </div>
-              <div className="project-art flex min-h-32 items-center justify-center border border-[var(--border)] bg-[var(--surface2)] ff-mono text-4xl text-[var(--accent)]">
-                {project.index}
-              </div>
+              <ProjectArtwork project={project} />
             </div>
             <div
               id={`project-details-${project.index}`}
@@ -1235,6 +1279,27 @@ function ProjectList() {
           </article>
         );
       })}
+    </div>
+  );
+}
+
+function ProjectArtwork({ project }: { project: Project }) {
+  const [imageAvailable, setImageAvailable] = useState(true);
+
+  return (
+    <div className="project-art relative flex min-h-32 items-center justify-center overflow-hidden border border-[var(--border)] bg-[var(--surface2)] ff-mono text-4xl text-[var(--accent)]">
+      {imageAvailable ? (
+        <Image
+          src={project.image}
+          alt={`${project.title} project preview`}
+          fill
+          sizes="(max-width: 639px) 100vw, 180px"
+          className="object-cover"
+          onError={() => setImageAvailable(false)}
+        />
+      ) : (
+        <span aria-hidden="true">{project.index}</span>
+      )}
     </div>
   );
 }
