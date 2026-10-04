@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 const SITE_URL = "https://dhiyaa-fazila.my.id";
 const PAGE_PATH = "/portofolio";
-const OG_IMAGE = "/portofolio/og-image.jpg";
+const OG_IMAGE = "/portofolio/photo.jpg";
 
 const TITLE = "Dhiyaa Fazila Nugraha | Fullstack Developer & Collaborative Robotic Operator";
 const DESCRIPTION =
