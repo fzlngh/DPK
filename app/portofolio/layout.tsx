@@ -1,24 +1,9 @@
 import type { Metadata } from "next";
-
-/**
- * -----------------------------------------------------------------------
- * SEO CONFIG (edit these two constants, everything below reads from them)
- * -----------------------------------------------------------------------
- * SITE_URL must be your real production domain, no trailing slash.
- * OG_IMAGE is a 1200x630 image used for link previews on WhatsApp, X,
- * LinkedIn, Facebook, etc. Add the real file at the path below; until
- * then, previews will just show a broken image, nothing else breaks.
- *
- *   /public/portofolio/og-image.jpg   -> 1200x630 social preview image
- *   /public/portofolio/favicon.ico    -> browser tab icon
- *   /public/portofolio/icon.png       -> 512x512 app icon (Android/PWA)
- * -----------------------------------------------------------------------
- */
 const SITE_URL = "https://dhiyaa-fazila.my.id";
 const PAGE_PATH = "/portofolio";
 const OG_IMAGE = "/portofolio/og-image.jpg";
 
-const TITLE = "Dhiyaa Fazila Nugraha | Fullstack Developer & Cloud Engineer";
+const TITLE = "Dhiyaa Fazila Nugraha | Fullstack Developer & Collaborative Robotic Operator";
 const DESCRIPTION =
   "Portfolio of Dhiyaa Fazila Nugraha, a vocational student at SMK Negeri 1 Jakarta majoring in Information Systems, Networking, and Applications (SIJA). Fullstack developer, collaborative robotic operator, and cloud engineer with award winning work in UI/UX design, IoT, cloud computing, and scientific research.";
 
@@ -130,7 +115,6 @@ export default function PortofolioLayout({ children }: { children: React.ReactNo
     <>
       <script
         type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
       />
       {children}
